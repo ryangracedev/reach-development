@@ -1,0 +1,20 @@
+@media (max-width: 600px) {
+
+    .CreateBtn {
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        margin-top: -4rem;
+    }
+
+    .Create-Button-Top {
+        font-weight: 200;
+        font-size: 40px;
+    }
+
+    .Create-Button-Bottom {
+        margin-top: -20%;
+        font-size: 50px;
+        font-weight: 1000;
+    }
+
+}

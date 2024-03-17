@@ -1,20 +1,27 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask_pymongo import PyMongo
 from bson import json_util, ObjectId
+from flask_mongoengine import MongoEngine
 import os
 import json
 import sys
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static/frontend/build', static_url_path='')
 app.config["MONGO_URI"] = os.getenv('MONGO_URI')
 mongo = PyMongo(app)
 
 ###########
 ### APP ###
 ###########
+
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def static_files(path):
+    return send_from_directory(app.static_folder, path)
 
 @app.route('/test-mongo')
 def test_mongo():

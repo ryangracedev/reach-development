@@ -1,0 +1,14 @@
+@media (max-width: 600px) {
+
+    .Login-Btn {
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .Login-Btn-Text {
+        top: 100rem;
+        font-size: 50px;
+        font-weight: 1000;
+    }
+
+}
