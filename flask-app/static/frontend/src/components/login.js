@@ -4,7 +4,7 @@ import '../styles/login.css';
 function Login() {
   return (
     <div className="Login-Btn">
-      <h1 className='Login-Btn-Text'>SIGNIN</h1>
+      <h1 className='Login-Btn-Text'>SIGN IN</h1>
     </div>
   );
 }

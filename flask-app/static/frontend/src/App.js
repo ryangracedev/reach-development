@@ -1,16 +1,15 @@
 import './App.css';
-import CreateBtn from './components/createBtn';
-import Login from './components/login';
-//import RedBalloon from './components/redBalloon';
-//import OrangeBalloon from './components/orangeBalloon';
+import HomePage from './pages/homePage';
+import CreateParty from './pages/createPartyOne';
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
     <div className="App">
-      <CreateBtn />
-      <Login />
-      {/* <RedBalloon /> */}
-      {/* <OrangeBalloon /> */}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/create-party" element={<CreateParty />} />
+      </Routes>
     </div>
   );
 }
