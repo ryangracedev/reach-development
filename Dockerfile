@@ -10,6 +10,24 @@ COPY /flask-app /app
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install Node.js and npm
+RUN apt-get update && apt-get install -y nodejs npm
+
+# Change directory to the frontend folder
+WORKDIR /app/static/frontend
+
+# Copy frontend source code to the container
+COPY /static/frontend /app/static/frontend
+
+# Install frontend dependencies
+RUN npm install
+
+# Build frontend assets
+RUN npm run build
+
+# Change directory back to the root of the application
+WORKDIR /app
+
 # Make port 5000 available to the world outside this container
 EXPOSE 8000
 

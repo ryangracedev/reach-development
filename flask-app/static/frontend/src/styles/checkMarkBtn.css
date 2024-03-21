@@ -1,0 +1,33 @@
+@media (max-width: 600px) {
+
+    .Check-Mark-Btn {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    .Button {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 40px; /* Example width */
+        height: 40px; /* Example height, adjust as needed */
+    }
+
+    .Check {
+        background-image: url('../assets/checkmark-button.svg');
+    }
+
+    .Done {
+        background-image: url('../assets/done-button.svg');
+    }
+
+    .Text {
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        color: rgb(255, 255, 255);
+        font-weight: 500;
+        font-size: 18px;
+        padding-left: 1rem;
+    }
+
+}

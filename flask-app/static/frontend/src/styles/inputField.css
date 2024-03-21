@@ -3,22 +3,33 @@
     .Input-Field {
         color: white;
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        margin-top: 15rem;
+        margin-top: 4rem;
+        text-align: left;
     }
 
     .Name {
         font-weight: 500;
-        font-size: 30px;
+        font-size: 26px;
         margin: 0%;
-        margin-right: 10rem;
+        margin-left: 0.7rem;
+        color: rgb(255, 255, 255);
     }
 
     .Description {
         font-weight: 500;
-        font-size: 15px;
+        font-size: 16px;
         margin: 0%;
-        margin-right: 8.6rem;
-        color: #272727;
+        margin-right: 5rem;
+        width: 10rem;
+        color: #676767;
+        background-color: black;
+        border-color: black;
+    }
+
+    .Description::placeholder {
+        color: #272727; /* Lighter color for the placeholder text */
+        font-weight: 500; /* Typically, placeholder text is lighter than input text */
+        /* You can add other styles here as needed */
     }
 
 }

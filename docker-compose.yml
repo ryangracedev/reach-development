@@ -6,9 +6,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGO_URI=mongodb://mongoadmin:secret@mongo:27017/mydatabase?authSource=admin
+      - MONGO_URI=mongodb://mongoadmin:secret@mongo:27017/reach_app?authSource=admin
     depends_on:
       - mongo
+    volumes:
+      - ./flask-app:/app  # This line ensures that changes in your Flask app code are reflected in the container
   mongo:
     image: mongo
     ports:
