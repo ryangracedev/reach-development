@@ -1,0 +1,11 @@
+@media (max-width: 600px) {
+
+    .Create-Page-Two {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        height: 95%;
+    }
+
+}

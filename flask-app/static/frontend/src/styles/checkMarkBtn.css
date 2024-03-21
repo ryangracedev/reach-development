@@ -4,6 +4,11 @@
         display: flex;
         align-items: center;
         flex-direction: row;
+        cursor: pointer;
+    }
+
+    .Yes {
+        padding-left: 0rem;
     }
 
     .Button {
@@ -25,7 +30,7 @@
     .Text {
         font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         color: rgb(255, 255, 255);
-        font-weight: 500;
+        font-weight: 700;
         font-size: 18px;
         padding-left: 1rem;
     }

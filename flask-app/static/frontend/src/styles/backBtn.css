@@ -1,0 +1,15 @@
+@media (max-width: 600px) {
+
+    .Back-Button {
+        justify-content: center;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-image: url('../assets/back-button.svg');
+        width: 20px; /* Example width */
+        height: 20px; /* Example height, adjust as needed */
+        margin-right: 10rem;
+        cursor: pointer;
+    }
+
+}

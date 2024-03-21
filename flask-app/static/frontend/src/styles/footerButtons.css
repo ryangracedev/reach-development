@@ -1,0 +1,10 @@
+@media (max-width: 600px) {
+
+    .Footer {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        
+    }
+
+}

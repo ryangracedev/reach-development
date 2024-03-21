@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useEvent } from '../context/eventContext'; // Import useEvent
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Logo from '../components/logo';
 import InputArea from '../components/inputArea';
 import CheckMarkBtn from '../components/checkMarkBtn';
@@ -6,12 +8,21 @@ import './createPartyOne.css'
 
 function CreatePartyOne() {
 
-  const [eventName, setEventName] = useState('');
-  const [eventDescription, setEventDescription] = useState('');
+  const { eventData } = useEvent();
 
+  const navigate = useNavigate(); // Initialize useNavigate
+
+
+  // A simplified handleSubmit that could be moved to App.js or another component
   const handleSubmit = async () => {
-    const eventData = { eventName, eventDescription };
+    console.log(eventData); // Here you can also perform the fetch operation
+    navigate('/create-party-extra'); // Navigate to CreatePartyTwo
+    // Assuming fetch operation is moved to App.js or triggered when all data is collected
 
+
+    // The fetch operation can eventually be placed here or elsewhere, depending on your app's flow
+    // Remember to replace '/create-event' with your actual backend endpoint URL
+    /*
     const response = await fetch('/create-event', {
       method: 'POST',
       headers: {
@@ -21,18 +32,14 @@ function CreatePartyOne() {
     });
     const responseData = await response.json();
     console.log(responseData);
-    // Additional logic to handle response, like redirecting the user
+    */
   };
+
 
   return (
     <div className="Create-Page-One">
       <Logo />
-      <InputArea 
-        eventName={eventName}
-        setEventName={setEventName}
-        eventDescription={eventDescription}
-        setEventDescription={setEventDescription}
-      />
+      <InputArea />
       <CheckMarkBtn  classNameBtn = 'Check' text = 'Next' onClick={handleSubmit}/>
     </div>
   );
