@@ -1,0 +1,13 @@
+@media (max-width: 600px) {
+
+    .Sign-In-Input-Area {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        justify-content: top;
+        margin-top: 10rem;
+        margin-bottom: 3rem;
+    }
+
+}

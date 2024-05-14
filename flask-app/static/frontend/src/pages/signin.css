@@ -1,0 +1,17 @@
+@media (max-width: 600px) {
+
+    .Sign-In {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        height: 95%;
+    }
+
+    .Forgot-Password {
+        color: #434343;
+        font-size: 13px;
+        margin-top: 8rem;
+    }
+
+}

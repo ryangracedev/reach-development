@@ -15,7 +15,6 @@ function CreatePartyTwo() {
     // Assuming fetch operation is moved to App.js or triggered when all data is collected
   };
 
-
   return (
     <div className="Create-Page-Two">
       <Logo />
