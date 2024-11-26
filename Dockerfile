@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y nodejs npm
 WORKDIR /app/static/frontend
 
 # Copy frontend source code to the container
-COPY /static/frontend /app/static/frontend
+COPY flask-app/static/frontend /app/static/frontend
 
 # Install frontend dependencies
 RUN npm install
@@ -28,7 +28,7 @@ RUN npm run build
 # Change directory back to the root of the application
 WORKDIR /app
 
-# Make port 5000 available to the world outside this container
+# Make port 8000 available to the world outside this container
 EXPOSE 8000
 
 # Define environment variable
