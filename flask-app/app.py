@@ -5,13 +5,26 @@ from flask_mongoengine import MongoEngine
 from mongoengine import Document, StringField, DateTimeField, ReferenceField, BooleanField
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS  # Import flask-cors
+from datetime import datetime, timedelta
+from functools import wraps
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 import os
 import json
 import sys
-
+import jwt
 
 app = Flask(__name__, static_folder='static/frontend/build', static_url_path='')
 app.config["MONGO_URI"] = os.getenv('MONGO_URI')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']     # Use the same secret key for JWT
+# Check if SECRET KEY is in docker-compose
+if not app.config['SECRET_KEY']:
+    raise ValueError("SECRET_KEY not set in environment variables")
+
+jwt = JWTManager(app)
+
+print(f"SECRET_KEY loaded: {app.config['SECRET_KEY']}")
+
 mongo = PyMongo(app)
 # Allow all origins for development
 CORS(app)
@@ -36,6 +49,8 @@ class Event(Document):
     date_time = DateTimeField(required=True)
     host_name = ReferenceField(User, required=True)
 
+# Simulated database collection (use your MongoDB collection)
+users_collection = mongo.db.users
 
 @app.route('/')
 def index():
@@ -45,32 +60,32 @@ def index():
 def static_files(path):
     return send_from_directory(app.static_folder, path)
 
-@app.route('/create-event', methods=['POST'])
-def create_event():
-    # Get data from request
+@app.route('/signin', methods=['POST'])
+def signin():
     data = request.json
-    print("Received data:", data)
-    eventName = data.get('eventName')
-    eventDescription = data.get('eventDescription')
-    print("Event Name:", eventName)
-    print("Event Description:", eventDescription)
-    # Get user collection
-    events_collection = mongo.db.events
-    # Insert a complete user document at once
-    event_doc = {
-        'event-name': eventName,
-        'description': eventDescription,
-        'address': '16 Athletic Ave',
-        'date-time': '02-24-24:21:30',
-        'host-name': 'ryankgrace'
-    }
-    # Insert the document and return the object id
-    event_id = events_collection.insert_one(event_doc).inserted_id
-    # Retrieve the inserted document using its ID
-    document = events_collection.find_one({'_id': event_id})
-    # Convert MongoDB document to JSON
-    document_json = json.loads(json_util.dumps(document))
-    return jsonify(document_json), 200
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"error": "Username and password are required"}), 400
+
+    # Check if the user exists in the database
+    user = users_collection.find_one({"username": username})
+    if not user:
+        return jsonify({"error": "Invalid username or password"}), 401
+ 
+    # Verify the password
+    if not check_password_hash(user["password"], password):
+        return jsonify({"error": "Invalid username or password"}), 401
+
+    # Create a JWT token
+    access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1))
+
+    return jsonify({
+        "message": "Sign-in successful",
+        "username": username,
+        "access_token": access_token
+    }), 200
 
 # Endpoint to handle a user signup
 @app.route('/signup', methods=['POST'])
@@ -195,6 +210,60 @@ def verify_code():
     )
 
     return jsonify({"message": "Phone number verified successfully"}), 200
+
+
+@app.route('/create-event', methods=['POST'])
+@jwt_required()
+def create_event():
+    data = request.json
+    print("Received payload:", data)  # Log the received payload
+
+    # Get events collection
+    events_collection = mongo.db.events
+
+    # Validate required fields
+    event_name = data.get('event_name')
+    description = data.get('description')
+    address = data.get('address')
+    date_time = data.get('date_time')
+    # Extract the user identity from the JWT
+    host_id = get_jwt_identity()
+
+    if not event_name or not description or not address or not date_time or not host_id:
+        return jsonify({"error": "All fields (event_name, description, address, date_time, host_id) are required"}), 400
+
+    print(data)
+
+    # Insert event into events collection
+    event_doc = {
+        "event_name": event_name,
+        "description": description,
+        "address": address,
+        "date_time": date_time,
+        "host_id": host_id,
+        "invitee_ids": [],
+        "status": "active"
+    }
+    event_id = events_collection.insert_one(event_doc).inserted_id
+
+    # Update the host's hosted_events
+    mongo.db.users.update_one(
+        {"_id": host_id},
+        {"$push": {"hosted_events": str(event_id)}}
+    )
+
+    return jsonify({"message": "Event created successfully", "event_id": str(event_id)}), 201
+
+@app.route('/events/<event_name>', methods=['GET'])
+def get_event(event_name):
+    # Fetch the event by name from the database
+    event = mongo.db.events.find_one({"event_name": event_name})
+    if not event:
+        return jsonify({"error": "Event not found"}), 404
+
+    # Convert the MongoDB document to JSON
+    event_json = json.loads(json_util.dumps(event))
+    return jsonify(event_json), 200
 
 
 # MAIN

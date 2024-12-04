@@ -6,7 +6,10 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGO_URI=mongodb://mongoadmin:secret@mongo:27017/reach_app?authSource=admin
+      - MONGO_URI
+      - SECRET_KEY
+    env_file:
+      - .env
     depends_on:
       - mongo
     volumes:

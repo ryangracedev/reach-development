@@ -1,27 +1,25 @@
 import React, { createContext, useContext, useState } from 'react';
 
+// Create the EventContext
 const EventContext = createContext();
 
-export function useEvent() {
+// Custom hook to use the EventContext
+export const useEventContext = () => {
   return useContext(EventContext);
-}
+};
 
+// Provider component
 export const EventProvider = ({ children }) => {
   const [eventData, setEventData] = useState({
-    eventName: '',
-    eventDescription: '',
-    eventAddress: '',
-    eventDate: '',
-    eventTime: '',
-    hostName: ''
-    // Add other event properties here as needed
+    image: null,
+    name: '',
+    description: '',
+    address: '',
+    dateTime: '',
   });
 
-  const updateEventData = (newData) => {
-    setEventData((prevData) => ({
-      ...prevData,
-      ...newData,
-    }));
+  const updateEventData = (key, value) => {
+    setEventData((prev) => ({ ...prev, [key]: value }));
   };
 
   return (

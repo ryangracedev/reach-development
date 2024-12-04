@@ -1,0 +1,40 @@
+.home-page {
+    text-align: center;
+    padding: 50px;
+  }
+  
+  .home-buttons {
+    margin-top: 20px;
+  }
+  
+  .create-event-btn,
+  .sign-in-btn {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .create-event-btn {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .sign-in-btn {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .create-event-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .sign-in-btn:hover {
+    background-color: #0056b3;
+  }
+
+  h1 {
+    color: wheat;
+  }
