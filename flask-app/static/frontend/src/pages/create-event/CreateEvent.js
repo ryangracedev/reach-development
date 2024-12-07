@@ -13,6 +13,8 @@ const CreateEvent = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({}); // Store user input data
 
+  console.log('AuthState in CreateEvent:', authState);
+
   const nextStep = () => setStep((prev) => prev + 1);
 
   const updateFormData = (key, value) => {
@@ -21,6 +23,16 @@ const CreateEvent = () => {
       [key]: value,
     }));
   };
+
+  if (authState.isAuthenticated === null) {
+    return <p>Loading authentication status...</p>;
+  }
+
+  console.log("authState is not NULL");
+
+  console.log("Step: ", step);
+
+  console.log("Auth State: ", authState.isAuthenticated)
 
   return (
     <EventProvider>
@@ -39,10 +51,10 @@ const CreateEvent = () => {
         )}
 
         {/* Preview and Create logic */}
-        {(authState.isAuthenticated && step === 3) || (!authState.isAuthenticated && step === 7) ? (
+        {(authState.isAuthenticated && step === 3) || (authState.isAuthenticated && step === 7) ? (
           <EventPreview nextStep={nextStep} />
         ) : null}
-        {(authState.isAuthenticated && step === 4) || (!authState.isAuthenticated && step === 8) ? (
+        {(authState.isAuthenticated && step === 4) || (authState.isAuthenticated && step === 8) ? (
           <EventCreated />
         ) : null}
       </div>

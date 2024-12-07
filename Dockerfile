@@ -32,6 +32,7 @@ WORKDIR /app
 EXPOSE 8000
 
 # Define environment variable
+ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 

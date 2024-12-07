@@ -1,31 +1,30 @@
 import React, { useState } from 'react';
 import { useEventContext } from '../../context/EventContext';
 import { useNavigate } from 'react-router-dom'; // For navigation
+import { useAuthAPI } from '../../hooks/useAuthAPI'; // Import the custom hook
 
 const EventCreated = () => {
   const { eventData } = useEventContext();
+  const { fetchWithAuth } = useAuthAPI(); // Use the fetchWithAuth hook
   const [error, setError] = useState('');
   const navigate = useNavigate(); // Hook for navigation
 
   const handleSubmit = async () => {
+    const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+
+    if (!token) {
+      console.error('No token found. Please sign in or sign up.');
+      return;
+    }
+
+    
+
     setError('');
     try {
-      // Retrieve the JWT token from localStorage
-      const token = localStorage.getItem('jwtToken');
-
-      if (!token) {
-        setError('User is not authenticated. Please sign in.');
-        return;
-      }
-
-      console.log("Local Storage: \n", localStorage);
-      console.log("Token: \n", token);
-
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/create-event`, {
+      const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/create-event`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // Include the JWT token in the Authorization header
         },
         body: JSON.stringify({
           event_name: eventData.name,

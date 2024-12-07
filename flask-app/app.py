@@ -8,30 +8,49 @@ from flask_cors import CORS  # Import flask-cors
 from datetime import datetime, timedelta
 from functools import wraps
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
+from threading import Timer
+import redis
 import os
 import json
 import sys
 import jwt
+import random
+import string
+import time
 
+# Points flask app to static react build files
 app = Flask(__name__, static_folder='static/frontend/build', static_url_path='')
+# Get the Mongo URI
 app.config["MONGO_URI"] = os.getenv('MONGO_URI')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']     # Use the same secret key for JWT
+# Use the same secret key for JWT
+app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
 # Check if SECRET KEY is in docker-compose
 if not app.config['SECRET_KEY']:
     raise ValueError("SECRET_KEY not set in environment variables")
-
+# JSON Web Token
 jwt = JWTManager(app)
 
+# For Testing
 print(f"SECRET_KEY loaded: {app.config['SECRET_KEY']}")
 
 mongo = PyMongo(app)
+
 # Allow all origins for development
-CORS(app)
+CORS(app, supports_credentials=True)
 
 ###########
 ### APP ###
 ###########
+
+# Temporary store for user data
+# Initialize Redis client
+redis_client = redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True)
+
+# Function to generate a random verification code
+def generate_verification_code():
+     # 4-digit numeric code
+    return ''.join(random.choices(string.digits, k=4))
 
 # Define User schema
 class User(Document):
@@ -39,7 +58,6 @@ class User(Document):
     password = StringField(required=True)
     phone_number = StringField(required=True)
     profile_picture = StringField()
-    is_verified = BooleanField(default=False)
 
 # Define Event schema
 class Event(Document):
@@ -80,6 +98,7 @@ def signin():
 
     # Create a JWT token
     access_token = create_access_token(identity=username, expires_delta=timedelta(hours=1))
+    print("New JWT created for:", username)  # Debugging
 
     return jsonify({
         "message": "Sign-in successful",
@@ -98,24 +117,38 @@ def signup():
     phone_number = data.get('phone_number')
     # Get user collection
     users_collection = mongo.db.users
+
     # Validate required fields
     if not username or not password or not phone_number:
         return jsonify({"error": "All fields (username, password, phone_number) are required"}), 400
+    
     # Check if the username already exists
     if users_collection.find_one({'username': username}) is not None:
         return jsonify({"error": "Username already exists"}), 400
+    
+    # Check if the phone number is already verified
+    verified = redis_client.get(f'verified:{username}')
+    if not verified:
+        return jsonify({"error": "Phone number not verified yet"}), 400
+    
     # Hash the password
     hashed_password = generate_password_hash(password)
+
     # Create the user document for MongoDB
     user_doc = {
         "username": username,
         "password": hashed_password,
         "phone_number": phone_number,
         "profile_picture": "none",
-        "is_verified": False
     }
     # Insert the document and return the object id
     user_id = users_collection.insert_one(user_doc).inserted_id
+
+    # Create a JWT for the new user
+    access_token = create_access_token(identity=str(user_id))  # Use user_id as the identity
+
+    # Cleanup Redis
+    redis_client.delete(f'verified:{username}')
 
     # FOR TESTING
     # Retrieve the inserted document using its ID
@@ -123,7 +156,7 @@ def signup():
     # Convert MongoDB document to JSON
     document_json = json.loads(json_util.dumps(document))
     # Return
-    return jsonify({"message": "User signed up successfully"}), 201
+    return jsonify({"message": "User signed up successfully", "access_token": access_token}), 201
 
 # Endpoint to check if a username already exists
 @app.route('/check-username', methods=['POST'])
@@ -157,64 +190,84 @@ def check_phone():
 # Endpoint to handle sending a verfication code to the user
 @app.route('/send-verification', methods=['POST'])
 def send_verification():
+
+    # Get user data request
     data = request.json
+    # Extract user data
+    phone_number = data.get('phone_number')
     username = data.get('username')
 
-    # Validate username
-    if not username:
-        return jsonify({"error": "Username is required"}), 400
-
-    # Get user collection
-    users_collection = mongo.db.users
-
-    # Check if the user exists in MongoDB
-    user = users_collection.find_one({'username': username})
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-
+    # Validate username, phone number, and password
+    if not phone_number or not username:
+        return jsonify({"error": "Phone Number and Username required"}), 400
+    
+    # Generate a verification code
+    # verification_code = generate_verification_code()
     # Simulate sending the code
     verification_code = "1234"  # Fixed code for now
-    print(f"Sending verification code {verification_code} to {user['phone_number']}")
+
+    # Store the code in Redis with a 5-minute expiration
+    redis_client.set(username, verification_code, ex=300)  # Key: username, Value: code, Expiry: 5 mins
+
+    # redis_client.setex(
+    #     f"user:{phone_number}",
+    #     300,  # 5 minutes
+    #     json.dumps({
+    #         "username": username,
+    #         "password": password,
+    #         "verification_code": verification_code
+    #     })
+    # )
+
+    # Simulate sending the verification code (replace with actual SMS logic)
+    print(f"Sending verification code {verification_code} to {phone_number}")
+    # For Testing
+    print(f"Verification code for {username}: {verification_code}")
 
     return jsonify({"message": "Verification code sent"}), 200
 
 # Endpoint to handle verifying a user's account
 @app.route('/verify-code', methods=['POST'])
 def verify_code():
+
+    # Get data
     data = request.json
+    # Extract the username and code
     username = data.get('username')
     code = data.get('code')
 
-    print("Username received:", username)  # Debugging
+    # For Testing
+    print("Username received:", username)
 
     # Validate inputs
     if not username or not code:
         return jsonify({"error": "Username and code are required"}), 400
 
-    # Get user collection
-    users_collection = mongo.db.users
-
-    # Check if the user exists in MongoDB
-    user = users_collection.find_one({'username': username})
-    if not user:
-        return jsonify({"error": "User not found"}), 404
+    # Check Redis (or in-memory store) for verification code
+    stored_code = redis_client.get(username)  # Replace with your Redis logic
+    if not stored_code:
+        # For Testing
+        print(f"Redis Debug: Username '{username}' not found in Redis or expired")
+        return jsonify({"error": "Verification code expired or not found"}), 404
+    
+    # For Testing
+    print(f"Redis Debug: Stored code for '{username}' is '{stored_code}'")
 
     # Verify the code
-    if code != "1234":  # Fixed code for now
+    if code != stored_code:
         return jsonify({"error": "Invalid verification code"}), 400
 
-    # Mark the user as verified in MongoDB
-    users_collection.update_one(
-        {'username': username},
-        {'$set': {'is_verified': True}}
-    )
+    # Code is valid; delete from Redis
+    redis_client.delete(username)
+    redis_client.set(f"verified:{username}", "true", ex=300)  # Flag valid for 5 minutes
 
     return jsonify({"message": "Phone number verified successfully"}), 200
 
-
+# Endpoint to handle creation of events
 @app.route('/create-event', methods=['POST'])
 @jwt_required()
 def create_event():
+    print("Authorization Header:", request.headers.get("Authorization"))  # Debugging
     data = request.json
     print("Received payload:", data)  # Log the received payload
 
@@ -229,10 +282,10 @@ def create_event():
     # Extract the user identity from the JWT
     host_id = get_jwt_identity()
 
+    print("Host_ID: ", host_id)
+
     if not event_name or not description or not address or not date_time or not host_id:
         return jsonify({"error": "All fields (event_name, description, address, date_time, host_id) are required"}), 400
-
-    print(data)
 
     # Insert event into events collection
     event_doc = {
@@ -254,8 +307,11 @@ def create_event():
 
     return jsonify({"message": "Event created successfully", "event_id": str(event_id)}), 201
 
+# Endpoint to display an active event
 @app.route('/events/<event_name>', methods=['GET'])
 def get_event(event_name):
+
+    print("/events/<event_name> Reached. Displaying Event!")
     # Fetch the event by name from the database
     event = mongo.db.events.find_one({"event_name": event_name})
     if not event:

@@ -58,7 +58,6 @@ The `users` collection stores details about the application's users, including t
   "username": "john_doe",
   "phone_number": "1234567890",
   "profile_picture": "link_to_profile_picture",
-  "is_verified": true,
   "hosted_events": ["event_id_1", "event_id_3"], // Events the user is hosting
   "invited_events": ["event_id_2"] // Events the user is invited to
 }

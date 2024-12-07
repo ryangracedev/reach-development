@@ -7,17 +7,26 @@ const PhoneStep = ({ formData, updateFormData, nextStep }) => {
   const [isChecking, setIsChecking] = useState(false); // To show a loading indicator while checking
 
   const handleNext = async () => {
-    console.log("formData: ", formData)
+
+
+    // For Testing
+    console.log("Form Data In PhoneStep.js:\n", formData)
     // Frontend validation: Ensure the phone number is not empty
     if (!phoneNumber.trim()) {
       setError('Phone number is required');
       return;
     }
 
-    setError(''); // Clear previous errors
-    setIsChecking(true); // Show loading indicator
 
+    // Clear previous errors
+    setError('');
+     // Show loading indicator
+    setIsChecking(true);
+
+
+    // Check if phone number exits
     try {
+
       // Make API call to check if the phone number exists
       const response = await fetch(`${process.env.REACT_APP_API_URL}/check-phone`, {
         method: 'POST',
@@ -27,35 +36,40 @@ const PhoneStep = ({ formData, updateFormData, nextStep }) => {
         body: JSON.stringify({ phone_number: phoneNumber }),
       });
 
+      // Check if response is vaild
       if (response.ok) {
+        // Get response data
         const data = await response.json();
+        // Check if data exists in DB
         if (data.exists) {
           setError('Phone number already exists');
         } else {
+
           // Phone number is valid, proceed to the next step
           updateFormData('phoneNumber', phoneNumber);
 
-          // Make the signup API call
-          const signupResponse = await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
+          // Call /send-verification to send the code
+          const verificationResponse = await fetch(`${process.env.REACT_APP_API_URL}/send-verification`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               username: formData.username,
-              password: formData.password,
               phone_number: phoneNumber,
             }),
           });
 
-          if (signupResponse.ok) {
-            const result = await signupResponse.json();
-            console.log('Signup Successful:', result); // Debugging
-            nextStep(); // Move to verification step
+          // Check if /send-verification was successful
+          if (verificationResponse.ok) {
+            console.log('Verification code sent successfully');
+            // Go to verification step
+            nextStep();
           } else {
-            const errorResponse = await signupResponse.json();
-            setError(errorResponse.error || 'Signup failed');
+            const verificationError = await verificationResponse.json();
+            setError(verificationError.error || 'Failed to send verification code');
           }
+
         }
       } else {
         const errorResponse = await response.json();
