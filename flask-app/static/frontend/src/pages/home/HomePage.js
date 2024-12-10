@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; // Use AuthContext
 import './style/HomePage.css'; // Import the CSS file
@@ -21,7 +22,9 @@ const HomePage = () => {
         </button>
         {authState.isAuthenticated ? (
           <div>
-            <p>Welcome, {authState.username}!</p>
+            <p>
+              Logged in as <Link to={`/profile/${authState.username}`}>{authState.username}</Link>
+            </p>
             <button onClick={signOut} className="sign-out-btn">
               Sign Out
             </button>

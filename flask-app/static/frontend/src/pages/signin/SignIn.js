@@ -24,7 +24,7 @@ const SignIn = () => {
         const data = await response.json();
         console.log('Sign-in successful:', data);
         localStorage.setItem('jwtToken', data.access_token); // Save JWT token
-        signIn(data.username, data.access_token); // Update AuthContext
+        signIn(data.access_token); // Update AuthContext
 
         console.log("jwtToken: ", localStorage.getItem('jwtToken'));
         navigate('/'); // Redirect to the homepage
@@ -44,7 +44,7 @@ const SignIn = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSignIn}>
         <div>
-          <label>Username</label>
+          <label style={{ color: 'white' }}>Username</label>
           <input
             type="text"
             value={username}
@@ -53,7 +53,7 @@ const SignIn = () => {
           />
         </div>
         <div>
-          <label>Password</label>
+          <label style={{ color: 'white' }}>Password</label>
           <input
             type="password"
             value={password}
@@ -63,6 +63,11 @@ const SignIn = () => {
         </div>
         <button type="submit">Sign In</button>
       </form>
+      <a href="/forgot-password">Forgot Password?</a>
+      <h2>Don’t have an account?</h2>
+      <button onClick={() => navigate('/signup')} style={{ marginLeft: '8px' }}>
+        Sign Up
+      </button>
     </div>
   );
 };

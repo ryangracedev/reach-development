@@ -65,8 +65,9 @@ const VerificationStep = ({ formData, updateFormData, nextStep }) => {
           // Store the token in localStorage
           //localStorage.setItem('authToken', result.access_token);
 
+          console.log("Result: ", result);
           // Sign user in
-          signIn(formData.username, result.access_token);
+          signIn(result.access_token);
 
           // User is now signed up
           nextStep();

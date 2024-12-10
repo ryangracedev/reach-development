@@ -5,12 +5,18 @@ const AuthContext = createContext();
 
 const validateToken = (token) => {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1])); // Decode JWT payload
+    // Ensure the token has three parts separated by dots
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Invalid JWT structure');
+    }
+
+    const payload = JSON.parse(atob(parts[1])); // Decode JWT payload
     const isExpired = payload.exp * 1000 < Date.now(); // Check expiration
-    return !isExpired;
+    return { isValid: !isExpired, payload }; // Return both validation status and payload
   } catch (err) {
     console.error('Invalid token:', err);
-    return false;
+    return { isValid: false, payload: null }; // Return false and null payload
   }
 };
 
@@ -27,74 +33,88 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [authState, setAuthState] = useState({
       isAuthenticated: false,
+      userId: null,
       username: null,
       token: null, // Store the session token
     });
   
-    // Check for existing token on app load
-    useEffect(() => {
-      const storedToken = localStorage.getItem('authToken');
-      const storedUsername = localStorage.getItem('authUsername');
-    
-      if (storedToken && storedUsername && validateToken(storedToken)) {
+  // Check for existing token on app load
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken');
+  
+    if (storedToken) {
+      const { isValid, payload } = validateToken(storedToken);
+  
+      if (isValid) {
         setAuthState({
           isAuthenticated: true,
-          username: storedUsername,
+          userId: payload.sub, // `sub` contains the `identity` (user ID)
+          username: payload.username, // `username` from additional claims
           token: storedToken,
         });
       } else {
-        console.warn("Invalid token or no token found. Clearing auth state.");
+        console.warn("Token expired or invalid. Clearing auth state.");
         localStorage.removeItem('authToken');
-        localStorage.removeItem('authUsername');
         setAuthState({
           isAuthenticated: false,
+          userId: null,
           username: null,
           token: null,
         });
       }
-    }, []);
-  
-    const signIn = (username, token) => {
-      // For Testing
-      console.log("Signing in user:", username);
-      console.log("Token received:", token);
-      // Save token and username to localStorage
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('authUsername', username);
-  
-        // Delay the state update
-      setTimeout(() => {
-        setAuthState({
-          isAuthenticated: true,
-          username,
-          token,
-        });
-        console.log("Auth state after signIn:", authState); // Debugging
-      }, 0); // Small delay
-      // For Testing
-      // Log after setting the state
-      console.log('Auth state inside signIn (immediately after setAuthState):', {
-        isAuthenticated: true,
-        username,
-        token,
-      });
-    };
-  
-    const signOut = () => {
-      // Remove token and username from localStorage
+    }
+  }, []);
+
+  const signIn = (token) => {
+
+    if (!token) {
+      console.error('No token provided for signIn');
+      return;
+    }
+
+    // Parse userId from the JWT payload
+    const { isValid, payload } = validateToken(token);
+
+
+    if (!isValid) {
+      console.warn('Removing invalid token from localStorage');
       localStorage.removeItem('authToken');
-      localStorage.removeItem('authUsername');
-  
       setAuthState({
         isAuthenticated: false,
+        userId: null,
         username: null,
         token: null,
       });
-    };
-  
-    return (
-      <AuthContext.Provider value={{ authState, signIn, signOut }}>
-        {children}
-      </AuthContext.Provider>
-    );
+    }
+
+    console.log("Payload: \n", payload)
+
+    // Save token and username to localStorage
+    localStorage.setItem('authToken', token);
+
+    setAuthState({
+      isAuthenticated: true,
+      userId: payload.sub, // Extracted `user_id` from the JWT's `identity`
+      username: payload.username, // Extracted `username` from the additional claims
+      token,
+    });
   };
+
+  const signOut = () => {
+    // Remove token and user info from localStorage
+    localStorage.removeItem('authToken');
+
+    setAuthState({
+      isAuthenticated: false,
+      userId: null,
+      username: null,
+      token: null,
+    });
+  };
+
+  return (
+    <AuthContext.Provider value={{ authState, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

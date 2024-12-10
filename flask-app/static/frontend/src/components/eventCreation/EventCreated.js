@@ -10,6 +10,9 @@ const EventCreated = () => {
   const navigate = useNavigate(); // Hook for navigation
 
   const handleSubmit = async () => {
+
+    console.log("Event Data: ", eventData)
+
     const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
 
     if (!token) {
@@ -17,21 +20,19 @@ const EventCreated = () => {
       return;
     }
 
-    
-
     setError('');
     try {
+
+      const formData = new FormData();
+      formData.append('image', eventData.image);
+      formData.append('event_name', eventData.name);
+      formData.append('description', eventData.description);
+      formData.append('address', eventData.address);
+      formData.append('date_time', eventData.dateTime);
+
       const response = await fetchWithAuth(`${process.env.REACT_APP_API_URL}/create-event`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event_name: eventData.name,
-          description: eventData.description,
-          address: eventData.address,
-          date_time: eventData.dateTime,
-        }),
+        body: formData, // Directly send the form data
       });
 
       if (response.ok) {
@@ -39,7 +40,7 @@ const EventCreated = () => {
         console.log('Event created:', result);
 
         // Redirect to the dynamic event page
-        navigate(`/${encodeURIComponent(eventData.name)}`);
+        navigate(`/${encodeURIComponent(eventData.name.toLowerCase())}`);
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Failed to create the event');
