@@ -5,8 +5,11 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-color: #000000;
-    min-height: 100vh;
+    background-color: inherit;
+    height: 100dvh;
+    
+    padding-left: 3rem;
+    padding-right: 3rem;
   }
 
 }
@@ -14,9 +17,11 @@
 
 .App {
   text-align: center;
-  background-color: #000000;
-  min-height: 100vh;
+  /* background: linear-gradient(to bottom, #0d0101, #000000); */
+  background-color: inherit;
+  height: 100dvh;
   display: grid;
   align-items: center;
   justify-content: center;
+  border-bottom: var(--border-height) solid #c94b4b;
 }

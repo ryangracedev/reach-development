@@ -3,10 +3,17 @@ services:
   flask-app:
     build: 
       context: .
+      args:
+        NODE_ENV: ${NODE_ENV:-production}  # 👈 Defaults to "production", override in dev
     ports:
       - "8000:8000"
+    networks:
+      - reach-development_default
+      - bridge  # Attach to bridge for external access
     environment:
+      - FLASK_ENV
       - MONGO_URI
+      - REDIS_HOST
       - SECRET_KEY
     env_file:
       - .env
@@ -27,6 +34,12 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
+
+networks:
+  reach-development_default:
+    external: true  # Use existing network
+  bridge:
+    driver: bridge  # Attach Flask to the bridge network for external access
 
 volumes:
   mongo-data:

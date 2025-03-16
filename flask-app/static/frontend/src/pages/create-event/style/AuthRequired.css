@@ -1,0 +1,92 @@
+.auth-required {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.create-an-account {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50%;
+    margin-top: 4rem;
+}
+
+.auth-title {
+    font-size: 1.625rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.auth-subtext {
+    font-size: 1rem;
+    color: #3737378f;
+}
+
+/* Event Preview Styles */
+.event-preview {
+    position: relative;
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10rem;
+    margin-top: 4rem;
+    transform: rotate(-3deg);
+}
+
+.event-preview-image {
+    width: 15.625rem;
+    height: 8.75rem;
+    border-radius: 30px;
+    object-fit: cover;
+}
+
+.event-preview-info {
+    position: absolute;
+    margin-top: 3rem;
+    right: -20px;
+    width: 85%;
+    background: rgba(22, 22, 22, 0.563); /* Semi-transparent background */
+    backdrop-filter: blur(10px); /* Blurs the background */
+    -webkit-backdrop-filter: blur(10px); /* Ensures Safari compatibility */
+    border-radius: 30px;
+    padding: 1rem;
+    text-align: left;
+}
+
+.event-preview-date {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.2rem;
+    font-weight: 600;
+    padding-left: 0.5rem;
+}
+
+.event-preview-title {
+    font-size: 1.563rem;
+    font-weight: bold;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    /* backdrop-filter: blur(5px); Apply blur effect */
+    /* -webkit-backdrop-filter: blur(5px); */
+    /* text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5); Soft glow */
+}
+
+.event-preview-description {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.custom-button {
+    justify-content: center;
+    margin-bottom: 5rem;
+}

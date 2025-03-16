@@ -1,0 +1,41 @@
+.custom-button-hollow {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: black; /* Match screenshot text color */
+}
+
+.button-text-hollow {
+    margin-right: 0.75rem; /* Adds space between text and icon */
+}
+
+.button-icon-hollow {
+    width: 2.75rem;
+    height: 2.75rem;
+    background-color: transparent; /* No background fill */
+    border: 1px solid black; /* Black circular border */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.button-icon-hollow svg {
+    width: 70%;
+    height: 70%;
+    stroke: black; /* Change arrow color to black */
+}
+
+.custom-button-hollow:hover .button-icon-hollow {
+    background-color: rgba(0, 0, 0, 0.1); /* Subtle hover effect */
+}
+
+svg {
+    margin-left: 0.2rem; /* Remove unwanted shift */
+}

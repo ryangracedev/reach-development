@@ -1,13 +1,15 @@
 import os
+import boto3
 from flask import current_app
 from werkzeug.utils import secure_filename
+from botocore.exceptions import NoCredentialsError, ClientError
 
 # Optional: Uncomment these lines if/when you integrate AWS S3
 # import boto3
 # from botocore.exceptions import NoCredentialsError
 
+# Save the file locally and return the URL.
 def save_file_local(file):
-    """Save the file locally and return the URL."""
     print("[save_file_local]: Saving photo")
     upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads')
     os.makedirs(upload_folder, exist_ok=True)  # Create the folder if it doesn't exist
@@ -17,25 +19,46 @@ def save_file_local(file):
     print("[save_file_local]: filename: ", filename)
     return f"/uploads/{filename}"  # Return the relative path for the client
 
+# Save the file to AWS S3 and return the URL.
 def save_file_s3(file):
-    """Save the file to AWS S3 and return the URL."""
-    # Uncomment and configure this when you have an S3 bucket
-    # s3_client = boto3.client(
-    #     's3',
-    #     aws_access_key_id=current_app.config.get('AWS_ACCESS_KEY'),
-    #     aws_secret_access_key=current_app.config.get('AWS_SECRET_KEY')
-    # )
-    # bucket_name = current_app.config.get('S3_BUCKET_NAME')
-    # filename = secure_filename(file.filename)
-    # try:
-    #     s3_client.upload_fileobj(file, bucket_name, filename)
-    #     return f"https://{bucket_name}.s3.amazonaws.com/{filename}"
-    # except NoCredentialsError:
-    #     raise RuntimeError("AWS credentials are not configured.")
-    pass  # Placeholder until you configure AWS S3
 
+    try:
+        # Get the S3 client (automatically uses IAM role if running in AWS)
+        s3_client = boto3.client('s3', region_name=os.getenv("AWS_REGION", "us-east-2"))
+
+        # Get the bucket name
+        bucket_name = os.getenv("S3_BUCKET_NAME", "reach-event-images")
+        print(f"Using S3 Bucket: {bucket_name}") # Debugging
+
+        filename = secure_filename(file.filename)
+
+        # Debugging
+        print(f"Uploading {filename} to S3 bucket {bucket_name}...")
+
+        # Upload the file to S3
+        s3_client.upload_fileobj(
+            file,
+            bucket_name,
+            filename,
+            ExtraArgs={"ContentType": file.content_type}  # Ensure correct file type
+        )
+
+        # Return the public URL
+        file_url = f"https://{bucket_name}.s3.amazonaws.com/{filename}"
+        print(f"Upload successful! File URL: {file_url}")
+
+        # Return the URL of the uploaded image
+        return file_url
+
+    except NoCredentialsError:
+        print("AWS credentials are missing!")
+        raise RuntimeError("AWS credentials are not configured correctly.")
+    except ClientError as e:
+        print(f"S3 upload failed: {e}")
+        raise RuntimeError(f"Failed to upload file to S3: {e}")
+    
+# Save the file based on the environment (development or production).
 def save_file(file):
-    """Save the file based on the environment (development or production)."""
     environment = current_app.config.get('ENV', 'development')  # Default to 'development'
     if environment == 'production':
         return save_file_s3(file)  # Save to S3 in production

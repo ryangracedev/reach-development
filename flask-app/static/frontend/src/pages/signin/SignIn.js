@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext'; // Use the AuthContext for managing authentication
 import { useNavigate } from 'react-router-dom';
+import "./style/SignIn.css";
 
 const SignIn = () => {
   const { signIn } = useAuth(); // Access the signIn function from AuthContext
@@ -14,7 +15,7 @@ const SignIn = () => {
     setError(''); // Clear previous errors
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/signin`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
@@ -41,10 +42,11 @@ const SignIn = () => {
   return (
     <div className="sign-in-page">
       <h2>Sign In</h2>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSignIn}>
-        <div>
-          <label style={{ color: 'white' }}>Username</label>
+      {error && <p className="error-message">{error}</p>}
+
+      <form onSubmit={handleSignIn} className="sign-in-form">
+        <div className="input-group">
+          <label>Username</label>
           <input
             type="text"
             value={username}
@@ -52,8 +54,9 @@ const SignIn = () => {
             required
           />
         </div>
-        <div>
-          <label style={{ color: 'white' }}>Password</label>
+
+        <div className="input-group">
+          <label>Password</label>
           <input
             type="password"
             value={password}
@@ -61,13 +64,18 @@ const SignIn = () => {
             required
           />
         </div>
-        <button type="submit">Sign In</button>
+
+        <button type="submit" className="sign-in-button">Sign In</button>
       </form>
-      <a href="/forgot-password">Forgot Password?</a>
-      <h2>Don’t have an account?</h2>
-      <button onClick={() => navigate('/signup')} style={{ marginLeft: '8px' }}>
-        Sign Up
-      </button>
+
+      <a href="/forgot-password" className="forgot-password-link">Forgot Password?</a>
+
+      <div className="signup-container">
+        <p>Don’t have an account?</p>
+        <button onClick={() => navigate('/signup')} className="sign-up-button">
+          Sign Up
+        </button>
+      </div>
     </div>
   );
 };

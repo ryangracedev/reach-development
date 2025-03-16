@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import './style/SignupPage.css'; // Import the CSS file
+import './style/PhoneStep.css'; // Import page CSS file
+import CustomBack from '../common/CustomBack';
+import CustomHollow from '../common/CustomButtonHollow';
 
-const PhoneStep = ({ formData, updateFormData, nextStep }) => {
+const PhoneStep = ({ formData, prevStep, updateFormData, nextStep }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [error, setError] = useState('');
   const [isChecking, setIsChecking] = useState(false); // To show a loading indicator while checking
@@ -28,7 +31,7 @@ const PhoneStep = ({ formData, updateFormData, nextStep }) => {
     try {
 
       // Make API call to check if the phone number exists
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/check-phone`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/check-phone`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +52,7 @@ const PhoneStep = ({ formData, updateFormData, nextStep }) => {
           updateFormData('phoneNumber', phoneNumber);
 
           // Call /send-verification to send the code
-          const verificationResponse = await fetch(`${process.env.REACT_APP_API_URL}/send-verification`, {
+          const verificationResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/send-verification`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -84,18 +87,29 @@ const PhoneStep = ({ formData, updateFormData, nextStep }) => {
   };
 
   return (
-    <div>
-      <h2>Enter Your Phone Number</h2>
+    <div className="signup-step-three">
+      <div className='logo-container'>
+        <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
+      </div>
+      <div className='content-area'>
+        <div className='phone-box'>
+          <input
+            type="text"
+            placeholder="Phone Number"
+            value={phoneNumber}  // Ensure it's always a string
+            className='user-input-phone'
+            onChange={(e) => setPhoneNumber(e.target.value)}
+          />
+          <p className="phone-info">
+            To verify you.
+          </p>
+        </div>
+      </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <input
-        type="text"
-        placeholder="Phone Number"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-      />
-      <button onClick={handleNext} disabled={isChecking}>
-        {isChecking ? 'Checking...' : 'Next'}
-      </button>
+      <div className='nav'>
+        <CustomBack className="back-btn" onClick={prevStep} color='black' />
+        <CustomHollow className="next-btn" text="Next" onClick={handleNext} color="black" />
+      </div>
     </div>
   );
 };

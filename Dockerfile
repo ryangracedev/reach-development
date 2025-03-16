@@ -1,40 +1,53 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Stage 1: Build React frontend
+FROM node:18 AS frontend-builder
 
-# Set the working directory in the container
-WORKDIR /app
+# Set working directory to where your frontend actually exists
+WORKDIR /app/flask-app/static/frontend  
 
-# Copy the current directory contents into the container at /app
-COPY /flask-app /app
+# Copy package.json and package-lock.json first for better caching
+COPY flask-app/static/frontend/package*.json ./
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Install Node.js and npm
-RUN apt-get update && apt-get install -y nodejs npm
-
-# Change directory to the frontend folder
-WORKDIR /app/static/frontend
-
-# Copy frontend source code to the container
-COPY flask-app/static/frontend /app/static/frontend
-
-# Install frontend dependencies
+# Install dependencies
 RUN npm install
 
-# Build frontend assets
-RUN npm run build
+# 🔥 **Set NODE_ENV explicitly** (so it picks up the right .env file)
+ARG NODE_ENV=production
+ENV NODE_ENV=$NODE_ENV
 
-# Change directory back to the root of the application
+# Copy all frontend files
+COPY flask-app/static/frontend/ . 
+
+# **Build React for the specified environment**
+RUN if [ "$NODE_ENV" = "development" ]; then npm start; else npm run build; fi
+
+# Stage 2: Build Flask Backend
+FROM python:3.9-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y wget procps && rm -rf /var/lib/apt/lists/*
+
+# Set working directory inside the container
 WORKDIR /app
 
-# Make port 8000 available to the world outside this container
+# Copy the backend files
+COPY flask-app /app
+
+# Install backend dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Download the CA certificate for DocumentDB
+RUN wget https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem -O /app/global-bundle.pem
+
+# 🔥🔥🔥 REMOVE THIS: NO NEED TO COPY BUILD FILES 🔥🔥🔥
+COPY --from=frontend-builder /app/flask-app/static/frontend/build /app/static/frontend/build
+
+# Expose the application port
 EXPOSE 8000
 
-# Define environment variable
+# Define environment variables
 ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
-# Run app.py when the container launches
+# Run Flask application
 CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]

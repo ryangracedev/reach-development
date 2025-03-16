@@ -1,0 +1,111 @@
+.event-step-two {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.event-inputs-two {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50%;
+    margin-top: 8rem;
+    padding-left: 2rem;
+}
+
+.event-input-address {
+    font-size: 2.75rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: transparent;
+    width: 100%;
+    border: none;
+    border-bottom: var(--border-height) solid var(--border-before-color);
+    -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
+    padding: 0;
+}
+
+.event-input-address:focus {
+    outline: none;
+    box-shadow: none; /* Ensures no additional styling appears */
+}
+
+.event-input-address::placeholder {
+    padding: 0;
+    margin: 0;
+    font-size: inherit; /* Ensure it matches the input font */
+    text-align: left; /* Aligns the text properly */
+    color: rgba(255, 255, 255, 0.643); /* Adjust opacity if needed */
+}
+
+.address-info {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 200;
+    text-align: left;
+    font-size: 0.8rem;
+    color: rgba(185, 168, 12, 0.357);
+}
+
+.input-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Ensure everything stays left-aligned */
+}
+
+.input-label {
+    display: block; /* Make it appear above the input */
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 0.5rem; /* Space between label and input */
+    text-align: left;
+}
+
+.event-input {
+    font-size: 1rem;
+    background: transparent; /* Ensure transparency */
+    color: rgba(255, 255, 255, 0.357);
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.211); /* Fix Safari text color issue */
+    border: none;
+    width: 100%;
+    outline: none;
+    padding: 0.5rem;
+    text-align: left; /* Ensure text aligns left */
+}
+
+.event-input:focus {
+    outline: none !important;
+    box-shadow: none !important; /* Remove default focus styles */
+}
+
+/* Force left alignment specifically for date & time inputs */
+.event-input[type="date"],
+.event-input[type="time"] {
+    -webkit-appearance: none; /* Remove default iOS styling */
+    appearance: none;
+    background-color: transparent;
+    text-align: left !important;
+    direction: ltr; /* Ensure text starts from the left */
+    display: block; /* Ensure it's a block element */
+    width: 100%; /* Take full width */
+    padding-left: 0;
+}
+
+/* Ensure text stays aligned when user interacts */
+.event-input[type="date"]:focus,
+.event-input[type="time"]:focus {
+    text-align: left !important;
+}
+
+input::-webkit-date-and-time-value {
+    text-align: left;
+}
+
+.nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

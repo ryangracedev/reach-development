@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useAuth} from '../../context/AuthContext';
 import './style/SignupPage.css'; // Import the CSS file
+import './style/VerificationStep.css'; // Import page CSS file
+import CustomBack from '../common/CustomBack';
+import CustomHollow from '../common/CustomButtonHollow';
 
-const VerificationStep = ({ formData, updateFormData, nextStep }) => {
+const VerificationStep = ({ formData, prevStep, updateFormData, nextStep }) => {
   const { signIn } = useAuth(); // Access the signIn function from AuthContext
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -23,7 +26,7 @@ const VerificationStep = ({ formData, updateFormData, nextStep }) => {
 
     // Check if verification code is vaild
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/verify-code`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/verify-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,7 +47,7 @@ const VerificationStep = ({ formData, updateFormData, nextStep }) => {
         // ===========================
         // Make the signup API call
         // ===========================
-        const signupResponse = await fetch(`${process.env.REACT_APP_API_URL}/signup`, {
+        const signupResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -92,7 +95,7 @@ const VerificationStep = ({ formData, updateFormData, nextStep }) => {
   // ===========================
   const handleResendCode = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/send-verification`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/send-verification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -120,17 +123,33 @@ const VerificationStep = ({ formData, updateFormData, nextStep }) => {
   };
 
   return (
-    <div>
-      <h2>Verify Your Phone Number</h2>
+    <div className="signup-step-four">
+      <div className='logo-container'>
+        <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
+      </div>
+      <div className='content-area'>
+        <div className='verification-box'>
+          <input
+            type="text"
+            placeholder="Code"
+            value={code}  // Ensure it's always a string
+            className='user-input-verification'
+            onChange={(e) => setCode(e.target.value)}
+          />
+          <p className="verification-info">  {/* Feature: hide the first 2 parts of the phone number */}
+            We sent a code to {formData.phoneNumber},   
+            enter it below.
+          </p>
+          <button className="resend-code" onClick={handleResendCode}>
+            Resend Code
+          </button>
+        </div>
+      </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <input
-        type="text"
-        placeholder="Enter Verification Code"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-      />
-      <button onClick={handleVerify}>Verify</button>
-      <button onClick={handleResendCode}>Send Again</button>
+      <div className='nav'>
+        <CustomBack className="back-btn" onClick={prevStep} color='black' />
+        <CustomHollow className="next-btn" text="Verify" onClick={handleVerify} color="black" />
+      </div>
     </div>
   );
 };

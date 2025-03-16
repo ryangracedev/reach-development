@@ -1,153 +1,212 @@
-from flask import Flask, jsonify, request, render_template, send_from_directory, current_app
+# ==========================
+# IMPORTS
+# ==========================
+from flask import Flask, jsonify, request, send_from_directory, current_app
 from flask_pymongo import PyMongo
-from bson import json_util, ObjectId
 from flask_mongoengine import MongoEngine
-from mongoengine import Document, StringField, DateTimeField, ReferenceField, BooleanField
+from mongoengine import Document, StringField, DateTimeField, ReferenceField
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_cors import CORS  # Import flask-cors
-from datetime import datetime, timedelta
-from functools import wraps
+from flask_cors import CORS
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
-from werkzeug.utils import secure_filename
 from threading import Timer
-from bson import ObjectId
+from bson import json_util, ObjectId
+from werkzeug.utils import secure_filename
 from storage import save_file
 import redis
 import os
 import json
-import sys
-import jwt
 import random
 import string
+import sys
 import time
-
-# Uncomment when using boto3 for production
-# import boto3  
-
+# =============================
+# Print Envirnoment Variables
+# =============================
+print(f"🟠 ====== Environment Variables =======")
+for key, value in os.environ.items():
+    print(f"{key}: {value}")
+print(f"🟠 === END of Environment Variables ===")
+# =============================
+# Define Envirnoment Variables
+# =============================
+FLASK_ENV = os.getenv("FLASK_ENV", "development")
+IS_PRODUCTION = FLASK_ENV == "production"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongoadmin:secret@mongo:27017/reach_app?authSource=admin")
+REDIS_PORT = 6379
+REDIS_HOST = os.getenv("REDIS_HOST", "redis").split(":")[0] # Removes port if present
+USE_TLS = os.getenv("REDIS_USE_TLS", "false").lower() == "true" if FLASK_ENV == "production" else False
+TLS_CERT_PATH = "/app/global-bundle.pem"
 # Points flask app to static react build files
 app = Flask(__name__, static_folder='static/frontend/build', static_url_path='')
-# Get the Mongo URI
-app.config["MONGO_URI"] = os.getenv('MONGO_URI')
+# =============================
+# AWS Secret key & get JWT
+# =============================
+# Get AWS secret key
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-# Use the same secret key for JWT
-app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
-app.config["UPLOAD_FOLDER"] = os.getenv("UPLOAD_FOLDER", "uploads")  # Default to 'uploads'
-# Explicitly set the environment
-app.config["ENV"] = os.getenv("FLASK_ENV", "development")  # Defaults to 'development'
 # Check if SECRET KEY is in docker-compose
 if not app.config['SECRET_KEY']:
     raise ValueError("SECRET_KEY not set in environment variables")
+# Use the same secret key for JWT
+app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
 # JSON Web Token
 jwt = JWTManager(app)
-
-# For Testing
-print(f"SECRET_KEY loaded: {app.config['SECRET_KEY']}")
-
+# =============================
+# MongoDB 
+# =============================
+app.config["MONGO_URI"] = MONGO_URI
 mongo = PyMongo(app)
-
+# =============================
+# Redis & ElastiCache
+# =============================
+# Function to get a fresh Redis client
+def get_redis_client():
+    return redis.StrictRedis(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        ssl=USE_TLS,
+        decode_responses=True,
+        socket_timeout=5,  # No Hang
+        socket_connect_timeout=5,
+        retry_on_timeout=True  # Auto retry
+    )
+# Redis Configuration
+redis_client = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, db=0, decode_responses=True)
+# 
+USE_TLS = os.getenv("REDIS_USE_TLS", "false").lower() == "true" if FLASK_ENV == "production" else False
+# Create Redis connection
+redis_client = redis.StrictRedis(
+    host=REDIS_HOST,
+    port=REDIS_PORT,
+    db=0,
+    decode_responses=True,
+    ssl=USE_TLS # Use TLS
+)
+# =============================
+# Debugging
+# =============================
+print(f"⚫️ Running environment: {FLASK_ENV}")
+print(f"⚫️ Running environment: {app.config['ENV']}")
+print(f"⚫️ MongoDB URI: {MONGO_URI}")
+print(f"⚫️ SECRET_KEY loaded: {app.config['SECRET_KEY']}")
+print(f"🟡 Redis Connection Details:")
+print(f"   Host: {REDIS_HOST}")
+print(f"   Port: {REDIS_PORT}")
+print(f"   SSL: {USE_TLS}")
+print(f"   Full Redis URL: redis://{REDIS_HOST}:{REDIS_PORT}")
+# Run Redis test only in production
+if FLASK_ENV == "production":
+    try:
+        print("Testing Redis connection to ElastiCache...")
+        # Initialize Redis
+        redis_client = get_redis_client()
+        response = redis_client.ping()
+        print(f"✅ Redis PING response: {response}")
+    except Exception as e:
+        print(f"❌ Redis connection failed: {e}")
+# =============================
+# Other
+# =============================
+# Get /uploads folder path for local dev, defaults to uploads
+app.config["UPLOAD_FOLDER"] = os.getenv("UPLOAD_FOLDER", "uploads")
 # Allow all origins for development
 CORS(app, supports_credentials=True)
+# Simulated database collection (use your MongoDB collection)
+users_collection = mongo.db.users
 
-###########
-### APP ###
-###########
-
-print(f"Running environment: {app.config['ENV']}")
-
-# Temporary store for user data
-# Initialize Redis client
-redis_client = redis.StrictRedis(host='redis', port=6379, db=0, decode_responses=True)
-
+# =====================================================
+#  Functions and Endpoints
+# =====================================================
 # Function to generate a random verification code
 def generate_verification_code():
      # 4-digit numeric code
     return ''.join(random.choices(string.digits, k=4))
 
-# Define User schema
-# class User(Document):
-#     username = StringField(required=True)
-#     password = StringField(required=True)
-#     phone_number = StringField(required=True)
-#     profile_picture = StringField()
-
-# # Define Event schema
-# class Event(Document):
-#     event_name = StringField(required=True)
-#     description = StringField(required=True)
-#     address = StringField(required=True)
-#     date_time = DateTimeField(required=True)
-#     host_name = ReferenceField(User, required=True)
-
-# Simulated database collection (use your MongoDB collection)
-users_collection = mongo.db.users
-
-@app.route('/')
-def index():
+# This function serves the React frontend. It ensures that API routes return 404 errors,
+# serves static files correctly, and falls back to serving index.html for unknown paths.
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    # If the request is for an API route, return a 404 error.
+    if path.startswith("api/"):
+        return jsonify({"error": "Invalid API request"}), 404
+    # Construct the absolute path to the requested static file
+    static_file_path = os.path.join(app.static_folder, path)
+    # DEBUG logs
+    print(f"Requested path: {path}", file=sys.stderr, flush=True)
+    print(f"Resolved static file path: {static_file_path}", file=sys.stderr, flush=True)
+    # If the path is empty ("/"), serve `index.html` (React entry point)
+    if path == "":
+        print(f"Serving React index.html for root path")
+        return send_from_directory(app.static_folder, 'index.html')
+    # Ensure static assets (like CSS, JS) are served correctly
+    if os.path.exists(static_file_path) and not path.endswith("html"):
+        return send_from_directory(app.static_folder, path)
+    # If no matching file is found, serve the React app's `index.html`
     return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/<path:path>')
-def static_files(path):
-    return send_from_directory(app.static_folder, path)
+# If a request is made to an unknown endpoint, this function serves the React frontend instead.
+@app.errorhandler(404)
+def handle_404(e):
+    print(f"404 Error: {request.path} not found, serving React index.html", file=sys.stderr, flush=True)
+    return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/signin', methods=['POST'])
+# This endpoint allows users to sign in by verifying their username and password.
+# If successful, it returns a JWT access token.
+@app.route('/api/signin', methods=['POST'])
 def signin():
+    # Get request from client
     data = request.json
+    # Get credentials
     username = data.get('username')
     password = data.get('password')
-
+    # Check for input
     if not username or not password:
         return jsonify({"error": "Username and password are required"}), 400
-
     # Check if the user exists in the database
     user = users_collection.find_one({"username": username})
     if not user:
         return jsonify({"error": "Invalid username or password"}), 401
- 
     # Verify the password
     if not check_password_hash(user["password"], password):
         return jsonify({"error": "Invalid username or password"}), 401
-
     # Create a JWT token with both `identity` and additional claims
     access_token = create_access_token(
         identity=str(user["_id"]),  # Use user ID as the identity
         additional_claims={"username": username}  # Include username in the payload
     )
-    print("New JWT created for:", username, "with ID:", user["_id"])  # Debugging
-
+    # Debugging
+    print("New JWT created for:", username, "with ID:", user["_id"])
+    # Return
     return jsonify({
         "message": "Sign-in successful",
         "username": username,
         "access_token": access_token
     }), 200
 
-# Endpoint to handle a user signup
-@app.route('/signup', methods=['POST'])
+# This endpoint allows new users to create an account. It checks for existing usernames,
+# verifies the phone number, hashes the password, and stores user data in MongoDB.
+@app.route('/api/signup', methods=['POST'])
 def signup():
     # Get data from signup form
     data = request.json
-    # Get the 
+    # Get the username and password
     username = data.get('username')
     password = data.get('password')
     phone_number = data.get('phone_number')
     # Get user collection
     users_collection = mongo.db.users
-
     # Validate required fields
     if not username or not password or not phone_number:
         return jsonify({"error": "All fields (username, password, phone_number) are required"}), 400
-    
     # Check if the username already exists
     if users_collection.find_one({'username': username}) is not None:
         return jsonify({"error": "Username already exists"}), 400
-    
     # Check if the phone number is already verified
     verified = redis_client.get(f'verified:{username}')
     if not verified:
         return jsonify({"error": "Phone number not verified yet"}), 400
-    
     # Hash the password
     hashed_password = generate_password_hash(password)
-
     # Create the user document for MongoDB
     user_doc = {
         "username": username,
@@ -159,17 +218,14 @@ def signup():
     }
     # Insert the document and return the object id
     user_id = users_collection.insert_one(user_doc).inserted_id
-
     # Create a JWT token with both `identity` and additional claims
     access_token = create_access_token(
         identity=str(user_id),  # Use user ID as the identity
         additional_claims={"username": username}  # Include username in the payload
     )
-
     # Cleanup Redis
     redis_client.delete(f'verified:{username}')
-
-    # FOR TESTING
+    # DEBUG
     # Retrieve the inserted document using its ID
     document = users_collection.find_one({'_id': user_id})
     # Convert MongoDB document to JSON
@@ -177,9 +233,10 @@ def signup():
     # Return
     return jsonify({"message": "User signed up successfully", "access_token": access_token}), 201
 
-# Endpoint to check if a username already exists
-@app.route('/check-username', methods=['POST'])
+# This endpoint checks whether a given username is already registered in the database.
+@app.route('/api/check-username', methods=['POST'])
 def check_username():
+    # Get the 
     data = request.json
     username = data.get('username')
 
@@ -192,8 +249,8 @@ def check_username():
 
     return jsonify({"exists": user_exists}), 200
 
-# Endpoint to check if a phone number already exists
-@app.route('/check-phone', methods=['POST'])
+# This endpoint checks whether a given phone number is already registered in the database.
+@app.route('/api/check-phone', methods=['POST'])
 def check_phone():
     data = request.json
     phone_number = data.get('phone_number')
@@ -206,8 +263,9 @@ def check_phone():
 
     return jsonify({"exists": phone_exists}), 200
 
-# Endpoint to handle sending a verfication code to the user
-@app.route('/send-verification', methods=['POST'])
+# This endpoint generates and sends a verification code to the user's phone number,
+# storing the code temporarily in Redis.
+@app.route('/api/send-verification', methods=['POST'])
 def send_verification():
 
     # Get user data request
@@ -226,17 +284,13 @@ def send_verification():
     verification_code = "1234"  # Fixed code for now
 
     # Store the code in Redis with a 5-minute expiration
-    redis_client.set(username, verification_code, ex=300)  # Key: username, Value: code, Expiry: 5 mins
-
-    # redis_client.setex(
-    #     f"user:{phone_number}",
-    #     300,  # 5 minutes
-    #     json.dumps({
-    #         "username": username,
-    #         "password": password,
-    #         "verification_code": verification_code
-    #     })
-    # )
+    try:
+        print(f"Storing verification code in Redis -> Key: {username}, Code: {verification_code}")
+        redis_client.set(username, verification_code, ex=300)  # Store for 5 mins
+        print("Successfully stored verification code in Redis!")
+    except Exception as e:
+        print(f"Error setting Redis key: {e}")
+        return jsonify({"error": "Failed to store verification code"}), 500
 
     # Simulate sending the verification code (replace with actual SMS logic)
     print(f"Sending verification code {verification_code} to {phone_number}")
@@ -245,8 +299,8 @@ def send_verification():
 
     return jsonify({"message": "Verification code sent"}), 200
 
-# Endpoint to handle verifying a user's account
-@app.route('/verify-code', methods=['POST'])
+# This endpoint validates a verification code entered by the user against the stored code in Redis.
+@app.route('/api/verify-code', methods=['POST'])
 def verify_code():
 
     # Get data
@@ -282,8 +336,9 @@ def verify_code():
 
     return jsonify({"message": "Phone number verified successfully"}), 200
 
-# Endpoint to handle creation of events
-@app.route('/create-event', methods=['POST'])
+# This endpoint allows authenticated users to create events. The event details,
+# including an optional image, are stored in MongoDB.
+@app.route('/api/create-event', methods=['POST'])
 @jwt_required()
 def create_event():
     print("Authorization Header:", request.headers.get("Authorization"))  # Debugging
@@ -314,7 +369,9 @@ def create_event():
     if photo:
         try:
             photo_url = save_file(photo)  # Save the file and get its URL
+            print(f"Image uploaded successfully: {photo_url}")
         except Exception as e:
+            print(f"Error while uploading image: {e}")
             return jsonify({"error": f"Failed to save photo: {str(e)}"}), 500
 
     if not event_name or not description or not address or not date_time or not host_id:
@@ -342,8 +399,8 @@ def create_event():
 
     return jsonify({"message": "Event created successfully", "event_id": str(event_id)}), 201
 
-# Endpoint to display an active event
-@app.route('/events/<event_name>', methods=['GET'])
+# This endpoint retrieves event details based on the event name.
+@app.route('/api/events/<event_name>', methods=['GET'])
 def get_event(event_name):
 
     print("/events/<event_name> Reached. Displaying Event!")
@@ -354,12 +411,20 @@ def get_event(event_name):
         return jsonify({"error": "Event not found"}), 404
 
     print("Event Info:\n", event)
-    # Convert the MongoDB document to JSON
+
+    # Fetch the host's user document using `host_id`
+    host = mongo.db.users.find_one({"_id": ObjectId(event["host_id"])})
+    host_username = host["username"] if host else "Unknown"
+
+
+    # Convert event document to JSON and add host's username
     event_json = json.loads(json_util.dumps(event))
+    event_json["host_username"] = host_username  # ✅ Include host username
+    
     return jsonify(event_json), 200
 
-
-@app.route('/events/<event_name>/attend', methods=['POST'])
+# This endpoint allows a user to mark themselves as attending an event.
+@app.route('/api/events/<event_name>/attend', methods=['POST'])
 @jwt_required()
 def attend_event(event_name):
     user_id = get_jwt_identity()
@@ -393,8 +458,8 @@ def attend_event(event_name):
 
     return jsonify({"message": "Marked as attending"}), 200
 
-
-@app.route('/events/<event_name>/unattend', methods=['POST'])
+# This endpoint allows a user to remove themselves from an event's attendees list.
+@app.route('/api/events/<event_name>/unattend', methods=['POST'])
 @jwt_required()
 def unattend_event(event_name):
 
@@ -425,8 +490,8 @@ def unattend_event(event_name):
 
     return jsonify({"message": "Removed from attending"}), 200
 
-
-@app.route('/profile/<username>', methods=['GET'])
+# This endpoint retrieves a user's profile, including their hosted and attended events.
+@app.route('/api/profile/<username>', methods=['GET'])
 def get_profile(username):
     # Fetch user data based on the username in the URL
     user = mongo.db.users.find_one({"username": username})
@@ -467,8 +532,8 @@ def get_profile(username):
         "events_going_to": events_going_to
     }), 200
 
-
-@app.route('/forgot-password/send-code', methods=['POST'])
+# This endpoint sends a verification code to a user's phone number for password reset.
+@app.route('/api/forgot-password/send-code', methods=['POST'])
 def send_verification_code():
     data = request.json
     phone_number = data.get('phone_number')
@@ -491,8 +556,8 @@ def send_verification_code():
     print(f"Verification code for {phone_number}: {verification_code}")  # Debugging
     return jsonify({"message": "Verification code sent"}), 200
 
-
-@app.route('/forgot-password/verify-code', methods=['POST'], endpoint='forgot_password_verify_code')
+# This endpoint verifies the reset code before allowing the user to reset their password.
+@app.route('/api/forgot-password/verify-code', methods=['POST'], endpoint='forgot_password_verify_code')
 def verify_code():
     data = request.json
     phone_number = data.get('phone_number')
@@ -517,8 +582,8 @@ def verify_code():
 
     return jsonify({"message": "Code verified successfully"}), 200
 
-
-@app.route('/forgot-password/reset-password', methods=['POST'])
+# This endpoint allows users to reset their password after verifying their phone number.
+@app.route('/api/forgot-password/reset-password', methods=['POST'])
 def reset_password():
     data = request.json
     phone_number = data.get('phone_number')
@@ -550,8 +615,8 @@ def reset_password():
 
     return jsonify({"message": "Password updated successfully"}), 200
 
-
-@app.route('/upload-photo', methods=['POST'])
+# This endpoint allows authenticated users to upload a picture for the event.
+@app.route('/api/upload-photo', methods=['POST'])
 @jwt_required()
 def upload_photo():
     if 'photo' not in request.files:
@@ -567,11 +632,32 @@ def upload_photo():
         # Handle unexpected errors (e.g., file system or S3 issues)
         return jsonify({"error": str(e)}), 500
 
+# This endpoint serves user-uploaded files from the uploads directory.
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads')
+    print(f"Uploads folder set to: {upload_folder}")
     return send_from_directory(upload_folder, filename)
+
+# This endpoint checks if the server is running.
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "healthy"}), 200
+
+# Logs details of every incoming request for debugging purposes.
+@app.before_request
+def log_request_info():
+    print(f"Incoming request: {request.method} {request.path}", file=sys.stderr, flush=True)
+
+
+
+
+
+
+
+
+
 
 # MAIN
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8000, debug=True)

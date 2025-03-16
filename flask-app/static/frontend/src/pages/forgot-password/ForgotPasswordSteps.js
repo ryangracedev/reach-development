@@ -10,7 +10,7 @@ const ForgotPasswordSteps = () => {
 
   const handleSendCode = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/forgot-password/send-code`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/forgot-password/send-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone_number: phoneNumber }),
@@ -30,7 +30,7 @@ const ForgotPasswordSteps = () => {
 
   const handleVerifyCode = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/forgot-password/verify-code`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/forgot-password/verify-code`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone_number: phoneNumber, code: verificationCode }),
@@ -55,7 +55,7 @@ const ForgotPasswordSteps = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/forgot-password/reset-password`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/forgot-password/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone_number: phoneNumber, new_password: newPassword }),

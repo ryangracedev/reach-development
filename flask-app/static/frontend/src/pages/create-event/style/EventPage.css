@@ -1,0 +1,223 @@
+.event-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 110vh;
+    width: 100vw; /* ✅ Ensures full-width but no overflow */
+    overflow-x: hidden; /* ✅ Hides any accidental horizontal overflow */
+
+}
+
+.event-image-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* ✅ Ensures it covers the entire screen width */
+    height: 100vh; /* ✅ Ensures it covers the entire screen height */
+    object-fit: cover; /* Ensures image covers full screen */
+    opacity: 0.45; /* Adjust for readability */
+    overflow: visible;
+}
+
+@media screen and (max-width: 768px) {
+    .event-info-container {
+        width: 100vw;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .event-meta {
+        align-items: flex-start;
+    }
+}
+
+.event-info-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+    gap: 0.25rem;
+    z-index: 1;
+    margin-top: 20rem;
+}
+
+.event-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.25rem;
+    width: 100%;
+    margin-left: 4rem;
+}
+
+.event-page-name {
+    text-transform: uppercase;
+    font-size: 36px;
+    font-weight: 900;
+    margin: 0;
+    color: white;
+    opacity: 100%;
+}
+
+.event-page-date {
+    font-size: 16px;
+    margin: 0;
+    opacity: 65%;
+    text-transform: uppercase;
+}
+
+.event-page-hostname {
+    font-size: 16px;
+    margin: 0;
+}
+
+.event-page-desc {
+    font-size: 16px;
+    font-weight: 200;
+    margin: 1rem 0 0 0;
+}
+
+.event-page-address {
+    font-size: 16px;
+    margin: 0;
+}
+
+.event-link-button {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pushes text & icon to edges */
+    padding: 0.75rem 1.25rem 0.75rem 1.25rem;
+    width: 82%;
+    max-width: 1000px; /* Prevents it from getting too large */
+    height: 2rem;
+    border-radius: 30px; /* Creates pill shape */
+    background: rgba(255, 255, 255, 0.1); /* Light transparent effect */
+    backdrop-filter: blur(10px); /* Glassmorphism effect */
+    box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.3), 
+                inset 0px 0px 5px rgba(0, 0, 0, 0.2), 
+                0px 0px 5px rgba(0, 0, 0, 0.15); /* Depth effect */
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    margin-top: 2rem;
+}
+
+.link {
+    font-size: 14px;
+    font-weight: 200;
+    color: white;
+    white-space: nowrap; /* Prevents text wrapping */
+    margin: 0;
+}
+
+.event-link-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.logo-container-event-page {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    bottom: 0;
+    z-index: 2; /* ✅ Higher than background image */
+    margin-bottom: 1rem;
+}
+
+.logo-event-page {
+    width: 7rem;
+    cursor: pointer;
+}
+
+.accept-event-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    height: auto;
+    width: 100%;
+    z-index: 1;
+    margin-top: 1rem;
+    color: white;
+    gap: 1.5rem;
+}
+
+.yes-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5rem; /* Matches screenshot */
+    height: 2.5rem; /* Matches screenshot */
+    background: linear-gradient(145deg, #00ff00, #008800); /* Green gradient */
+    border: none;
+    border-radius: 25px; /* Makes it rounded */
+    cursor: pointer;
+    box-shadow: 0px 0px 8px rgba(0, 255, 0, 0.6); /* Green glow */
+    transition: all 0.3s ease-in-out;
+}
+
+.yes-button:disabled {
+    background: linear-gradient(145deg, #00aa00, #006600); /* Darker green when disabled */
+    box-shadow: none; /* Remove glow when disabled */
+    cursor: default;
+}
+
+.yes-button svg {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+}
+
+.countdown-container {
+    text-align: right;
+    color: white;
+    margin-top: 1rem;
+}
+
+.countdown-container p {
+    font-size: 12px;
+    opacity: 100%;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.countdown-timer {
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 0;
+    opacity: 50%;
+}
+
+.event-info-container.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+  
+.attendees-container {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.537);
+    color: white;
+    text-align: center;
+    transition: bottom 0.3s ease-in-out;
+    z-index: 3;
+}
+
+.attendees-container.visible {
+    bottom: 0;
+}
+
+.attendees-list {
+    padding: 0;
+}

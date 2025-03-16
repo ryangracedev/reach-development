@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './style/SignupPage.css'; // Import the CSS file
+import './style/PasswordStep.css';
+import CustomBack from '../common/CustomBack';
+import CustomHollow from '../common/CustomButtonHollow';
 
 // Password validation function
 const validatePassword = (password) => {
@@ -17,9 +20,13 @@ const validatePassword = (password) => {
   return { isValid: true, error: null };
 };
 
-const PasswordStep = ({ nextStep, updateFormData }) => {
+const PasswordStep = ({ nextStep, prevStep, updateFormData, formData }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    setPassword(formData.password || ''); // Keep input in sync when formData updates
+  }, [formData.password]);
 
   const handleNext = () => {
     // Validate the password
@@ -38,17 +45,32 @@ const PasswordStep = ({ nextStep, updateFormData }) => {
     nextStep();
   };
 
+  console.log("prevStep function in PasswordStep:", prevStep);
+  
   return (
-    <div>
-      <h2>Create a Password</h2>
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error */}
-      <button onClick={handleNext}>Next</button>
+    <div className="signup-step-two">
+      <div className='logo-container'>
+        <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
+      </div>
+      <div className='content-area'>
+        <div className='password-box'>
+          <input
+            type="text"
+            placeholder="Password"
+            value={password}  // Ensure it's always a string
+            className='user-input-password'
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <p className="password-info">
+            Must be 8 characters minimum, with a number.
+          </p>
+        </div>
+      </div>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div className='nav'>
+        <CustomBack className="back-btn" onClick={prevStep} color='black' />
+        <CustomHollow className="next-btn" text="Next" onClick={handleNext} color="black" />
+      </div>
     </div>
   );
 };

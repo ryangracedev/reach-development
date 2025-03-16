@@ -1,0 +1,64 @@
+.signup-step-one {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.logo-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-left: -0.5rem;
+    margin-top: 2rem;
+}
+
+.signup-logo {
+    width: 12rem;
+}
+
+
+.content-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 60%;
+    margin-top: 5rem;
+    padding-left: 1rem;
+}
+
+.user-input-username {
+    font-size: 2.75rem;
+    font-weight: bold;
+    color: #000000;
+    background-color: transparent;
+    width: 100%;
+    border: none;
+    border-bottom: var(--border-height) solid var(--border-before-color);
+    -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
+    padding: 0;
+}
+
+.user-input-username:focus {
+    outline: none;
+    box-shadow: none; /* Ensures no additional styling appears */
+}
+
+.user-input-username::placeholder {
+    padding: 0;
+    margin: 0;
+    font-size: inherit; /* Ensure it matches the input font */
+    text-align: left; /* Aligns the text properly */
+    color: rgba(0, 0, 0, 0.775); /* Adjust opacity if needed */
+}
+
+.username-info {
+    text-align: left;
+    color: rgb(0, 0, 0);
+}
+
+.nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}

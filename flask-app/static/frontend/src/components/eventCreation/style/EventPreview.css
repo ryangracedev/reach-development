@@ -1,8 +1,55 @@
-img {
-    width: 10rem;
-    height: auto;
+.event-link-preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
-p {
+.link-preview-container {
+    position: relative; /* Ensures text stays above the background */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 50%;
+    margin-top: 6rem;
+}
+
+.auth-title {
+    font-size: 1.625rem;
+    font-weight: 500;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    z-index: 1;
+}
+
+.event-link {
     color: antiquewhite;
+    font-weight: 400;
+    font-size: 16px;
+    margin-bottom: 3rem;
+    z-index: 1;
+}
+
+.auth-subtext {
+    font-size: 1rem;
+    color: #3737378f;
+}
+
+.event-image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 110%; /* Slightly larger than container to prevent cutoff */
+    height: 110%;
+    object-fit: cover; /* Ensures image covers full screen */
+    filter: blur(30px); /* Increase blur intensity */
+    opacity: 0.5; /* Adjust for readability */
+    transform: translate(-50%, -50%); /* Center the image */
+    overflow: visible; /* Ensures blur spreads */
+}
+
+.nav-single {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    z-index: 1;
 }

@@ -1,0 +1,97 @@
+.event-step-one {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.event-inputs-one {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 60%;
+    margin-top: 8rem;
+    padding-left: 2rem;
+}
+
+.event-input-name {
+    padding: 0;
+    font-size: 2.75rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: transparent;
+    width: 100%;
+    border: none;
+    border-bottom: var(--border-height) solid var(--border-before-color);
+    -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
+}
+
+.event-input-name:focus {
+    outline: none;
+    box-shadow: none; /* Ensures no additional styling appears */
+}
+
+.event-input-name::placeholder {
+    padding: 0;
+    margin: 0;
+    font-size: inherit; /* Ensure it matches the input font */
+    text-align: left; /* Aligns the text properly */
+    color: rgba(255, 255, 255, 0.765); /* Adjust opacity if needed */
+}
+
+/* Hide the default file input */
+.event-input-photo {
+    display: none;
+}
+
+/* Style the file upload label to match the UI */
+.custom-file-upload {
+    font-size: 1.688rem; /* Adjust size to match 'Photo' text */
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.181); /* Adjust opacity */
+    display: block;
+    cursor: pointer;
+    text-decoration: underline; /* Removes underline */
+    text-underline-offset: 0.2rem;
+    text-align: left; /* Ensure it's aligned left */
+    padding-top: 4rem;
+}
+
+.custom-file-upload:hover {
+    color: rgba(255, 255, 255, 0.8); /* Slightly brighter on hover */
+}
+
+/* Style the actual textarea */
+.custom-textarea {
+    padding: 0;
+    font-size: 1.688rem;
+    font-weight: bold;
+    background-color: transparent;
+    color: rgb(255, 255, 255); /* Adjust opacity */
+    border: none;
+    border-bottom: var(--border-height) solid var(--border-before-color);
+    width: 100%;
+    resize: none;
+    outline: none;
+    height: 10rem;
+    padding-top: 4rem;
+}
+
+/* Remove extra padding from placeholder text */
+.custom-textarea::placeholder {
+    color: rgba(255, 255, 255, 0.181); /* Adjust opacity */
+    font-size: inherit;
+    padding: 0;
+    margin: 0;
+}
+
+.error {
+    align-self: flex-start;
+    color: red;
+}
+
+.nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

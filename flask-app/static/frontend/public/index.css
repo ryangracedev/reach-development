@@ -2,6 +2,4 @@ body {
     background-color: black;
     max-width: 100vw;
     max-height: 100vw;
-    overflow-x: hidden;
-    overflow-y: hidden;
 }

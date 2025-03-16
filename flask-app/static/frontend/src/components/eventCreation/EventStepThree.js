@@ -1,6 +1,8 @@
 import React from 'react';
 import { useEventContext } from '../../context/EventContext';
-import '../../pages/create-event/style/EventCreation.css'
+import '../../pages/create-event/style/EventCreation.css';
+import '../../pages/create-event/style/EventCreation.css';
+import CustomButton from '../common/CustomButton';
 
 const EventStepThree = ({ nextStep }) => {
   const { eventData } = useEventContext();

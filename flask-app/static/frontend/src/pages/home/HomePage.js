@@ -14,12 +14,13 @@ const HomePage = () => {
 
   return (
     <div className="home-page">
-      <h1>Welcome to Reach</h1>
-      <p>Create and manage your events with ease.</p>
+      <div>
+        <img src="/Logo-Inflated2.png" alt="Reach Logo" className="logo" />
+      </div>
+      <button onClick={() => navigate('/create-event')} className="create-event-btn">
+        CREATE A PARTY
+      </button>
       <div className="home-buttons">
-        <button onClick={() => navigate('/create-event')} className="create-event-btn">
-          Create a Party
-        </button>
         {authState.isAuthenticated ? (
           <div>
             <p>

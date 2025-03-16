@@ -19,6 +19,7 @@ export const EventProvider = ({ children }) => {
   });
 
   const updateEventData = (key, value) => {
+    console.log(`Updating Event Data: ${key} = ${value}`); // Debugging line
     setEventData((prev) => ({ ...prev, [key]: value }));
   };
 

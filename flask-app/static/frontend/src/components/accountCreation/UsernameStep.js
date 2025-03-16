@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './style/SignupPage.css'; // Import the CSS file
+import './style/UsernameStep.css'; // Import the CSS file
+import CustomBack from '../common/CustomBack';
+import CustomHollow from '../common/CustomButtonHollow';
 
-const UsernameStep = ({ nextStep, updateFormData }) => {
-  const [username, setUsername] = useState('');
+const UsernameStep = ({ nextStep, prevStep, updateFormData, formData }) => {
+  const [username, setUsername] = useState(formData.username || ''); // Initialize with saved value
   const [error, setError] = useState('');
-  const [isChecking, setIsChecking] = useState(false); // To show a loading indicator while checking
+
+  useEffect(() => {
+    setUsername(formData.username || ''); // Keep input in sync when formData updates
+  }, [formData.username]);
 
   const handleNext = async () => {
     // Frontend validation: Ensure the username is not empty
@@ -14,11 +20,10 @@ const UsernameStep = ({ nextStep, updateFormData }) => {
     }
 
     setError(''); // Clear previous errors
-    setIsChecking(true); // Show loading indicator
 
     try {
       // Make API call to check if the username exists
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/check-username`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/check-username`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,24 +47,33 @@ const UsernameStep = ({ nextStep, updateFormData }) => {
     } catch (err) {
       setError('Failed to validate username. Please try again.');
       console.error('Error checking username:', err);
-    } finally {
-      setIsChecking(false); // Hide loading indicator
     }
   };
 
   return (
-    <div>
-      <h2>Enter Your Username</h2>
-      <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
+    <div className="signup-step-one">
+      <div className='logo-container'>
+        <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
+      </div>
+      <div className='content-area'>
+        <div className='username-box'>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}  // Ensure it's always a string
+            className='user-input-username'
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <p className="username-info">
+            Who are you?
+          </p>
+        </div>
+      </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <button onClick={handleNext} disabled={isChecking}>
-        {isChecking ? 'Checking...' : 'Next'}
-      </button>
+      <div className='nav'>
+        <CustomBack className="back-btn" onClick={prevStep} color='black' />
+        <CustomHollow className="next-btn" text="Next" onClick={handleNext} color="black" />
+      </div>
     </div>
   );
 };
