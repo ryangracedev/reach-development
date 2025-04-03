@@ -14,30 +14,76 @@
     padding-left: 2rem;
 }
 
+
+
+
+
+
+
+
 .event-input-name {
     padding: 0;
-    font-size: 2.75rem;
+    font-size: 1.6rem;
     font-weight: bold;
     color: #ffffff;
     background-color: transparent;
     width: 100%;
+    transition: font-size 0.3s ease;
+    position: relative;
     border: none;
-    border-bottom: var(--border-height) solid var(--border-before-color);
-    -webkit-tap-highlight-color: transparent; /* Removes tap highlight */
 }
 
 .event-input-name:focus {
+    transition: font-size 0.3s ease;
+    font-size: 1.6rem;
     outline: none;
     box-shadow: none; /* Ensures no additional styling appears */
 }
 
 .event-input-name::placeholder {
+    transition: font-size 0.3s ease, opacity 0.3s ease;
+    font-size: 2.75rem;
     padding: 0;
     margin: 0;
-    font-size: inherit; /* Ensure it matches the input font */
     text-align: left; /* Aligns the text properly */
-    color: rgba(255, 255, 255, 0.765); /* Adjust opacity if needed */
+    color: rgba(255, 255, 255, 1); /* Adjust opacity if needed */
+    pointer-events: none;
 }
+
+
+
+
+
+
+
+
+.event-upload-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 5rem;
+}
+  
+.image-preview {
+    width: 6rem;
+    height: 9rem;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 1rem;
+}
+
+.image-preview.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.image-preview.clickable:hover {
+    transform: scale(1.20);
+}
+
+
+
 
 /* Hide the default file input */
 .event-input-photo {
@@ -48,17 +94,16 @@
 .custom-file-upload {
     font-size: 1.688rem; /* Adjust size to match 'Photo' text */
     font-weight: bold;
-    color: rgba(255, 255, 255, 0.181); /* Adjust opacity */
+    color: rgb(255, 255, 255); /* Adjust opacity */
     display: block;
     cursor: pointer;
     text-decoration: underline; /* Removes underline */
     text-underline-offset: 0.2rem;
     text-align: left; /* Ensure it's aligned left */
-    padding-top: 4rem;
 }
 
 .custom-file-upload:hover {
-    color: rgba(255, 255, 255, 0.8); /* Slightly brighter on hover */
+    color: rgba(255, 255, 255, 1); /* Slightly brighter on hover */
 }
 
 /* Style the actual textarea */
@@ -79,19 +124,30 @@
 
 /* Remove extra padding from placeholder text */
 .custom-textarea::placeholder {
-    color: rgba(255, 255, 255, 0.181); /* Adjust opacity */
+    color: rgba(255, 255, 255, 1); /* Adjust opacity */
     font-size: inherit;
     padding: 0;
     margin: 0;
 }
 
+
 .error {
-    align-self: flex-start;
+    position: fixed;
+    top: 6%;
+    align-self: center;
+    font-size: small;
     color: red;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
 }
+
+.error.visible {
+    opacity: 1;
+  }
 
 .nav {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
+

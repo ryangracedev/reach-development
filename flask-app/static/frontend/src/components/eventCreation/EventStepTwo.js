@@ -71,7 +71,9 @@ const EventStepTwo = ({ nextStep, prevStep }) => {
         </div>
       </div>
 
-      {error && <p className="error">{error}</p>}
+      <p className={`error ${error ? 'visible' : ''}`}>
+        {error}
+      </p>
       <div className='nav'>
         <CustomBack className="back-btn" onClick={handlePrev} />
         <CustomButton className="next-btn" text="Next" onClick={handleNext} color="black" />

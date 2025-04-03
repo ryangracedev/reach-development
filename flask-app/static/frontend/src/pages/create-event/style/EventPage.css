@@ -1,12 +1,13 @@
+/* Container for the entire page */
 .event-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    min-height: 110vh;
-    width: 100vw; /* ✅ Ensures full-width but no overflow */
-    overflow-x: hidden; /* ✅ Hides any accidental horizontal overflow */
-
-}
+    min-height: 160vh;   /* Enough space to scroll */
+    width: 100vw;
+    overflow-x: hidden;
+    background: #000;    /* Example: black background */
+    color: #fff;         /* White text */
+    position: relative;  /* So we can position child elements if needed */
+  }
+  
 
 .event-image-background {
     position: fixed;
@@ -32,6 +33,11 @@
 }
 
 .event-info-container {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    position: relative;
+    width: 100%;
+    height: auto;
+
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -40,6 +46,31 @@
     gap: 0.25rem;
     z-index: 1;
     margin-top: 20rem;
+}
+
+/* The top portion (event info) that fades out */
+.top-section {
+    width: 100%;
+    height: 80%; /* For example, top 80% of screen */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.2s ease-out; /* For minor fade smoothing */
+}
+
+/* The “pull-up” handle area with the “List” label */
+.pull-up-handle {
+    width: 100%;
+    text-align: center;
+    margin-top: -2rem; /* Pull it up slightly overlapping top-section */
+    transition: opacity 0.2s ease-out;
+}
+
+.event-info-container.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
 }
 
 .event-meta {
@@ -95,7 +126,7 @@
     max-width: 1000px; /* Prevents it from getting too large */
     height: 2rem;
     border-radius: 30px; /* Creates pill shape */
-    background: rgba(255, 255, 255, 0.1); /* Light transparent effect */
+    background: rgba(88, 88, 88, 0.181); /* Light transparent effect */
     backdrop-filter: blur(10px); /* Glassmorphism effect */
     box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.3), 
                 inset 0px 0px 5px rgba(0, 0, 0, 0.2), 
@@ -200,24 +231,40 @@
     pointer-events: none;
     transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
+
+
+/* Attendees */
+
   
-.attendees-container {
-    position: fixed;
-    bottom: -100%;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.537);
-    color: white;
-    text-align: center;
-    transition: bottom 0.3s ease-in-out;
-    z-index: 3;
-}
-
-.attendees-container.visible {
+.attendees-list-container {
+    /* position: absolute; */
     bottom: 0;
+    width: 100%;
+    height: 40%;
+    text-align: left;
+    margin-left: 4rem;
+    margin-top: 2rem;
+    /* background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    text-align: left;
+    padding-top: 5rem;
+    padding-left: 5rem; */
 }
 
-.attendees-list {
+.list {
     padding: 0;
+    color: white;
+}
+
+.list-name {
+    text-transform: uppercase;
+    font-size: 36px;
+    font-weight: 900;
+    margin: 0;
+    color: rgb(255, 255, 255);
+    opacity: 100%;
 }

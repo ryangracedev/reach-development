@@ -3,6 +3,7 @@
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
+    width: 100vw;
 }
 
 .link-preview-container {
@@ -35,16 +36,17 @@
 }
 
 .event-image {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 110%; /* Slightly larger than container to prevent cutoff */
-    height: 110%;
-    object-fit: cover; /* Ensures image covers full screen */
-    filter: blur(30px); /* Increase blur intensity */
-    opacity: 0.5; /* Adjust for readability */
-    transform: translate(-50%, -50%); /* Center the image */
-    overflow: visible; /* Ensures blur spreads */
+    position: fixed;
+    top: 0; /* Pin it to the top of the screen */
+    left: 0; /* Pin it to the left of the screen */
+    width: 100vw; /* Full width of the viewport */
+    height: 100vh; /* Full height of the viewport */
+    object-fit: cover; /* Ensures the image covers the whole screen */
+    filter: blur(30px); /* Keeps the blur effect */
+    opacity: 0.6; /* Keeps the opacity for readability */
+    z-index: -1; /* Ensures the image stays in the background */
+    overflow: visible; /* Makes sure the blur spreads beyond the image boundaries */
+    transform: scale(110%);
 }
 
 .nav-single {

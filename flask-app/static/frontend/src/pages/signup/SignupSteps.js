@@ -3,11 +3,11 @@ import UsernameStep from '../../components/accountCreation/UsernameStep';
 import PasswordStep from '../../components/accountCreation/PasswordStep';
 import PhoneStep from '../../components/accountCreation/PhoneStep';
 import VerificationStep from '../../components/accountCreation/VerificationStep';
-import useBackgroundColor from '../../hooks/useBackgroundColor';
+// import useBackgroundColor from '../../hooks/useBackgroundColor';
 
 const SignupSteps = ({ currentStep, nextStep, prevStep, updateFormData, formData }) => {
 
-  useBackgroundColor(currentStep >= 1 && currentStep <= 4); 
+  // useBackgroundColor(currentStep >= 1 && currentStep <= 4); 
 
   switch (currentStep) {
     case 1:

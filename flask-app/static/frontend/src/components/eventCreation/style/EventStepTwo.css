@@ -109,3 +109,23 @@ input::-webkit-date-and-time-value {
     flex-direction: row;
     justify-content: space-between;
 }
+
+.error {
+    position: fixed;
+    top: 6%;
+    align-self: center;
+    font-size: small;
+    color: red;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.error.visible {
+    position: fixed;
+    top: 6%;
+    align-self: center;
+    font-size: small;
+    color: red;
+    opacity: 1;
+    transition: opacity 0.4s ease-in-out;
+  }

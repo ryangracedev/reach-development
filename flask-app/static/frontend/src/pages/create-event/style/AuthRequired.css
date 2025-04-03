@@ -22,7 +22,7 @@
 
 .auth-subtext {
     font-size: 1rem;
-    color: #3737378f;
+    color: #ffffff74;
 }
 
 /* Event Preview Styles */
@@ -50,7 +50,8 @@
     margin-top: 3rem;
     right: -20px;
     width: 85%;
-    background: rgba(22, 22, 22, 0.563); /* Semi-transparent background */
+    background: rgba(0, 0, 0, 0.252); /* Semi-transparent background */
+    
     backdrop-filter: blur(10px); /* Blurs the background */
     -webkit-backdrop-filter: blur(10px); /* Ensures Safari compatibility */
     border-radius: 30px;

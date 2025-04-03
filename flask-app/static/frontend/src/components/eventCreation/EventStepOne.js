@@ -12,7 +12,7 @@ const EventStepOne = ({ nextStep }) => {
 
   const handleNext = () => {
     if (!eventData.name.trim() || !eventData.description.trim()) {
-      setError('Event name and description are required');
+      setError('Name and description required');
       return;
     }
     setError('');
@@ -25,7 +25,14 @@ const EventStepOne = ({ nextStep }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    updateEventData('image', file); // Save the image file
+    if (file) {
+      updateEventData('image', file); // Save the image file
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateEventData('imagePreview', reader.result); // Save preview URL
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -35,17 +42,24 @@ const EventStepOne = ({ nextStep }) => {
           type="text"
           placeholder="Name"
           value={eventData.name}
-          className='event-input-name'
+          className={`event-input-name ${eventData.name ? 'filled' : ''}`}
           onChange={(e) => updateEventData('name', e.target.value)}
         />
-        <input
-          type="file"
-          id="file-upload"
-          onChange={handleFileChange}
-          className="event-input-photo"
-          accept="image/*"
-        />
-        <label htmlFor="file-upload" className="custom-file-upload">Photo</label>
+        <div className='event-upload-row'>
+          <input
+            type="file"
+            id="file-upload"
+            onChange={handleFileChange}
+            className="event-input-photo"
+            accept="image/*"
+          />
+          <label htmlFor="file-upload" className="custom-file-upload">Photo</label>
+          {eventData.imagePreview && (
+            <label htmlFor="file-upload">
+              <img src={eventData.imagePreview} alt="Preview" className="image-preview clickable" />
+            </label>
+          )}
+        </div>
         <textarea
           id="event-description"
           placeholder="About"
@@ -54,7 +68,7 @@ const EventStepOne = ({ nextStep }) => {
           onChange={(e) => updateEventData('description', e.target.value)}
         />
       </div>
-      {error && <p className="error">{error}</p>}
+      <p className={`error ${error ? 'visible' : ''}`}>{error}</p>
       <div className='nav'>
         <CustomBack className="back-btn" onClick={handlePrev} />
         <CustomButton className="next-btn" text="Next" onClick={handleNext} color="black" />

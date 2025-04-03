@@ -4,6 +4,7 @@ import './style/SignupPage.css'; // Import the CSS file
 import './style/VerificationStep.css'; // Import page CSS file
 import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
+import CustomButton from '../common/CustomButton';
 
 const VerificationStep = ({ formData, prevStep, updateFormData, nextStep }) => {
   const { signIn } = useAuth(); // Access the signIn function from AuthContext
@@ -124,9 +125,9 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep }) => {
 
   return (
     <div className="signup-step-four">
-      <div className='logo-container'>
+      {/* <div className='logo-container'>
         <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
-      </div>
+      </div> */}
       <div className='content-area'>
         <div className='verification-box'>
           <input
@@ -147,8 +148,8 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep }) => {
       </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div className='nav'>
-        <CustomBack className="back-btn" onClick={prevStep} color='black' />
-        <CustomHollow className="next-btn" text="Verify" onClick={handleVerify} color="black" />
+        <CustomBack className="back-btn" onClick={prevStep} color='white' />
+        <CustomButton className="next-btn" text="Next" onClick={handleVerify} color="black" />
       </div>
     </div>
   );

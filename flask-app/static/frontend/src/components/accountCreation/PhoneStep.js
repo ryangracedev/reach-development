@@ -3,6 +3,7 @@ import './style/SignupPage.css'; // Import the CSS file
 import './style/PhoneStep.css'; // Import page CSS file
 import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
+import CustomButton from '../common/CustomButton';
 
 const PhoneStep = ({ formData, prevStep, updateFormData, nextStep }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -88,9 +89,9 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep }) => {
 
   return (
     <div className="signup-step-three">
-      <div className='logo-container'>
+      {/* <div className='logo-container'>
         <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
-      </div>
+      </div> */}
       <div className='content-area'>
         <div className='phone-box'>
           <input
@@ -107,8 +108,8 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep }) => {
       </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <div className='nav'>
-        <CustomBack className="back-btn" onClick={prevStep} color='black' />
-        <CustomHollow className="next-btn" text="Next" onClick={handleNext} color="black" />
+        <CustomBack className="back-btn" onClick={prevStep} color='white' />
+        <CustomButton className="next-btn" text="Next" onClick={handleNext} color="black" />
       </div>
     </div>
   );

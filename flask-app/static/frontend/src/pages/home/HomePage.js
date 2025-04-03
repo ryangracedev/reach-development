@@ -1,41 +1,95 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; // Use AuthContext
-import './style/HomePage.css'; // Import the CSS file
+import './style/HomePage.scss'; // Import the CSS file
+
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { authState, signOut } = useAuth(); // Access authState and signOut from AuthContext
+  const [animateExit, setAnimateExit] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [clicked, setClicked] = useState(false);
+
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
 
   const handleSignIn = () => {
     navigate('/signin'); // Redirects to the sign-in page
   };
 
   return (
-    <div className="home-page">
-      <div>
-        <img src="/Logo-Inflated2.png" alt="Reach Logo" className="logo" />
+    <div className={`home-page ${loaded ? 'fade-in' : ''}`}>
+      {/* <video
+        className="logo"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+      >
+        <source src="/reach-rotate.mov" type="video/quicktime" />
+        <source src="/reach-rotate.webm" type="video/webm" />
+        Your browser does not support the video tag.
+      </video> */}
+
+
+
+
+      {/* Top Logo Section */}
+      <div className={`logo-container ${animateExit ? 'logo-exit' : ''}`}>
+        <img src="/Reach_Logo_White.png" alt="Reach Logo" className="logo" />
       </div>
-      <button onClick={() => navigate('/create-event')} className="create-event-btn">
-        CREATE A PARTY
+
+
+      {/* CREATE A PARTY Section */}
+      <button 
+        onClick={() => { 
+          setAnimateExit(true); 
+          setClicked(true); 
+          setTimeout(() => {
+            navigate('/create-event')
+            }, 500);
+          }} 
+          className={`create-event-btn ${clicked ? 'clicked' : ''}`}
+      >
+       
+        <video
+          className="create-a-party-model"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+        >
+          <source src="/model_test.mp4" type="video/mp4" />
+          {/* <source src="/reach-rotate.mov" type="video/quicktime" />
+          <source src="/reach-rotate.webm" type="video/webm" /> */}
+          Your browser does not support the video tag.
+        </video>
+
       </button>
-      <div className="home-buttons">
+
+
+      {/* Bottom Button Section */}
+      <div className={`home-buttons ${animateExit ? 'home-buttons-exit' : ''}`}>
         {authState.isAuthenticated ? (
-          <div>
-            <p>
-              Logged in as <Link to={`/profile/${authState.username}`}>{authState.username}</Link>
-            </p>
-            <button onClick={signOut} className="sign-out-btn">
-              Sign Out
-            </button>
+          <div className='bottom-button'>
+            <h3 id='bottom-button-text'>
+              <Link to={`/profile/${authState.username}`}>{authState.username}</Link>
+            </h3>
           </div>
         ) : (
-          <button onClick={handleSignIn} className="sign-in-btn">
-            Sign In
-          </button>
+          <div onClick={handleSignIn} className="bottom-button">
+            <h3 id='bottom-button-text'>LOG IN</h3>
+          </div>
         )}
       </div>
+
+
+
     </div>
   );
 };
