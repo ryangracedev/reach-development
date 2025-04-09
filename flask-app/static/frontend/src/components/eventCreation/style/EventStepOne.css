@@ -8,13 +8,13 @@
 .event-inputs-one {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 60%;
-    margin-top: 8rem;
+    justify-content: center;
+    height: 70%;
     padding-left: 2rem;
+    padding-right: 2rem;
+    margin-top: 3rem;
+    gap: 2rem;
 }
-
-
 
 
 
@@ -22,34 +22,8 @@
 
 
 .event-input-name {
-    padding: 0;
-    font-size: 1.6rem;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: transparent;
-    width: 100%;
     transition: font-size 0.3s ease;
-    position: relative;
-    border: none;
 }
-
-.event-input-name:focus {
-    transition: font-size 0.3s ease;
-    font-size: 1.6rem;
-    outline: none;
-    box-shadow: none; /* Ensures no additional styling appears */
-}
-
-.event-input-name::placeholder {
-    transition: font-size 0.3s ease, opacity 0.3s ease;
-    font-size: 2.75rem;
-    padding: 0;
-    margin: 0;
-    text-align: left; /* Aligns the text properly */
-    color: rgba(255, 255, 255, 1); /* Adjust opacity if needed */
-    pointer-events: none;
-}
-
 
 
 
@@ -62,7 +36,8 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-    padding-top: 5rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
 }
   
 .image-preview {
@@ -92,12 +67,11 @@
 
 /* Style the file upload label to match the UI */
 .custom-file-upload {
-    font-size: 1.688rem; /* Adjust size to match 'Photo' text */
+    font-size: 34px; /* Adjust size to match 'Photo' text */
     font-weight: bold;
-    color: rgb(255, 255, 255); /* Adjust opacity */
+    color: rgba(255, 255, 255, 0.45);
     display: block;
     cursor: pointer;
-    text-decoration: underline; /* Removes underline */
     text-underline-offset: 0.2rem;
     text-align: left; /* Ensure it's aligned left */
 }
@@ -109,25 +83,6 @@
 /* Style the actual textarea */
 .custom-textarea {
     padding: 0;
-    font-size: 1.688rem;
-    font-weight: bold;
-    background-color: transparent;
-    color: rgb(255, 255, 255); /* Adjust opacity */
-    border: none;
-    border-bottom: var(--border-height) solid var(--border-before-color);
-    width: 100%;
-    resize: none;
-    outline: none;
-    height: 10rem;
-    padding-top: 4rem;
-}
-
-/* Remove extra padding from placeholder text */
-.custom-textarea::placeholder {
-    color: rgba(255, 255, 255, 1); /* Adjust opacity */
-    font-size: inherit;
-    padding: 0;
-    margin: 0;
 }
 
 

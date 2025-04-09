@@ -4,6 +4,7 @@ import './style/PasswordStep.css';
 import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
 import CustomButton from '../common/CustomButton';
+import CustomInput from '../common/CustomInput'; // Import CustomInput
 
 // Password validation function
 const validatePassword = (password) => {
@@ -55,12 +56,14 @@ const PasswordStep = ({ nextStep, prevStep, updateFormData, formData }) => {
       </div> */}
       <div className='content-area'>
         <div className='password-box'>
-          <input
-            type="text"
+          <CustomInput
+            label="Password"
             placeholder="Password"
-            value={password}  // Ensure it's always a string
-            className='user-input-password'
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
+            inputType="name"
+            wrap={false}
+            count={false}
           />
           <p className="password-info">
             Must be 8 characters minimum, with a number.

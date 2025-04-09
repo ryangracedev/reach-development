@@ -13,6 +13,7 @@ import Profile from './pages/profile/Profile';
 import ForgotPasswordSteps from './pages/forgot-password/ForgotPasswordSteps';
 import Signup from './pages/signup/Signup';
 import AuthRequired from './pages/create-event/AuthRequired';
+import SignupAuthRequired from './pages/signup/SignupAuthRequired';
 
 function App() {
 
@@ -64,6 +65,7 @@ function App() {
               <Route path="/profile/:username" element={<Profile />} />
               <Route path="/forgot-password" element={<ForgotPasswordSteps />} />
               <Route path="/auth-required" element={<AuthRequired />} />
+              <Route path="/signup-auth-required" element={<SignupAuthRequired />} />
             </Routes>
           </EventProvider>
         </AuthProvider>

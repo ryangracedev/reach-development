@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useEventContext } from '../../context/EventContext';
 import { useNavigate } from 'react-router-dom'; // For navigation
 import { useAuthAPI } from '../../hooks/useAuthAPI'; // Import the custom hook
@@ -8,8 +8,13 @@ const EventCreated = () => {
   const { fetchWithAuth } = useAuthAPI(); // Use the fetchWithAuth hook
   const navigate = useNavigate(); // Hook for navigation
   const [error, setError] = useState('');
+  const hasSubmitted = useRef(false);
 
   useEffect(() => {
+    
+    if (hasSubmitted.current) return;
+    hasSubmitted.current = true;
+
     const handleSubmit = async () => {
       console.log("Submitting Event Data: ", eventData);
 

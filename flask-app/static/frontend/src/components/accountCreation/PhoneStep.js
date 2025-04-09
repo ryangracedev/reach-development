@@ -4,6 +4,7 @@ import './style/PhoneStep.css'; // Import page CSS file
 import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
 import CustomButton from '../common/CustomButton';
+import CustomInput from '../common/CustomInput'; // Import CustomInput
 
 const PhoneStep = ({ formData, prevStep, updateFormData, nextStep }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -94,12 +95,14 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep }) => {
       </div> */}
       <div className='content-area'>
         <div className='phone-box'>
-          <input
-            type="text"
+          <CustomInput
+            label="Phone Number"
             placeholder="Phone Number"
-            value={phoneNumber}  // Ensure it's always a string
-            className='user-input-phone'
+            value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
+            inputType="name"
+            wrap={false}
+            count={false}
           />
           <p className="phone-info">
             To verify you.

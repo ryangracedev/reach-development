@@ -6,7 +6,7 @@ import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
 import CustomButton from '../common/CustomButton';
 
-const VerificationStep = ({ formData, prevStep, updateFormData, nextStep }) => {
+const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handleSignupComplete }) => {
   const { signIn } = useAuth(); // Access the signIn function from AuthContext
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -74,7 +74,11 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep }) => {
           signIn(result.access_token);
 
           // User is now signed up
-          nextStep();
+          if (handleSignupComplete) {
+            handleSignupComplete(); // For signup flow
+          } else {
+            nextStep(); // For other flows like creating a party
+          }
 
         } else {
           const errorResponse = await signupResponse.json();

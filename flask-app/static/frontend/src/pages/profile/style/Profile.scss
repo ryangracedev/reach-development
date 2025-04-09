@@ -1,0 +1,136 @@
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 4rem;
+    width: 70%;
+    height: 80%;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    position: fixed;
+}
+
+.logo-profile {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.profile-username {
+    color: white;
+    font-size: 22px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.events-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-top: 5rem;
+}
+
+.profile-container h1 {
+    text-align: left;
+}
+
+.profile-container section {
+    margin-bottom: 40px;
+}
+
+.profile-container ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.profile-container li {
+    font-size: 22px;
+    margin-bottom: 10px;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.list-events {
+    font-size: 24px;
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: bolder;
+    text-decoration: none;
+}
+
+.checker-text {
+    font-family: monospace;
+    background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
+        <rect width='4' height='4' fill='%23ccc'/>\
+        <rect x='4' y='4' width='4' height='4' fill='%23ccc'/>\
+      </svg>");
+    background-size: 4px 4px;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.checker-text-white {
+    font-family: monospace;
+    background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
+        <rect width='4' height='4' fill='%23ffffff'/>\
+        <rect x='4' y='4' width='4' height='4' fill='%23ffffff'/>\
+      </svg>");
+    background-size: 2px 2px;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.checker-text-red {
+    font-family: monospace;
+    background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
+        <rect width='4' height='4' fill='%23ff0000'/>\
+        <rect x='4' y='4' width='4' height='4' fill='%23ff0000'/>\
+      </svg>");
+    background-size: 4px 4px;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.checker-text-yellow {
+    font-family: monospace;
+    background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
+        <rect width='4' height='4' fill='%23ffd500'/>\
+        <rect x='4' y='4' width='4' height='4' fill='%23ffd500'/>\
+      </svg>");
+    background-size: 4px 4px;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+
+
+.profile-container h2 {
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-align: left;
+}
+
+.profile-container p {
+    margin: 5px 0;
+}
+
+h3 {
+    color: wheat;
+}
+
+.event-link:hover {
+    color: rgba(255, 255, 255, 0.6);
+}

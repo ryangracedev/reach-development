@@ -5,7 +5,14 @@ import PhoneStep from '../../components/accountCreation/PhoneStep';
 import VerificationStep from '../../components/accountCreation/VerificationStep';
 // import useBackgroundColor from '../../hooks/useBackgroundColor';
 
-const SignupSteps = ({ currentStep, nextStep, prevStep, updateFormData, formData }) => {
+const SignupSteps = ({ 
+  currentStep, 
+  nextStep, 
+  prevStep, 
+  updateFormData, 
+  formData, 
+  handleSignupComplete // optional, used for signup from the homescreen
+}) => {
 
   // useBackgroundColor(currentStep >= 1 && currentStep <= 4); 
 
@@ -18,7 +25,13 @@ const SignupSteps = ({ currentStep, nextStep, prevStep, updateFormData, formData
       return <PhoneStep nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />;
     case 4:
       return (
-        <VerificationStep nextStep={nextStep} prevStep={prevStep} updateFormData={updateFormData} formData={formData} />
+        <VerificationStep 
+          nextStep={nextStep} 
+          prevStep={prevStep} 
+          updateFormData={updateFormData} 
+          formData={formData} 
+          handleSignupComplete={handleSignupComplete}
+        />
       );
     default:
       return null;

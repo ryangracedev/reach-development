@@ -1,0 +1,77 @@
+.event-preview {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10rem;
+  margin-top: 4rem;
+  transform: rotate(-3deg);
+  margin-right: 2rem;
+  filter: blur(0px);
+}
+
+.event-preview-image {
+  width: 15.625rem;
+  height: 8.75rem;
+  border-radius: 30px;
+  object-fit: cover;
+}
+
+.event-preview-blur {
+  position: absolute;
+  z-index: -1; 
+  width: 22rem;
+  height: 18rem;
+  margin-top: -3rem;
+  margin-left: 1rem;
+  background-color: transparent;
+  opacity: 15%;
+  filter: blur(50px);
+  transform: scale(1.1) translateZ(0);
+  overflow: visible;
+}
+
+.event-preview-info {
+  position: absolute;
+  margin-top: 3rem;
+  margin-left: 4rem;
+  width: 14rem;
+  border-radius: 30px;
+  padding: 1rem;
+  text-align: left;
+  background-color: rgba(0, 0, 0, 0.516);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.event-preview-date {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+  padding-left: 0.5rem;
+}
+
+.event-preview-title {
+  font-size: 1.563rem;
+  font-weight: bold;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.event-preview-description {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.fade-in {
+  animation: fadeInOnly 0.5s ease forwards;
+}

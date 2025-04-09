@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext'; // Use the AuthContext for managing authentication
 import { useNavigate } from 'react-router-dom';
-import "./style/SignIn.css";
+import "./style/SignIn.scss";
+import CustomButton from '../../components/common/CustomButton';
+import CustomInput from '../../components/common/CustomInput';
 
 const SignIn = () => {
   const { signIn } = useAuth(); // Access the signIn function from AuthContext
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
+
+    useEffect(() => {
+      setLoaded(true);
+    }, []);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -41,40 +48,54 @@ const SignIn = () => {
 
   return (
     <div className="sign-in-page">
-      <h2>Sign In</h2>
       {error && <p className="error-message">{error}</p>}
 
+      <div className={`sign-in-label ${loaded ? 'stack-down-logo' : ''}`}>
+          <img src="/Reach_Logo_Full.png" alt="Reach Logo" className="logo-signin" />
+          {/* <h2>LOG IN</h2> */}
+      </div>
+
       <form onSubmit={handleSignIn} className="sign-in-form">
-        <div className="input-group">
-          <label>Username</label>
-          <input
-            type="text"
+
+        <div id='custom-input' className={`username-input ${loaded ? 'stack-down' : ''}`}>
+          <CustomInput
+            label="Username"
+            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
           />
         </div>
 
-        <div className="input-group">
-          <label>Password</label>
-          <input
-            type="password"
+        <div id='custom-input' className={`password-input ${loaded ? 'stack-down' : ''}`}>
+          <CustomInput
+            label="Password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
           />
         </div>
 
-        <button type="submit" className="sign-in-button">Sign In</button>
+        <a href="/forgot-password" className={`forgot-password-link ${loaded ? 'stack-down' : ''}`}>Forgot Password?</a>
+
+        <div className={`signup-container ${loaded ? 'stack-down' : ''}`}>
+          {/* <div className="custom-input-underline" /> */}
+          <button onClick={() => navigate('/signup')} className="sign-up-button">
+            <p>Don’t have an account?</p>
+            <div className='sign-up-group'>
+              <p id='text'>Sign Up</p>
+              <svg xmlns="http://www.w3.org/2000/svg" width="9.023" height="14.088" viewBox="0 0 9.023 14.088">
+                <g id="Group_71" data-name="Group 71" transform="translate(-134.713 -457.047)">
+                  <rect id="Rectangle_92" data-name="Rectangle 92" width="2.876" height="9.885" rx="1.438" transform="translate(134.713 459.081) rotate(-45)" fill="#fff"/>
+                  <rect id="Rectangle_93" data-name="Rectangle 93" width="2.876" height="9.817" rx="1.438" transform="translate(141.703 462.16) rotate(45)" fill="#fff"/>
+                </g>
+              </svg>
+            </div>
+          </button>
+        </div>
       </form>
 
-      <a href="/forgot-password" className="forgot-password-link">Forgot Password?</a>
-
-      <div className="signup-container">
-        <p>Don’t have an account?</p>
-        <button onClick={() => navigate('/signup')} className="sign-up-button">
-          Sign Up
-        </button>
+      <div className={`sign-in-nav ${loaded ? 'stack-down' : ''}`}>
+        <CustomButton className="next-btn" text="Log In" onClick={handleSignIn} color="white" />
       </div>
     </div>
   );

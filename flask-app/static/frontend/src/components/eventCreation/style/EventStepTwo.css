@@ -12,6 +12,31 @@
     height: 50%;
     margin-top: 8rem;
     padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.address-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.address-input-label {
+    color: rgba(255, 255, 255, 0.177);
+    font-size: 16px;
+    margin-bottom: 0px;
+    align-self: flex-start;
+    transform-origin: left center;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    transform: scale(0.8);
+    filter: blur(10px);
+    opacity: 0;
+}
+
+.address-input-label.focused {
+    transform: scale(1);
+    filter: blur(0px);
+    opacity: 1;
 }
 
 .event-input-address {

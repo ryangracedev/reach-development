@@ -16,16 +16,6 @@
     width: 12rem;
 }
 
-
-.content-area {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 60%;
-    margin-top: 5rem;
-    padding-left: 1rem;
-}
-
 .user-input-verification {
     font-size: 2.75rem;
     font-weight: bold;
@@ -48,7 +38,7 @@
     margin: 0;
     font-size: inherit; /* Ensure it matches the input font */
     text-align: left; /* Aligns the text properly */
-    color: rgba(255, 255, 255, 0.775); /* Adjust opacity if needed */
+    color: rgba(255, 255, 255, 0.172); /* Adjust opacity if needed */
 }
 
 .verification-info {
@@ -61,6 +51,17 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: start;
+}
+
+.resend-code {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.427) ;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px); 
+    border: none;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    border-radius: 3rem;
 }
 
 .nav {

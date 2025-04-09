@@ -3,6 +3,8 @@
   position: relative;
   height: 100%;
   z-index: 1;
+  width: 85%;
+  max-width: 500px;
 }
 
 .background-video-container {
@@ -26,10 +28,12 @@
   z-index: -1;
   pointer-events: none;
   opacity: 40%;
+  mix-blend-mode: screen;
 }
 
 .fade-slide-out {
   animation: slideRight 0.3s cubic-bezier(0.37, 0.01, 0, 1) forwards;
+  transform-origin: center right;
 }
 
 @keyframes slideRight {
@@ -56,6 +60,7 @@
 
 .fade-slide-in {
   animation: slideLeft 0.3s cubic-bezier(0.37, 0.01, 0, 1) forwards;
+  transform-origin: center left;
 }
 
 @keyframes slideLeft {
@@ -83,6 +88,7 @@
 
 .fade-in {
   animation: fadeInOnly 0.5s ease forwards;
+  transform: translateZ(0);
 }
 
 @keyframes fadeInOnly {

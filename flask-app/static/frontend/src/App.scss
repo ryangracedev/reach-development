@@ -7,9 +7,6 @@
     text-align: center;
     background-color: inherit;
     height: 100dvh;
-    
-    padding-left: 3rem;
-    padding-right: 3rem;
   }
 
 }
@@ -19,7 +16,8 @@
   // background: linear-gradient(to bottom, #0d0101, #000000);
   background-color: inherit;
   height: 100dvh;
-  display: grid;
+  width: 100vw;
+  display: flex;
   align-items: center;
   justify-content: center;
   border-bottom: var(--border-height) solid #c94b4b;

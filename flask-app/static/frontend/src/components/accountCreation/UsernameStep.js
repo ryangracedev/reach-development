@@ -4,6 +4,7 @@ import './style/UsernameStep.css'; // Import the CSS file
 import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
 import CustomButton from '../common/CustomButton';
+import CustomInput from '../common/CustomInput'; // Import CustomInput
 
 const UsernameStep = ({ nextStep, prevStep, updateFormData, formData }) => {
   const [username, setUsername] = useState(formData.username || ''); // Initialize with saved value
@@ -58,12 +59,14 @@ const UsernameStep = ({ nextStep, prevStep, updateFormData, formData }) => {
       </div> */}
       <div className='content-area'>
         <div className='username-box'>
-          <input
-            type="text"
+          <CustomInput
+            label="Username"
             placeholder="Username"
-            value={username}  // Ensure it's always a string
-            className='user-input-username'
+            value={username}
             onChange={(e) => setUsername(e.target.value)}
+            inputType="name"
+            wrap={false}
+            count={false}
           />
           <p className="username-info">
             Who are you?

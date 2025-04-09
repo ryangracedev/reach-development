@@ -7,7 +7,7 @@
     justify-content: center;
     font-size: 1.25rem;
     font-weight: 500;
-    color: black; /* Match screenshot text color */
+    color: rgb(255, 255, 255); /* Match screenshot text color */
 }
 
 .button-text-hollow {
@@ -18,7 +18,7 @@
     width: 2.75rem;
     height: 2.75rem;
     background-color: transparent; /* No background fill */
-    border: 1px solid black; /* Black circular border */
+    border: 1px solid rgb(255, 255, 255); /* Black circular border */
     border-radius: 50%;
     display: flex;
     justify-content: center;
@@ -29,11 +29,7 @@
 .button-icon-hollow svg {
     width: 70%;
     height: 70%;
-    stroke: black; /* Change arrow color to black */
-}
-
-.custom-button-hollow:hover .button-icon-hollow {
-    background-color: rgba(0, 0, 0, 0.1); /* Subtle hover effect */
+    stroke: rgb(255, 255, 255); /* Change arrow color to black */
 }
 
 svg {

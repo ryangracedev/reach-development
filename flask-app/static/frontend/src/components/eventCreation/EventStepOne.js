@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'; // Import for navigation
 import './style/EventStepOne.css'; // Import the CSS file
 import CustomButton from '../common/CustomButton';
 import CustomBack from '../common/CustomBack';
+import CustomInput from '../common/CustomInput'; // Import CustomInput
 
 const EventStepOne = ({ nextStep }) => {
   const navigate = useNavigate();                               // Hook for navigation
@@ -38,13 +39,28 @@ const EventStepOne = ({ nextStep }) => {
   return (
     <div className="event-step-one">
       <div className='event-inputs-one'>
-        <input
-          type="text"
-          placeholder="Name"
-          value={eventData.name}
-          className={`event-input-name ${eventData.name ? 'filled' : ''}`}
-          onChange={(e) => updateEventData('name', e.target.value)}
-        />
+        <div className='event-input-name'>
+          <CustomInput
+            label="Name"
+            placeholder="Name"
+            value={eventData.name}
+            onChange={(e) => updateEventData('name', e.target.value)}
+            inputType="name"
+            wrap={true}
+            count={true}
+          />
+        </div>
+        <div className='custom-textarea'>
+          <CustomInput
+            label="About"
+            placeholder="About"
+            value={eventData.description}
+            onChange={(e) => updateEventData('description', e.target.value)}
+            inputType="description"
+            wrap={true}
+            count={true}
+          />
+        </div>
         <div className='event-upload-row'>
           <input
             type="file"
@@ -60,13 +76,6 @@ const EventStepOne = ({ nextStep }) => {
             </label>
           )}
         </div>
-        <textarea
-          id="event-description"
-          placeholder="About"
-          className="custom-textarea"
-          value={eventData.description}
-          onChange={(e) => updateEventData('description', e.target.value)}
-        />
       </div>
       <p className={`error ${error ? 'visible' : ''}`}>{error}</p>
       <div className='nav'>

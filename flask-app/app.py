@@ -11,6 +11,8 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from threading import Timer
 from bson import json_util, ObjectId
 from werkzeug.utils import secure_filename
+import datetime
+from dateutil import parser
 from storage import save_file
 import redis
 import os
@@ -493,43 +495,66 @@ def unattend_event(event_name):
 # This endpoint retrieves a user's profile, including their hosted and attended events.
 @app.route('/api/profile/<username>', methods=['GET'])
 def get_profile(username):
+    
     # Fetch user data based on the username in the URL
     user = mongo.db.users.find_one({"username": username})
     if not user:
         return jsonify({"error": "User not found"}), 404
-
+    
+    now = datetime.datetime.now(datetime.timezone.utc)
+    
     # Fetch events hosted by this user
-    hosted_events = list(mongo.db.events.find({"host_id": str(user["_id"])}))
-    hosted_events = [
-        {
+    raw_hosted_events = list(mongo.db.events.find({"host_id": str(user["_id"])}))
+    
+    hosted_events = []
+    past_events = []
+    
+    for event in raw_hosted_events:
+        event_data = {
             "event_id": str(event["_id"]),
             "event_name": event["event_name"],
             "description": event["description"],
             "date_time": event["date_time"],
             "address": event["address"]
         }
-        for event in hosted_events
-    ]
-
+    
+        event_time = parser.isoparse(event["date_time"])  # Adjust format as needed
+        if now > event_time + datetime.timedelta(hours=12):
+            past_events.append({"event": event_data, "was_host": True})
+        else:
+            hosted_events.append(event_data)
+    
     # Fetch events this user is attending
-    events_going_to = list(
+    raw_attending_events = list(
         mongo.db.events.find({"_id": {"$in": [ObjectId(event_id) for event_id in user.get("events_going_to", [])]}})
     )
-    events_going_to = [
-        {
+    
+    current_events = []
+    
+    for event in raw_attending_events:
+        # Skip events already processed as hosted
+        if event["host_id"] == str(user["_id"]):
+            continue
+    
+        event_data = {
             "event_id": str(event["_id"]),
             "event_name": event["event_name"],
             "description": event["description"],
             "date_time": event["date_time"],
             "address": event["address"]
         }
-        for event in events_going_to
-    ]
-
+    
+        event_time = parser.isoparse(event["date_time"])
+        if now > event_time + datetime.timedelta(hours=12):
+            past_events.append({"event": event_data, "was_host": False})
+        else:
+            current_events.append(event_data)
+    
     return jsonify({
         "username": user["username"],
         "hosted_events": hosted_events,
-        "events_going_to": events_going_to
+        "events_going_to": current_events,
+        "past_events": past_events
     }), 200
 
 # This endpoint sends a verification code to a user's phone number for password reset.

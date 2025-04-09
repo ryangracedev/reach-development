@@ -1,0 +1,179 @@
+.sign-in-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
+    height: 100%;
+    width: 75%;
+}
+
+.sign-in-label {
+    display: flex;
+    justify-content: center;
+    flex-direction: row-reverse;
+    align-items: center;
+    opacity: 0;
+    margin-top: 3rem;
+    
+    h2 {
+        font-size: 14px;
+        color: #FFC400;
+    }
+
+    .logo-signin {
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+.sign-in-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: start;
+    margin-top: 0rem;
+    width: 18rem;
+    gap: 0.5rem;
+}
+
+.username-input {
+    opacity: 0;
+    margin-bottom: 1rem;
+}
+
+.password-input {
+    opacity: 0;
+}
+
+.forgot-password-link {
+    font-size: 14px;
+    text-decoration: none;
+    color: #FFC400;
+    opacity: 0;
+}
+
+.forgot-password-link:hover {
+    opacity: 1;
+}
+
+.signup-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    opacity: 0;
+    margin-top: 4rem;
+    width: 100%;
+
+    p {
+        font-size: 14px;
+        opacity: 20%;
+        margin: 0;
+    }
+    #text {
+        opacity: 100%;
+    }
+}
+
+#custom-input {
+    overflow: hidden;
+    width: 100%;
+}
+
+.custom-input-underline {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.055);
+    margin-top: 8px;
+}
+
+.sign-up-button {
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    background: none;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0;
+    gap: 14px;
+    margin-top: 1rem;
+    overflow: visible;
+}
+
+.sign-in-button:hover, .sign-up-button:hover {
+    background: #ffffff2d;
+}
+
+.sign-up-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sign-in-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-right: -1rem;
+    opacity: 0;
+}
+
+.stack-down {
+    animation: blur-in 0.4s cubic-bezier(0.37, 0.01, 0, 1) forwards;
+    transform-origin: top left;
+}
+
+.stack-down-logo {
+    animation: fade-in 0.6s cubic-bezier(0.37, 0.01, 0, 1) forwards;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        filter: blur(15px);
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0px);
+    }
+}
+
+@keyframes blur-in {
+    0% {
+        transform: translateY(-20px) scale(0.7);
+        opacity: 0;
+        filter: blur(15px);
+    }
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
+}
+
+.sign-in-form .sign-in-label.stack-down-logo {
+    animation-delay: 0s;
+}
+  
+.sign-in-form .username-input.stack-down {
+    animation-delay: 0.1s;
+}
+  
+.sign-in-form .password-input.stack-down {
+    animation-delay: 0.1s;
+}
+  
+.forgot-password-link.stack-down {
+    animation-delay: 0.15s;
+}
+  
+.signup-container.stack-down {
+    animation-delay: 0.2s;
+}
+  
+.sign-in-nav.stack-down {
+    animation-delay: 0.25s;
+}

@@ -1,13 +1,12 @@
 /* Container for the entire page */
 .event-page {
-    min-height: 160vh;   /* Enough space to scroll */
-    width: 100vw;
-    overflow-x: hidden;
+    height: 100%;   /* Enough space to scroll */
+    width: 85%;
+    max-width: 900px;
     background: #000;    /* Example: black background */
     color: #fff;         /* White text */
     position: relative;  /* So we can position child elements if needed */
-  }
-  
+}
 
 .event-image-background {
     position: fixed;
@@ -20,24 +19,10 @@
     overflow: visible;
 }
 
-@media screen and (max-width: 768px) {
-    .event-info-container {
-        width: 100vw;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .event-meta {
-        align-items: flex-start;
-    }
-}
-
 .event-info-container {
-    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
     position: relative;
     width: 100%;
     height: auto;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -48,31 +33,6 @@
     margin-top: 20rem;
 }
 
-/* The top portion (event info) that fades out */
-.top-section {
-    width: 100%;
-    height: 80%; /* For example, top 80% of screen */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.2s ease-out; /* For minor fade smoothing */
-}
-
-/* The “pull-up” handle area with the “List” label */
-.pull-up-handle {
-    width: 100%;
-    text-align: center;
-    margin-top: -2rem; /* Pull it up slightly overlapping top-section */
-    transition: opacity 0.2s ease-out;
-}
-
-.event-info-container.hidden {
-    transform: translateY(-100%);
-    opacity: 0;
-    pointer-events: none;
-}
-
 .event-meta {
     display: flex;
     flex-direction: column;
@@ -81,34 +41,46 @@
     text-align: left;
     gap: 0.25rem;
     width: 100%;
-    margin-left: 4rem;
-}
+    overflow: visible;
+    text-shadow: 1px 1px 4px rgb(0, 0, 0);
 
-.event-page-name {
-    text-transform: uppercase;
-    font-size: 36px;
-    font-weight: 900;
-    margin: 0;
-    color: white;
-    opacity: 100%;
-}
-
-.event-page-date {
-    font-size: 16px;
-    margin: 0;
-    opacity: 65%;
-    text-transform: uppercase;
-}
-
-.event-page-hostname {
-    font-size: 16px;
-    margin: 0;
-}
-
-.event-page-desc {
-    font-size: 16px;
-    font-weight: 200;
-    margin: 1rem 0 0 0;
+    .meta-backdrop {
+        position: absolute;
+        z-index: -1;
+        width: 100%;
+        height: 50%;
+        border-radius: 100rem;
+        transform: scale(1.1);
+        background-color: rgba(0, 0, 0, 0);
+    }
+    
+    .event-page-name {
+        text-transform: uppercase;
+        font-size: 36px;
+        font-weight: 900;
+        margin: 0;
+        color: white;
+        opacity: 100%;
+    }
+    
+    .event-page-date {
+        font-size: 16px;
+        margin: 0;
+        opacity: 65%;
+        text-transform: uppercase;
+    }
+    
+    .event-page-hostname {
+        font-size: 16px;
+        margin: 0;
+    }
+    
+    .event-page-desc {
+        font-size: 12px;
+        font-weight: 800;
+        margin: 1rem 0 0 0;
+        text-transform: uppercase;
+    }
 }
 
 .event-page-address {
@@ -122,7 +94,7 @@
     align-items: center;
     justify-content: space-between; /* Pushes text & icon to edges */
     padding: 0.75rem 1.25rem 0.75rem 1.25rem;
-    width: 82%;
+    width: 92.5%;
     max-width: 1000px; /* Prevents it from getting too large */
     height: 2rem;
     border-radius: 30px; /* Creates pill shape */
@@ -149,25 +121,10 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-.logo-container-event-page {
-    position: fixed;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    bottom: 0;
-    z-index: 2; /* ✅ Higher than background image */
-    margin-bottom: 1rem;
-}
-
-.logo-event-page {
-    width: 7rem;
-    cursor: pointer;
-}
-
 .accept-event-container {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     height: auto;
     width: 100%;
@@ -201,6 +158,18 @@
     width: 20px;
     height: 20px;
     margin: 0;
+}
+
+.edit-button {
+    padding: 0.75rem 1rem 0.75rem 1rem;
+    width: 6rem;
+    font-size: 1rem;
+    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.395);
+    color: white;
+    border: none;
+    border-radius: 4rem;
+    align-self: center;
 }
 
 .countdown-container {
@@ -267,4 +236,33 @@
     margin: 0;
     color: rgb(255, 255, 255);
     opacity: 100%;
+}
+
+.bottom-container {
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    bottom: 0;
+    z-index: 2; /* ✅ Higher than background image */
+    margin-bottom: 2rem;
+    gap: 7rem;
+}
+
+.logo-event-page {
+    width: 1.75rem;
+    cursor: pointer;
+}
+
+.list-button {
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    width: 6rem;
+    font-size: 1rem;
+    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.395);
+    color: white;
+    border: 1px dotted rgba(255, 255, 255, 0);
+    border-radius: 4rem;
+    align-self: center;
 }

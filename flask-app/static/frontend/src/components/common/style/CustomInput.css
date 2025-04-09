@@ -1,0 +1,93 @@
+.custom-input-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+.top-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom-input-label {
+  color: rgba(255, 255, 255, 0.177);
+  font-size: 16px;
+  margin-bottom: 0px;
+  align-self: flex-start;
+  transform-origin: left center;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  transform: scale(0.8);
+  filter: blur(10px);
+  opacity: 0;
+}
+
+.custom-input-label.focused {
+  transform: scale(1);
+  filter: blur(0px);
+  opacity: 1;
+}
+
+.char-count {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.177);
+  transform-origin: left center;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  transform: scale(0.8);
+  filter: blur(10px);
+  opacity: 0;
+}
+
+.char-count.focused {
+  transform: scale(1);
+  filter: blur(0px);
+  opacity: 1;
+}
+
+
+
+
+
+
+
+.custom-input-field {
+  color: white;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 34px;
+  font-weight: bold;
+  padding: 0;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.custom-input-field::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+  opacity: 1;
+  transition: color 0.2s ease;
+}
+
+.custom-input-field:focus::placeholder {
+  color: rgba(255, 255, 255, 0.077);
+}
+
+
+
+
+
+
+/* .custom-input-underline {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.055);
+  margin-top: 8px;
+} */

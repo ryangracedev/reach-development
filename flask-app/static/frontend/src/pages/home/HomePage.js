@@ -38,12 +38,6 @@ const HomePage = () => {
 
 
 
-      {/* Top Logo Section */}
-      <div className={`logo-container ${animateExit ? 'logo-exit' : ''}`}>
-        <img src="/Reach_Logo_White.png" alt="Reach Logo" className="logo" />
-      </div>
-
-
       {/* CREATE A PARTY Section */}
       <button 
         onClick={() => { 
@@ -75,15 +69,20 @@ const HomePage = () => {
 
       {/* Bottom Button Section */}
       <div className={`home-buttons ${animateExit ? 'home-buttons-exit' : ''}`}>
+
+        {/* Top Logo Section */}
+        <div onClick={signOut} className={`logo-container ${animateExit ? 'logo-exit' : ''}`}>
+          <img src="/Reach_Logo_Full.png" alt="Reach Logo" className="logo" />
+        </div>
         {authState.isAuthenticated ? (
           <div className='bottom-button'>
             <h3 id='bottom-button-text'>
-              <Link to={`/profile/${authState.username}`}>{authState.username}</Link>
+              @<Link to={`/profile/${authState.username}`}>{authState.username}</Link>
             </h3>
           </div>
         ) : (
           <div onClick={handleSignIn} className="bottom-button">
-            <h3 id='bottom-button-text'>LOG IN</h3>
+            <h3 id='bottom-button-text'>Login.</h3>
           </div>
         )}
       </div>
@@ -95,3 +94,16 @@ const HomePage = () => {
 };
 
 export default HomePage;  
+
+
+// {`sign-in-label ${loaded ? 'fade-in' : ''}`}
+
+// {`username-input ${loaded ? 'fade-in' : ''}`}
+
+// {`password-input ${loaded ? 'fade-in' : ''}`}
+
+// {`forgot-password-link ${loaded ? 'fade-in' : ''}`}
+
+// {`signup-container ${loaded ? 'fade-in' : ''}`}
+
+// {`nav ${loaded ? 'fade-in' : ''}`}
