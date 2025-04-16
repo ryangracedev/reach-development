@@ -6,7 +6,6 @@ import EventPreview from '../../components/eventCreation/EventPreview';
 import EventCreated from '../../components/eventCreation/EventCreated';
 import SignupSteps from '../signup/SignupSteps'; // Import SignupSteps
 import AuthRequired from './AuthRequired';
-import useBackgroundColor from '../../hooks/useBackgroundColor';
 import { EventProvider } from '../../context/EventContext';
 import './style/EventCreation.scss';
 
@@ -88,17 +87,32 @@ const CreateEvent = () => {
           Your browser does not support the video tag.
         </video>
       </div>
-      <div className={`create-event-container ${
-        transitioning
-          ? (transitionDirection === 'forward' ? 'fade-slide-in' : 'fade-slide-out')
-          : (fadeIn || loaded ? 'fade-in' : '')
-      }`}>
+      <div className="create-event-container">
           {/* Step 1: Name, Photo, Description */}
-          {step === 1 && <EventStepOne nextStep={nextStep} />}
+          {step === 1 && ( 
+            <EventStepOne 
+              nextStep={nextStep}
+              transitioning={transitioning}
+              transitionDirection={transitionDirection}
+            />
+          )}
           {/* Step 2: Address, Date, Time */}
-          {step === 2 && <EventStepTwo nextStep={nextStep} prevStep={prevStep} />}
+          {step === 2 && (
+            <EventStepTwo 
+              nextStep={nextStep} 
+              prevStep={prevStep} 
+              transitioning={transitioning}
+              transitionDirection={transitionDirection}
+            />
+          )}
           {/* Step 3: If user is NOT signed in, show AuthRequired */}
-          {!authState.isAuthenticated && step === 3 && <AuthRequired nextStep={nextStep} />}
+          {!authState.isAuthenticated && step === 3 && (
+            <AuthRequired 
+              nextStep={nextStep}
+              transitioning={transitioning}
+              transitionDirection={transitionDirection}
+            />
+          )}
           {/* Step 4-7: Signup Process (Username, Password, Phone, Verification) */}
           {!authState.isAuthenticated && step >= 4 && step <= 7 && (
             <SignupSteps
@@ -107,11 +121,19 @@ const CreateEvent = () => {
               prevStep={prevStep}
               updateFormData={updateFormData}
               formData={formData}             // Pass formData
+              transitioning={transitioning}
+              transitionDirection={transitionDirection}
+              fadeIn={fadeIn}
             />
           )}
           {/* Step 3 (if signed in) or Step 8 (after signup): Event Preview */}
           {(authState.isAuthenticated && step === 3) || (authState.isAuthenticated && step === 8) ? (
-            <EventPreview nextStep={nextStep} />
+            <EventPreview 
+              nextStep={nextStep} 
+              transitioning={transitioning}
+              transitionDirection={transitionDirection}
+              fadeIn={fadeIn}
+            />
           ) : null}
           {/* Step 4 (if signed in) or Step 9 (after signup): Event Created */}
           {(authState.isAuthenticated && step === 4) || (authState.isAuthenticated && step === 9) ? (

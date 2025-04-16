@@ -15,6 +15,7 @@ const SignupForEvent = () => {
 
   useEffect(() => {
     setLoaded(true);
+    setFadeIn(true);
   }, []);
 
   const nextStep = () => {
@@ -67,11 +68,7 @@ const SignupForEvent = () => {
         style={{ backgroundImage: image ? `url(${image})` : 'none' }}
       >
       </div>
-      <div className={`signup-slides ${
-        transitioning
-          ? (transitionDirection === 'forward' ? 'fade-slide-in' : 'fade-slide-out')
-          : (fadeIn || loaded ? 'fade-in' : '')
-      }`}>
+      <div className="signup-slides">
         <SignupSteps
           currentStep={step}
           nextStep={nextStep}
@@ -79,6 +76,9 @@ const SignupForEvent = () => {
           updateFormData={updateFormData}
           formData={formData}
           handleSignupComplete={handleSignupComplete}
+          transitioning={transitioning}
+          transitionDirection={transitionDirection}
+          fadeIn={fadeIn}
         />
       </div>
     </div>

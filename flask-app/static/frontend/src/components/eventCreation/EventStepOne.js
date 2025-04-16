@@ -5,11 +5,18 @@ import './style/EventStepOne.css'; // Import the CSS file
 import CustomButton from '../common/CustomButton';
 import CustomBack from '../common/CustomBack';
 import CustomInput from '../common/CustomInput'; // Import CustomInput
+import '../../animations/animations.scss'
 
-const EventStepOne = ({ nextStep }) => {
+const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
   const navigate = useNavigate();                               // Hook for navigation
   const { eventData, updateEventData } = useEventContext();
   const [error, setError] = useState('');
+
+  const animationClass = transitioning
+    ? transitionDirection === 'forward'
+      ? 'slideLeft'
+      : 'slideRight'
+    : 'fade-in';
 
   const handleNext = () => {
     if (!eventData.name.trim() || !eventData.description.trim()) {
@@ -37,7 +44,7 @@ const EventStepOne = ({ nextStep }) => {
   };
 
   return (
-    <div className="event-step-one">
+    <div className={`event-step-one ${animationClass}`}>
       <div className='event-inputs-one'>
         <div className='event-input-name'>
           <CustomInput

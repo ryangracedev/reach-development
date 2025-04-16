@@ -31,3 +31,8 @@
     justify-content: center;
     margin-bottom: 5rem;
 }
+
+.auth-nav {
+    display: flex;
+    justify-content: center;
+}

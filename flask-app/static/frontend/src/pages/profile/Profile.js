@@ -53,7 +53,7 @@ const Profile = () => {
 
         {profileData.hosted_events && profileData.hosted_events.length > 0 && (
           <div className='profile-hosted-events'>
-            <h2 className='checker-text-red'>Hosted Events</h2>
+            <h2 className='checker-text-sub' id='list-label'>HOST</h2>
             <ul className="event-list">
               {profileData.hosted_events.map((event) => (
                 <li key={event.event_id}>
@@ -68,7 +68,7 @@ const Profile = () => {
 
         {profileData.events_going_to && profileData.events_going_to.length > 0 && (
           <div className='profile-future-events'>
-            <h2 className='checker-text-yellow'>Attending Events</h2>
+            <h2 className='checker-text-sub' id='list-label'>GOING</h2>
             <ul className="event-list">
               {profileData.events_going_to.map((event) => (
                 <li key={event.event_id}>
@@ -83,13 +83,13 @@ const Profile = () => {
 
         {profileData.past_events && profileData.past_events.length > 0 && (
           <div className='profile-past-events'>
-            <h2 className="checker-text-white">Past Events</h2>
+            <h2 className="checker-text-sub" id='list-label'>PAST</h2>
             <ul className="event-list">
               {profileData.past_events.map(({ event, was_host }) => (
                 <li key={event.event_id}>
                   <a
                     href={`/${event.event_name}`}
-                    className={`list-events ${was_host ? "checker-text-red" : "checker-text-white"}`}
+                    className={`list-events ${was_host ? "checker-text-red-host" : "checker-text-white-past"}`}
                   >
                     {event.event_name}
                   </a>

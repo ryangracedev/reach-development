@@ -232,7 +232,7 @@ const EventPage = () => {
       {/* Logo */}
       <div className='bottom-container'>
         <img src="/Reach_Logo_Full.png" alt="Reach Logo" className="logo-event-page" onClick={() => navigate('/')}/>
-        <button className='list-button'>List</button>
+        <button className='list-button'>LIST</button>
       </div>
 
       {/* Event Information */}

@@ -9,10 +9,11 @@
   margin-top: 4rem;
   transform: rotate(-3deg);
   margin-right: 2rem;
-  filter: blur(0px);
+  // filter: blur(0px); // Remove for other background effect
 }
 
 .event-preview-image {
+  position: relative;
   width: 15.625rem;
   height: 8.75rem;
   border-radius: 30px;
@@ -25,10 +26,10 @@
   width: 22rem;
   height: 18rem;
   margin-top: -3rem;
-  margin-left: 1rem;
+  margin-left: 2rem;
   background-color: transparent;
-  opacity: 15%;
-  filter: blur(50px);
+  opacity: 10%;
+  filter: blur(60px);
   transform: scale(1.1) translateZ(0);
   overflow: visible;
 }
@@ -45,6 +46,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  z-index: 99;
 }
 
 .event-preview-date {
@@ -70,8 +72,4 @@
   color: rgba(255, 255, 255, 0.7);
   margin-top: 0.5rem;
   padding-left: 0.5rem;
-}
-
-.fade-in {
-  animation: fadeInOnly 0.5s ease forwards;
 }

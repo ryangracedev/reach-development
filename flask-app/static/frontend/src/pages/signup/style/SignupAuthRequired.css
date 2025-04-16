@@ -10,39 +10,7 @@
     margin-top: 0;
 }
 
-
-.fade-in {
-    animation: fadeInOnly 0.3s ease forwards;
-    transform: translateZ(0);
-} 
-  
-.fade-out {
-    animation: fadeOutOnly 0.3s ease forwards;
-    transform: translateZ(0);
-}
-  
-@keyframes fadeInOnly {
-    0% {
-        transform: scale(85%);
-        opacity: 0;
-        filter: blur(10px);
-    }
-    100% {
-        transform: scale(100%); 
-        opacity: 1;
-        filter: blur(0px);
-    }
-}
-  
-@keyframes fadeOutOnly {
-    0% {
-        transform: scale(100%);
-        opacity: 1;
-        filter: blur(0px);
-    }
-    100% {
-        transform: scale(85%);
-        opacity: 0;
-        filter: blur(30px);
-    }
+.auth-nav {
+    display: flex;
+    justify-content: center;
 }

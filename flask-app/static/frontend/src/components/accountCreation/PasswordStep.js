@@ -5,6 +5,7 @@ import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
 import CustomButton from '../common/CustomButton';
 import CustomInput from '../common/CustomInput'; // Import CustomInput
+import '../../animations/animations.scss';
 
 // Password validation function
 const validatePassword = (password) => {
@@ -22,9 +23,17 @@ const validatePassword = (password) => {
   return { isValid: true, error: null };
 };
 
-const PasswordStep = ({ nextStep, prevStep, updateFormData, formData }) => {
+const PasswordStep = ({ nextStep, prevStep, updateFormData, formData, transitioning, transitionDirection, fadeIn }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  let animationClass = '';
+
+  if (transitioning) {
+    animationClass = transitionDirection === 'forward' ? 'slideLeft' : 'slideRight';
+  } else if (fadeIn) {
+    animationClass = 'fade-in';
+  }
 
   useEffect(() => {
     setPassword(formData.password || ''); // Keep input in sync when formData updates
@@ -50,7 +59,7 @@ const PasswordStep = ({ nextStep, prevStep, updateFormData, formData }) => {
   console.log("prevStep function in PasswordStep:", prevStep);
   
   return (
-    <div className="signup-step-two">
+    <div className={`signup-step-two ${animationClass}`}>
       {/* <div className='logo-container'>
         <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
       </div> */}

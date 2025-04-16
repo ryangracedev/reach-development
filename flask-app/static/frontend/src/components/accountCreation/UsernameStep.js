@@ -5,10 +5,19 @@ import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
 import CustomButton from '../common/CustomButton';
 import CustomInput from '../common/CustomInput'; // Import CustomInput
+import '../../animations/animations.scss';
 
-const UsernameStep = ({ nextStep, prevStep, updateFormData, formData }) => {
+const UsernameStep = ({ nextStep, prevStep, updateFormData, formData, transitioning, transitionDirection, fadeIn }) => {
   const [username, setUsername] = useState(formData.username || ''); // Initialize with saved value
   const [error, setError] = useState('');
+
+  let animationClass = '';
+
+  if (transitioning) {
+    animationClass = transitionDirection === 'forward' ? 'slideLeft' : 'slideRight';
+  } else if (fadeIn) {
+    animationClass = 'fade-in';
+  }
 
   useEffect(() => {
     setUsername(formData.username || ''); // Keep input in sync when formData updates
@@ -53,7 +62,7 @@ const UsernameStep = ({ nextStep, prevStep, updateFormData, formData }) => {
   };
 
   return (
-    <div className="signup-step-one">
+    <div className={`signup-step-one ${animationClass}`}>
       {/* <div className='logo-container'>
         <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
       </div> */}

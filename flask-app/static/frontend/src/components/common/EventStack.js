@@ -1,5 +1,6 @@
 import React from 'react';
 import './style/EventStack.scss';
+import '../../animations/animations.scss';
 
 const EventStack = ({ image, name, description, dateTime }) => {
 
@@ -20,8 +21,8 @@ const EventStack = ({ image, name, description, dateTime }) => {
   return (
     <div className="event-preview">
       <img src={image || '/default-image.jpg'} alt="Event" className="event-preview-blur" />
-      <img src={image || '/default-image.jpg'} alt="Event" className="event-preview-image" />
-      <div className="event-preview-info">
+      <img src={image || '/default-image.jpg'} alt="Event" className="event-preview-image fade-in-gpu" />
+      <div className="event-preview-info fade-in-gpu">
         <p className="event-preview-date">{dateTime ? formatEventDate(dateTime) : 'Event Date'}</p>
         <h2 className="event-preview-title">{name || 'Event Title'}</h2>
         <p className="event-preview-description">{description || 'Event description'}</p>

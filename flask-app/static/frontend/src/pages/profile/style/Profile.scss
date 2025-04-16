@@ -5,6 +5,10 @@
     gap: 4rem;
     width: 70%;
     height: 80%;
+
+    a {
+        letter-spacing: 3px;
+    }
 }
 
 .profile-header {
@@ -33,6 +37,7 @@
     flex-direction: column;
     justify-content: flex-start;
     margin-top: 5rem;
+    gap: 2rem;
 }
 
 .profile-container h1 {
@@ -63,19 +68,6 @@
     text-decoration: none;
 }
 
-.checker-text {
-    font-family: monospace;
-    background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-        <rect width='4' height='4' fill='%23ccc'/>\
-        <rect x='4' y='4' width='4' height='4' fill='%23ccc'/>\
-      </svg>");
-    background-size: 4px 4px;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
 .checker-text-white {
     font-family: monospace;
     background-image: url("data:image/svg+xml;utf8,\
@@ -83,18 +75,59 @@
         <rect width='4' height='4' fill='%23ffffff'/>\
         <rect x='4' y='4' width='4' height='4' fill='%23ffffff'/>\
       </svg>");
-    background-size: 2px 2px;
+    background-size: 4px 4px;
     color: transparent;
     -webkit-background-clip: text;
     background-clip: text;
+}
+
+.checker-text-white-past {
+    font-family: monospace;
+    background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
+        <rect width='4' height='4' fill='%23ffffff'/>\
+        <rect x='4' y='4' width='4' height='4' fill='%23ffffff'/>\
+      </svg>");
+    background-size: 4px 4px;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    opacity: 20%;
 }
 
 .checker-text-red {
     font-family: monospace;
     background-image: url("data:image/svg+xml;utf8,\
       <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-        <rect width='4' height='4' fill='%23ff0000'/>\
-        <rect x='4' y='4' width='4' height='4' fill='%23ff0000'/>\
+        <rect width='4' height='4' fill='%23ff69b4'/>\
+        <rect x='4' y='4' width='4' height='4' fill='%23ff69b4'/>\
+      </svg>");
+    background-size: 4px 4px;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.checker-text-red-host {
+    font-family: monospace;
+    background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
+        <rect width='4' height='4' fill='%23ffffff'/>\
+        <rect x='4' y='4' width='4' height='4' fill='%23ffffff'/>\
+      </svg>");
+    background-size: 4px 4px;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    opacity: 20%;
+}
+
+.checker-text-red-host::first-letter {
+    font-family: monospace;
+    background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
+        <rect width='4' height='4' fill='%23ff69b4'/>\
+        <rect x='4' y='4' width='4' height='4' fill='%23ff69b4'/>\
       </svg>");
     background-size: 4px 4px;
     color: transparent;
@@ -115,7 +148,35 @@
     background-clip: text;
 }
 
+.checker-text-sub {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #ffffff46;
+    font-weight: 400;
+    background-size: 2px 2px;
+    // background-image: url("data:image/svg+xml;utf8,\
+    //   <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
+    //     <rect width='4' height='4' fill='%23ffd500'/>\
+    //     <rect x='4' y='4' width='4' height='4' fill='%23ffd500'/>\
+    //   </svg>");
+    // color: transparent;
+    // -webkit-background-clip: text;
+    // background-clip: text;
+}
 
+#list-label {
+    color: rgb(255, 255, 255);
+    background-color: #000000;
+    border: none;
+    border-radius: 2rem;
+    padding: 0.30rem 0.7rem 0.30rem 0.7rem;
+    margin-left: -0.6rem;
+    font-size: 14px;
+    width: fit-content;
+}
+
+.profile-past-events {
+    margin-top: 4rem;
+}
 
 .profile-container h2 {
     margin-bottom: 10px;

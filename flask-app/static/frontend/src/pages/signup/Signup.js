@@ -14,6 +14,7 @@ const Signup = () => {
 
   useEffect(() => {
     setLoaded(true);
+    setFadeIn(true);
   }, []);
 
   const nextStep = () => {
@@ -59,11 +60,7 @@ const Signup = () => {
   };
 
   return (
-    <div className={`signup-home ${
-      transitioning
-        ? (transitionDirection === 'forward' ? 'fade-slide-in' : 'fade-slide-out')
-        : (fadeIn || loaded ? 'fade-in' : '')
-    }`}>
+    <div className="signup-home">
       <SignupSteps
         currentStep={step}
         nextStep={nextStep}
@@ -71,6 +68,9 @@ const Signup = () => {
         updateFormData={updateFormData}
         formData={formData}
         handleSignupComplete={handleSignupComplete}
+        transitioning={transitioning}
+        transitionDirection={transitionDirection}
+        fadeIn={fadeIn}
       />
     </div>
   );

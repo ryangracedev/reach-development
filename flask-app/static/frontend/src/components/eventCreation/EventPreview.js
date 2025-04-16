@@ -2,15 +2,23 @@ import React from 'react';
 import { useEventContext } from '../../context/EventContext';
 import CustomButton from '../common/CustomButton';
 import './style/EventPreview.css';
+import '../../animations/animations.scss';
 
-
-const EventPreview = ({ nextStep }) => {
+const EventPreview = ({ nextStep, transitioning, transitionDirection, fadeIn }) => {
   const { eventData } = useEventContext();
+
+  let animationClass = '';
+
+  if (transitioning) {
+    animationClass = transitionDirection === 'forward' ? 'slideLeft' : 'slideRight';
+  } else if (fadeIn) {
+    animationClass = 'fade-in';
+  }
 
   const eventLink = `reachtheparty.com/${encodeURIComponent(eventData.name.toLowerCase())}`
 
   return (
-    <div className="event-link-preview">
+    <div className={`event-link-preview ${animationClass}`}>
 
       {eventData.image && (
         <img className='event-image' src={URL.createObjectURL(eventData.image)} alt="Event" />
@@ -24,6 +32,7 @@ const EventPreview = ({ nextStep }) => {
       <div className='nav-single'>
         <CustomButton className="next-btn" text="Done" onClick={nextStep} color="black" />
       </div>
+      
     </div>
   );
 };

@@ -5,11 +5,20 @@ import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
 import CustomButton from '../common/CustomButton';
 import CustomInput from '../common/CustomInput'; // Import CustomInput
+import '../../animations/animations.scss';
 
-const PhoneStep = ({ formData, prevStep, updateFormData, nextStep }) => {
+const PhoneStep = ({ formData, prevStep, updateFormData, nextStep, transitioning, transitionDirection, fadeIn }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [error, setError] = useState('');
   const [isChecking, setIsChecking] = useState(false); // To show a loading indicator while checking
+
+  let animationClass = '';
+
+  if (transitioning) {
+    animationClass = transitionDirection === 'forward' ? 'slideLeft' : 'slideRight';
+  } else if (fadeIn) {
+    animationClass = 'fade-in';
+  }
 
   const handleNext = async () => {
 
@@ -89,7 +98,7 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep }) => {
   };
 
   return (
-    <div className="signup-step-three">
+    <div className={`signup-step-three ${animationClass}`}>
       {/* <div className='logo-container'>
         <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
       </div> */}

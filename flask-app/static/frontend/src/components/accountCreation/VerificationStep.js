@@ -5,11 +5,20 @@ import './style/VerificationStep.css'; // Import page CSS file
 import CustomBack from '../common/CustomBack';
 import CustomHollow from '../common/CustomButtonHollow';
 import CustomButton from '../common/CustomButton';
+import '../../animations/animations.scss';
 
-const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handleSignupComplete }) => {
+const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handleSignupComplete, transitioning, transitionDirection, fadeIn }) => {
   const { signIn } = useAuth(); // Access the signIn function from AuthContext
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+
+  let animationClass = '';
+
+  if (transitioning) {
+    animationClass = transitionDirection === 'forward' ? 'slideLeft' : 'slideRight';
+  } else if (fadeIn) {
+    animationClass = 'fade-in';
+  }
 
   // For Testing
   console.log('Final Form Data:\n', formData);
@@ -128,7 +137,7 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handle
   };
 
   return (
-    <div className="signup-step-four">
+    <div className={`signup-step-four ${animationClass}`}>
       {/* <div className='logo-container'>
         <img src="/Logo-Inflated2.png" alt="Reach Logo" className="signup-logo" />
       </div> */}

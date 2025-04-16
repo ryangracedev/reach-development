@@ -4,11 +4,18 @@ import './style/EventStepTwo.css'; // Import the CSS file
 import CustomButton from '../common/CustomButton';
 import CustomBack from '../common/CustomBack';
 import CustomInput from '../common/CustomInput'; // Import CustomInput
+import '../../animations/animations.scss'
 
-const EventStepTwo = ({ nextStep, prevStep }) => {
+const EventStepTwo = ({ nextStep, prevStep, transitioning, transitionDirection }) => {
   const { eventData, updateEventData } = useEventContext();
   const [error, setError] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+
+  const animationClass = transitioning
+  ? transitionDirection === 'forward'
+    ? 'slideLeft'
+    : 'slideRight'
+  : 'fade-in';
 
   const handleFocus = () => {
     console.log("Input focused");
@@ -45,7 +52,7 @@ const EventStepTwo = ({ nextStep, prevStep }) => {
   }
 
   return (
-    <div className="event-step-two">
+    <div className={`event-step-two ${animationClass}`}>
       <div className='event-inputs-two'>
         <div className='address-box'>
           <CustomInput

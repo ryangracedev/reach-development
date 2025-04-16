@@ -46,10 +46,15 @@
 }
 
 .forgot-password-link {
-    font-size: 14px;
+    font-size: 12px;
     text-decoration: none;
+    background-color: #110d00;
+    border: none;
+    border-radius: 2rem;
+    padding: 0.30rem 0.7rem 0.30rem 0.7rem;
     color: #FFC400;
     opacity: 0;
+    margin-left: -0.6rem;
 }
 
 .forgot-password-link:hover {

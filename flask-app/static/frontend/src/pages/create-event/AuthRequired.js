@@ -3,9 +3,16 @@ import { useEventContext } from '../../context/EventContext';
 import CustomButton from '../../components/common/CustomButton';
 import EventStack from '../../components/common/EventStack';
 import './style/AuthRequired.css';
+import '../../animations/animations.scss';
 
-const AuthRequired = ({ nextStep }) => {
+const AuthRequired = ({ nextStep, transitioning, transitionDirection }) => {
     const { eventData } = useEventContext();
+
+    const animationClass = transitioning
+    ? transitionDirection === 'forward'
+      ? 'slideLeft'
+      : 'slideRight'
+    : '';  
 
     // Handle Next Click
     const handleNext = () => {
@@ -21,9 +28,9 @@ const AuthRequired = ({ nextStep }) => {
     console.log("Event Name: ", eventData.name)
 
     return (
-        <div className="auth-required">
+        <div className={`auth-required ${animationClass}`}>
             <div className='create-an-account'>
-                <div className='page-headings'>
+                <div className='page-headings fade-in'>
                     <h1 className="auth-title">To post a party,<br/>you have to create<br/>an account.</h1>
                     <p className="auth-subtext">It also lets you accept<br/>other events.</p>
                 </div>
@@ -35,7 +42,9 @@ const AuthRequired = ({ nextStep }) => {
                     dateTime={eventData.dateTime}
                 />
             </div>
-            <CustomButton className="next-btn" text="OK" onClick={handleNext} />
+            <div className='auth-nav fade-in'>
+                <CustomButton className="next-btn" text="OK" onClick={handleNext} />
+            </div>
         </div>
     );
 };
