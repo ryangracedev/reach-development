@@ -10,9 +10,62 @@
     transform-origin: center right;
 }
 
+.fade-out {
+    animation: fadeOutOnly 0.5s ease forwards;
+    transform: translateZ(0);
+    animation-fill-mode: both;
+}
+
+.fade-out-img {
+    animation: fadeOutImg 0.5s ease forwards;
+    transform: translateZ(0);
+}
+
+.fade-out-no-delay {
+    animation: fadeOutOnly 0.5s ease forwards;
+    animation-delay: 0.0s;
+    animation-fill-mode: both;
+}
+
 .fade-in {
     animation: fadeInOnly 0.5s ease forwards;
     transform: translateZ(0);
+    animation-fill-mode: both;
+}
+
+.fade-in-slowed {
+    animation: fadeInSlowed 0.5s ease forwards;
+    transform: translateZ(0);
+    animation-fill-mode: both;
+}
+
+.fade-in-img {
+    animation: fadeInImg 0.5s ease forwards;
+    transform: translateZ(0);
+}
+
+.fade-in-no-delay {
+    animation: fadeInOnly 0.5s ease forwards;
+    animation-delay: 0.0s;
+    animation-fill-mode: both;
+}
+
+.fade-in-delayed-1 {
+    animation: fadeInSlowed 0.5s ease forwards;
+    animation-delay: 0.1s;
+    animation-fill-mode: both;
+}
+  
+.fade-in-delayed-2 {
+    animation: fadeInSlowed 0.5s ease forwards;
+    animation-delay: 0.3s;
+    animation-fill-mode: both;
+}
+  
+.fade-in-delayed-3 {
+    animation: fadeInSlowed 0.5s ease forwards;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
 }
 
 .fade-in-gpu {
@@ -20,7 +73,7 @@
   transform: translateZ(0);
   will-change: transform, opacity;
 }
-  
+
 @keyframes slideRight {
     0% {
       transform: scale(1);
@@ -59,6 +112,30 @@
     }
 }
 
+@keyframes fadeOutOnly {
+    0% {
+        transform: scale(100%);
+        opacity: 1;
+        filter: blur(0px);
+    }
+    100% {
+        transform: scale(85%);
+        opacity: 0;
+        filter: blur(10px);
+    }
+}
+
+@keyframes fadeOutImg {
+    0% {
+        opacity: 1;
+        filter: blur(0px);
+    }
+    100% {
+        opacity: 0;
+        filter: blur(30px);
+    }
+}
+
 @keyframes fadeInOnly {
     0% {
         transform: scale(85%);
@@ -68,6 +145,32 @@
     100% {
         transform: scale(100%);
         opacity: 1;
+        filter: blur(0px);
+    }
+}
+
+@keyframes fadeInSlowed {
+    0% {
+        transform: scale(140%);
+        opacity: 0;
+        filter: blur(10px);
+    }
+    100% {
+        transform: scale(100%);
+        opacity: 1;
+        filter: blur(0px);
+    }
+}
+
+@keyframes fadeInImg {
+    0% {
+        transform: scale(115%);
+        opacity: 0;
+        filter: blur(10px);
+    }
+    100% {
+        transform: scale(100%);
+        opacity: 0.45;
         filter: blur(0px);
     }
 }

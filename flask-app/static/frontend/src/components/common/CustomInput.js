@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './style/CustomInput.css'; // Import the styles
 
-const CustomInput = ({ label, placeholder, onClick, value, onChange, inputType = "text", wrap, count }) => {
+const CustomInput = ({ label, placeholder, onClick, value, onChange, inputType = "text", wrap, count, errorMessage, errorVisible, maxChar }) => {
 
   const [isFocused, setIsFocused] = useState(false);
     
-  let maxCount = null;
-  if (inputType === 'description') maxCount = 70;
-  if (inputType === 'name') maxCount = 40; // assuming average word length for 50 words
+  let maxCount = maxChar;
 
   const handleFocus = () => {
     console.log("Input focused");
@@ -17,6 +15,16 @@ const CustomInput = ({ label, placeholder, onClick, value, onChange, inputType =
   const handleBlur = () => {
     console.log("Input not focused");
     setIsFocused(false);
+
+    // Wait for keyboard to fully close
+    setTimeout(() => {
+      // Force a viewport reflow by scrolling then resetting
+      const scrollY = window.scrollY;
+      window.scrollTo({ top: scrollY === 0 ? 1 : scrollY - 1, behavior: 'smooth' });
+      setTimeout(() => {
+        window.scrollTo({ top: scrollY, behavior: 'smooth' });
+      }, 50);
+    }, 50);
   };
 
   const handleChange = (e) => {
@@ -63,7 +71,9 @@ const CustomInput = ({ label, placeholder, onClick, value, onChange, inputType =
           onChange={handleChange}
         />
       )}
-      {/* <div className="custom-input-underline" /> */}
+      <div className={`error-message-container ${errorVisible ? 'visible' : ''}`}>
+        {errorMessage && <p className='error-message'>{errorMessage}</p>}
+      </div>
     </div>
   );
 };

@@ -25,7 +25,7 @@ const EventStack = ({ image, name, description, dateTime }) => {
       <div className="event-preview-info fade-in-gpu">
         <p className="event-preview-date">{dateTime ? formatEventDate(dateTime) : 'Event Date'}</p>
         <h2 className="event-preview-title">{name || 'Event Title'}</h2>
-        <p className="event-preview-description">{description || 'Event description'}</p>
+        <p className="event-preview-description">"{description || 'Event description'}"</p>
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; // Import AuthContext
-import CustomButton from '../../components/common/CustomButton.js'
+import CustomInput from '../../components/common/CustomInput';
 import './style/EventPage.css'
-
+import '../../animations/animations.scss'
 
 const EventPage = () => {
-  const { eventName } = useParams(); // Get event name from URL
+  const { slug } = useParams();
   const { authState } = useAuth(); // Get current user state
   const [eventData, setEventData] = useState(null);
   const [attendees, setAttendees] = useState([]);
@@ -15,33 +15,82 @@ const EventPage = () => {
   const [countdown, setCountdown] = useState('');
   const [isAddressReleased, setIsAddressReleased] = useState(false); // ✅ Track if address is released
   const [showAttendees, setShowAttendees] = useState(false); // ✅ Track whether to show attendees list
-  const [pullAmount, setPullAmount] = useState(0);  // How far the user has pulled up
-  const [isOpen, setIsOpen] = useState(false);      // Whether the list is fully open
-  const startYRef = useRef(null); 
-
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeOverlay, setActiveOverlay] = useState(null); // null | 'list' | 'edit'
+  const isFirstLoad = useRef(true);
+  const firstAnimationClass = useRef({
+    meta: isFirstLoad.current ? 'fade-in-delayed-1' : 'fade-in-no-delay',
+    accept: isFirstLoad.current ? 'fade-in-delayed-2' : 'fade-in-no-delay',
+    link: isFirstLoad.current ? 'fade-in-delayed-3' : 'fade-in-no-delay',
+  });
+  isFirstLoad.current = false;
 
   const navigate = useNavigate();
+
+  const handleToggleOverlay = (type) => {
+    setActiveOverlay((prev) => (prev === type ? null : type));
+    
+  };
+
+  useEffect(() => {
+    isFirstLoad.current = false;
+    console.log("Set MOUNTing True: ", isFirstLoad.current)
+  }, []);
+
+  useEffect(() => {
+    if (activeOverlay) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [activeOverlay]);
 
   // The REST
 
   useEffect(() => {
+    // For Safari bfcache fix
+    window.history.scrollRestoration = 'manual';
+
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  
+    const unload = () => {
+      // Prevent page from being cached in bfcache
+      window.location.href = window.location.href;
+    };
+  
+    window.addEventListener('unload', unload);
+  
+    return () => {
+      window.removeEventListener('unload', unload);
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchEventData = async () => {
+      let isMounted = true;
+
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${encodeURIComponent(eventName)}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${slug}`);
         if (response.ok) {
           const data = await response.json();
 
           console.log("Fetched Event Data!")
           setEventData(data);
-
+          setAttendees(data.attendees || []);
 
           console.log(`Auth: ${authState.isAuthenticated}`)
           console.log(`Auth.Username: ${authState.username}`)
           console.log(`Host_ID: ${data.host_id}`); // ✅ Uses `data` directly
 
           // Check if the logged-in user is already attending
-          if (authState.isAuthenticated && data.attendees?.includes(authState.username)) {
+          if (
+            isMounted &&
+            authState &&
+            authState.isAuthenticated &&
+            data.attendees?.includes(authState.username)
+          ) {
             setIsGoing(true);
           }
 
@@ -55,10 +104,14 @@ const EventPage = () => {
         console.error('Error fetching event data:', err);
         setError('An error occurred. Please try again.');
       }
+
+      return () => {
+        isMounted = false;
+      };
     };
 
     fetchEventData();
-  }, [eventName, authState]);
+  }, [slug, authState]);
 
   useEffect(() => {
     if (!eventData?.date_time) return;
@@ -94,33 +147,12 @@ const EventPage = () => {
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, [eventData]);
 
-
-
-  // ✅ Fetch Attendees List
-  useEffect(() => {
-    if (!eventData) return;
-
-    const fetchAttendees = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${encodeURIComponent(eventName)}/attendees`);
-        if (response.ok) {
-          const data = await response.json();
-          setAttendees(data.attendees);
-        }
-      } catch (err) {
-        console.error('Error fetching attendees:', err);
-      }
-    };
-
-    fetchAttendees();
-  }, [eventData]);
-
   const handleYes = () => {
     if (!authState.isAuthenticated) {
       // Redirect to signup with the current event name
       navigate('/signup-auth-required', { 
         state: { 
-          returnTo: `/${eventName}`,
+          returnTo: `/${slug}`,
           action: 'yes',
           image: eventData.image,
           eventName: eventData.event_name,
@@ -137,7 +169,7 @@ const EventPage = () => {
   const handleNo = () => {
     if (!authState.isAuthenticated) {
       // Redirect to signup with the current event name
-      navigate('/signup-for-event', { state: { returnTo: `/${eventName}`, action: 'no' } });
+      navigate('/signup-for-event', { state: { returnTo: `/${slug}`, action: 'no' } });
     } else {
       // Call the /unattend endpoint if the user is signed in
       unattendEvent();
@@ -146,7 +178,7 @@ const EventPage = () => {
 
   const attendEvent = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${eventName}/attend`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${slug}/attend`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,7 +201,7 @@ const EventPage = () => {
 
   const unattendEvent = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${eventName}/unattend`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/events/${slug}/unattend`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -187,6 +219,41 @@ const EventPage = () => {
     } catch (err) {
       console.error('Error removing attendance:', err);
       setError('An error occurred. Please try again.');
+    }
+  };
+
+  const handleSaveEvent = async () => {
+    const formData = new FormData();
+    formData.append("event_name", eventData.event_name);
+    formData.append("description", eventData.description);
+    formData.append("address", eventData.address);
+    formData.append("date_time", eventData.date_time);
+  
+    // Only append if user uploaded a new image (check if it's a File object)
+    if (eventData.image instanceof File) {
+      formData.append("image", eventData.image);
+    }
+  
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/update-event/${slug}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${authState.token}`,
+        },
+        body: formData,
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Event updated:", data);
+        setActiveOverlay(null);
+        // window.location.reload();  // Force refresh to reflect changes
+      } else {
+        const error = await response.json();
+        console.error("Update error:", error.error);
+      }
+    } catch (err) {
+      console.error("Error submitting update:", err);
     }
   };
 
@@ -208,7 +275,7 @@ const EventPage = () => {
       })
     : '';
 
-  const eventLink = `reachtheparty.com/${encodeURIComponent(eventName)}`;
+  const eventLink = `reachtheparty.com/${slug}`;
 
   if (error) {
     return <p className="error">{error}</p>;
@@ -225,55 +292,102 @@ const EventPage = () => {
 
       {/* Background Image */}
       {eventData.image && (
-        <img className='event-image-background' src={eventData.image} alt="Event" />
+        <img
+          className='event-image-background fade-in-img'
+          style={{ animationDelay: '0.1s' }}
+          src={eventData.imagePreview || eventData.image}
+          alt="Event"
+        />
       )}
 
-
       {/* Logo */}
-      <div className='bottom-container'>
-        <img src="/Reach_Logo_Full.png" alt="Reach Logo" className="logo-event-page" onClick={() => navigate('/')}/>
-        <button className='list-button'>LIST</button>
+      <div className='bottom-container fade-in' style={{ animationDelay: '0.55s' }}>
+        <img
+          src="/Reach_Logo_Full.png"
+          alt="Reach Logo"
+          className={`logo-event-page ${activeOverlay === 'list' ? 'hide-logo' : ''}`}
+          onClick={() => navigate('/')}
+        />
+        {activeOverlay === 'edit' ? (
+          <button className='list-button' onClick={handleSaveEvent}>
+            SAVE
+          </button>
+        ) : (
+          <button className='list-button' onClick={() => handleToggleOverlay('list')}>
+            {activeOverlay === 'list' ? 'CLOSE' : 'LIST'}
+          </button>
+        )}
       </div>
 
       {/* Event Information */}
       <div className="event-info-container">
 
-        <div className='event-meta'>
+        <div 
+          className={`event-meta ${
+            (activeOverlay === 'list' || activeOverlay === 'edit') ? 'fade-out-no-delay' : firstAnimationClass.current.meta
+          }`}
+        >
           <div className='meta-backdrop'></div>
           <h1 className='event-page-date'>
-            {eventDate} <span style={{ marginLeft: '10px' }}>{eventTime}</span>
+            <span style={{ marginRight: '6px' }}>{eventDate}</span>•<span style={{ marginLeft: '6px' }}>{eventTime}</span>
           </h1>
           <h1 className='event-page-name'>{eventData.event_name}</h1>
           <h1 className='event-page-hostname'>@{eventData.host_username}</h1>
           <h1 className='event-page-desc'>"{eventData.description}"</h1>
         </div>
         
-        <div className='accept-event-container'>
+        <div 
+          className={`accept-event-container`}
+        >
           {isHost ? (
-            <button className='edit-button'>EDIT</button>
+            <button 
+              className={`edit-button ${
+                (activeOverlay === 'list' || activeOverlay === 'edit') 
+                  ? 'fade-out-no-delay' 
+                  : firstAnimationClass.current.accept
+              }`}
+              onClick={() => handleToggleOverlay('edit')}
+            >
+              {activeOverlay === 'edit' ? 'CLOSE' : 'EDIT'}
+            </button>
           ) : (
-            <button
-              className={`yes-button ${isGoing ? 'going' : ''}`}
+            <button 
+              className={`yes-button ${isGoing ? 'going' : ''} ${
+                (activeOverlay === 'list' || activeOverlay === 'edit') 
+                  ? 'fade-out-no-delay' 
+                  : firstAnimationClass.current.accept
+              }`}
               disabled={isGoing}
               onClick={handleYes}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="21.304" height="17.296" viewBox="0 0 21.304 17.296">
-                <g id="Group_11" data-name="Group 11" transform="translate(1.505 2)">
-                  <rect id="Rectangle_14" data-name="Rectangle 14" width="17.226" height="5" rx="2.5" transform="translate(4.082 10.181) rotate(-45)" fill="#fff"/>
-                  <rect id="Rectangle_15" data-name="Rectangle 15" width="10.91" height="5" rx="2.5" transform="translate(2.03 4.047) rotate(45)" fill="#fff"/>
+              <div className="inverter-shape"></div>
+              <svg className="checkmark-icon" viewBox="0 0 21.304 17.296">
+                <g transform="translate(1.505 2)">
+                  <rect width="17.226" height="5" rx="2.5" transform="translate(4.082 10.181) rotate(-45)" />
+                  <rect width="10.91" height="5" rx="2.5" transform="translate(2.03 4.047) rotate(45)" />
                 </g>
               </svg>
             </button>
           )}
 
-          <div className="countdown-container">
+          <div className={`countdown-container ${
+            (activeOverlay === 'list' || activeOverlay === 'edit') 
+              ? 'fade-out-no-delay' 
+              : firstAnimationClass.current.accept
+          }`}>
             <p>{isAddressReleased ? "Address:" : "ADDRESS IS RELEASED IN"}</p>
             <h1 className="countdown-timer">{countdown}</h1>
           </div>
         </div>
 
-        <div className='event-link-button'>
-          <h1 className='link'>{eventLink}</h1>
+        <div 
+          className={`event-link-button ${
+            (activeOverlay === 'list' || activeOverlay === 'edit') ? 'fade-out-no-delay' : firstAnimationClass.current.link
+          }`}
+        >
+          <div className='link-text-wrapper'>
+            <h1 className='link'>{eventLink}</h1>
+          </div>
           <svg xmlns="http://www.w3.org/2000/svg" width="19.023" height="19.165" viewBox="0 0 19.023 19.165">
             <g id="Group_31" data-name="Group 31" transform="translate(232.005 683.461) rotate(180)">
               <rect id="Rectangle_37" data-name="Rectangle 37" width="3.579" height="19.023" rx="1.79" transform="translate(232.005 672.089) rotate(90)" fill="#fff"/>
@@ -285,24 +399,143 @@ const EventPage = () => {
 
       </div>
 
-      {/* <div className='list-container'>
-        <div className="attendees-list-container">
-          <h2 className='list-name'>List</h2>
-          <ul className="list">
-            {attendees.length > 0 ? (
-              attendees.map((attendee, index) => (
-                <li key={index} className="attendee">
-                  @{attendee}
-                </li>
-              ))
-            ) : (
-              <p>No attendees yet.</p>
-            )}
-          </ul>
-        </div>
-      </div> */}
+      <div className={`event-overlay ${activeOverlay === 'list' ? 'active' : ''}`}>
+        {activeOverlay === 'list' && (
+          <div className="attendees-list-container">
+
+            <div className='list-header'>
+              <h2 className="list-name">List</h2>
+              <p className='list-amount'>{attendees.length} GOING</p>
+            </div>
+      
+            <div className='list-scroll-wrapper'>
+              <div className='list-scrollable'>
+                <ul className="list">
+                  {attendees.length > 0 ? (
+                    attendees.map((attendee, index) => (
+                      <li
+                        key={index}
+                        className="attendee fade-in"
+                        style={{ animationDelay: `${0.025 * index}s` }}
+                      >
+                        <span className="attendee-link" onClick={() => navigate(`/profile/${attendee}`)}>
+                          @{attendee}
+                        </span>
+                      </li>
+                    ))
+                  ) : (
+                    <p>No attendees yet.</p>
+                  )}
+                </ul>
+              </div>
+              <div className="fade-top"></div>
+              <div className="fade-bottom"></div>
+            </div>
+
+          </div>
+        )}
+      </div>
+
+      <div className={`event-overlay ${activeOverlay === 'edit' ? 'active' : ''}`}>
+        {activeOverlay === 'edit' && isHost && (
+          <div className="edit-panel fade-in">
+            <div className="edit-inputs-wrapper">
+
+              <CustomInput
+                label="Title"
+                placeholder="Title"
+                value={eventData.event_name}
+                onChange={(e) => setEventData({ ...eventData, event_name: e.target.value })}
+                inputType="name"
+                wrap={false}
+                count={true}
+              />
+
+              <CustomInput
+                label="Description"
+                placeholder="Description"
+                value={eventData.description}
+                onChange={(e) => setEventData({ ...eventData, description: e.target.value })}
+                inputType="description"
+                wrap={false}
+                count={true}
+              />
+
+              <CustomInput
+                label="Address"
+                placeholder="Address"
+                value={eventData.address}
+                onChange={(e) => setEventData({ ...eventData, address: e.target.value })}
+                inputType="text"
+                wrap={false}
+                count={false}
+              />
+                
+              <div className='date-time-row'>
+                <div className="input-container fade-in" style={{ animationDelay: '0.3s' }}>
+                  <label htmlFor="event-date-edit" className="input-label">Date</label>
+                  <input
+                    type="date"
+                    id="event-date-edit"
+                    className="event-input"
+                    value={eventData.date_time ? new Date(eventData.date_time).toISOString().split('T')[0] : ''}
+                    onChange={(e) => {
+                      const time = new Date(eventData.date_time).toISOString().split('T')[1];
+                      const combined = new Date(`${e.target.value}T${time}`).toISOString();
+                      setEventData({ ...eventData, date_time: combined });
+                    }}
+                  />
+                </div>
+      
+                <div className="input-container fade-in" style={{ animationDelay: '0.4s' }}>
+                  <label htmlFor="event-time-edit" className="input-label">Time</label>
+                  <input
+                    type="time"
+                    id="event-time-edit"
+                    className="event-input"
+                    value={eventData.date_time ? new Date(eventData.date_time).toTimeString().substring(0, 5) : ''}
+                    onChange={(e) => {
+                      const date = new Date(eventData.date_time).toISOString().split('T')[0];
+                      const combined = new Date(`${date}T${e.target.value}`).toISOString();
+                      setEventData({ ...eventData, date_time: combined });
+                    }}
+                  />
+                </div>
+              </div>
 
 
+              <div className='event-upload-row fade-in' style={{ animationDelay: '0.6s' }}>
+                <input
+                  type="file"
+                  id="edit-photo-upload"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setEventData({ 
+                          ...eventData, 
+                          image: file,
+                          imagePreview: URL.createObjectURL(file)
+                        });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="event-input-photo"
+                  accept="image/*"
+                />
+                {eventData.image && (
+                  <label htmlFor="edit-photo-upload">
+                    <img src={eventData.imagePreview || eventData.image} alt="Preview" className="image-preview clickable" />
+                  </label>
+                )}
+              </div>
+    
+            </div>
+          </div>
+        )}
+      </div>
 
     </div>
   );

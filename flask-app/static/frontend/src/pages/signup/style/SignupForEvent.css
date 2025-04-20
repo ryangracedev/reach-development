@@ -1,6 +1,7 @@
 .signup-for-event {
-    height: 100%;
+    height: 85%;
     width: 85%;
+    position: relative;
 }
 
 .signup-slides {
@@ -33,4 +34,16 @@
     transition: all 0.3s ease-in-out;
     background: linear-gradient(145deg, #00ff00, #008800); /* Green gradient */
     box-shadow: 0px 0px 8px rgba(0, 255, 0, 0.6); /* Green glow */
+}
+
+.event-image {
+    position: absolute;
+    filter: blur(15px); /* Keeps the blur effect */
+    opacity: 0.8; /* Keeps the opacity for readability */
+    z-index: 0; /* Ensures the image stays in the background */
+    overflow: visible; /* Makes sure the blur spreads beyond the image boundaries */
+    top: 50%;
+    left: 90%;
+    transform: translate(-50%, -50%) scale(1); /* Scale + center */
+    align-self: anchor-center;
 }

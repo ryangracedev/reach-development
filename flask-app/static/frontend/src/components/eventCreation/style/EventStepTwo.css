@@ -10,9 +10,10 @@
     flex-direction: column;
     justify-content: space-between;
     height: 50%;
-    margin-top: 8rem;
+    margin-top: 4rem;
     padding-left: 2rem;
     padding-right: 2rem;
+    gap: 3rem;
 }
 
 .address-box {
@@ -40,7 +41,7 @@
 }
 
 .event-input-address {
-    font-size: 2.75rem;
+    font-size: 44px;
     font-weight: bold;
     color: #ffffff;
     background-color: transparent;
@@ -82,7 +83,7 @@
 
 .input-label {
     display: block; /* Make it appear above the input */
-    font-size: 1.5rem;
+    font-size: 28px;
     font-weight: bold;
     color: rgba(255, 255, 255, 0.5);
     margin-bottom: 0.5rem; /* Space between label and input */
@@ -135,22 +136,10 @@ input::-webkit-date-and-time-value {
     justify-content: space-between;
 }
 
-.error {
-    position: fixed;
-    top: 6%;
-    align-self: center;
-    font-size: small;
-    color: red;
-    opacity: 0;
-    transition: opacity 0.4s ease-in-out;
+#when-error {
+    margin-top: 2rem;
 }
 
-.error.visible {
-    position: fixed;
-    top: 6%;
-    align-self: center;
-    font-size: small;
-    color: red;
-    opacity: 1;
-    transition: opacity 0.4s ease-in-out;
-  }
+#time-error {
+    margin-top: 2rem;
+}

@@ -5,6 +5,7 @@
   width: 100%;
   max-width: 100%;
   position: relative;
+  transition: all 0.3s ease;
 }
 
 .top-bar {
@@ -69,6 +70,8 @@
   white-space: pre-wrap;
   overflow-wrap: break-word;
   word-break: break-word;
+  resize: none;
+
 }
 
 .custom-input-field::placeholder {
@@ -81,8 +84,30 @@
   color: rgba(255, 255, 255, 0.077);
 }
 
+.error-message-container {
+  position: absolute;
+  display: flex;
+  justify-content: flex-start;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  margin-top: 3.9rem;
+  padding-left: 0.1rem;
+}
 
+.error-message-container.visible {
+  max-height: 80px; /* adjust based on your message height */
+  opacity: 1;
+}
 
+.error-message {
+  transition: all 0.3s ease;
+  color: red;
+  font-size: 10px;
+  margin: 0;
+  text-align: left;
+}
 
 
 

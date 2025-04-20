@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import "./style/Profile.scss";
 
 const Profile = () => {
   const { username } = useParams(); // Extract the username from the URL
   const [profileData, setProfileData] = useState(null);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -57,9 +58,9 @@ const Profile = () => {
             <ul className="event-list">
               {profileData.hosted_events.map((event) => (
                 <li key={event.event_id}>
-                  <a href={`/${event.event_name}`} className="list-events checker-text-red">
+                  <button className="list-events checker-text-red" onClick={() => navigate(`/${event.slug}`)}>
                     {event.event_name}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -72,9 +73,9 @@ const Profile = () => {
             <ul className="event-list">
               {profileData.events_going_to.map((event) => (
                 <li key={event.event_id}>
-                  <a href={`/${event.event_name}`} className="list-events checker-text-yellow">
+                  <button className="list-events checker-text-yellow" onClick={() => navigate(`/${event.slug}`)}>
                     {event.event_name}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>
@@ -87,12 +88,12 @@ const Profile = () => {
             <ul className="event-list">
               {profileData.past_events.map(({ event, was_host }) => (
                 <li key={event.event_id}>
-                  <a
-                    href={`/${event.event_name}`}
+                  <button
                     className={`list-events ${was_host ? "checker-text-red-host" : "checker-text-white-past"}`}
+                    onClick={() => navigate(`/${event.slug}`)}
                   >
                     {event.event_name}
-                  </a>
+                  </button>
                 </li>
               ))}
             </ul>

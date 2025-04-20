@@ -11,27 +11,59 @@ const EventStepTwo = ({ nextStep, prevStep, transitioning, transitionDirection }
   const [error, setError] = useState('');
   const [isFocused, setIsFocused] = useState(false);
 
+  const [showError, setShowError] = useState({
+    address: false,
+    date: false,
+    time: false,
+  });
+  const [errors, setErrors] = useState({
+    address: '',
+    date: '',
+    time: '',
+  });
+
   const animationClass = transitioning
   ? transitionDirection === 'forward'
     ? 'slideLeft'
     : 'slideRight'
   : 'fade-in';
 
-  const handleFocus = () => {
-    console.log("Input focused");
-    setIsFocused(true);
-  };
-
-  const handleBlur = () => {
-    console.log("Input not focused");
-    setIsFocused(false);
-  };
-
   const handleNext = () => {
     console.log("Selected Date:", eventData.date);
     console.log("Selected Time:", eventData.time);
-    if (!eventData.address || !eventData.date || !eventData.time) {
-      setError('Event address, date, and time are required');
+
+    let hasError = false;
+    const newErrors = { address: '', date: '', time: '' };
+    const newShowError = { address: false, date: false, time: false };
+
+    if (!eventData.address.trim()) {
+      newErrors.address = 'Address is required';
+      newShowError.address = true;
+      hasError = true;
+    }
+
+    if (!eventData.date) {
+      newErrors.date = 'Date is required';
+      newShowError.date = true;
+      hasError = true;
+    }
+
+    if (!eventData.time) {
+      newErrors.time = 'Time is required';
+      newShowError.time = true;
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      setShowError(newShowError);
+
+      // Auto-clear logic
+      setTimeout(() => {
+        setShowError({ address: false, date: false, time: false });
+        setTimeout(() => setErrors({ address: '', date: '', time: '' }), 300);
+      }, 2000);
+
       return;
     }
   
@@ -43,7 +75,6 @@ const EventStepTwo = ({ nextStep, prevStep, transitioning, transitionDirection }
     // Update eventData with the combined dateTime
     updateEventData('dateTime', combinedDateTime);
   
-    setError('');
     nextStep();
   };
 
@@ -57,21 +88,23 @@ const EventStepTwo = ({ nextStep, prevStep, transitioning, transitionDirection }
         <div className='address-box'>
           <CustomInput
             label="Address"
-            placeholder="Where"
+            placeholder="Address"
             value={eventData.address || ""}
             onChange={(e) => updateEventData('address', e.target.value)}
             inputType="name"
             wrap={false}
             count={false}
+            errorMessage={errors.address}
+            errorVisible={showError.address}
           />
 
           <p className="address-info">
-            The address is always released 2 hours before it starts. So if your party starts at 9,<br/>the address is released at 7.
+            Address is released 2 hours before the party starts. So, if it starts at 9pm, the address is released at 7pm.
           </p>
         </div>
 
         <div className="input-container">
-          <label htmlFor="event-date" className="input-label">When</label>
+          <label htmlFor="event-date" className="input-label">Date</label>
           <input
             type="date"
             id="event-date"
@@ -79,6 +112,9 @@ const EventStepTwo = ({ nextStep, prevStep, transitioning, transitionDirection }
             value={eventData.date || ""}  // Default to an empty string if undefined
             onChange={(e) => updateEventData('date', e.target.value)}
           />
+          <div id='when-error' className={`error-message-container ${showError.date ? 'visible' : ''}`}>
+            {errors.date && <p className='error-message'>{errors.date}</p>}
+          </div>
         </div>
 
         <div className="input-container">
@@ -90,12 +126,12 @@ const EventStepTwo = ({ nextStep, prevStep, transitioning, transitionDirection }
             value={eventData.time || ""}  // Default to an empty string if undefined
             onChange={(e) => updateEventData('time', e.target.value)}
           />
+          <div id='time-error' className={`error-message-container ${showError.time ? 'visible' : ''}`}>
+            {errors.time && <p className='error-message'>{errors.time}</p>}
+          </div>
         </div>
       </div>
 
-      <p className={`error ${error ? 'visible' : ''}`}>
-        {error}
-      </p>
       <div className='nav'>
         <CustomBack className="back-btn" onClick={handlePrev} />
         <CustomButton className="next-btn" text="Next" onClick={handleNext} color="black" />

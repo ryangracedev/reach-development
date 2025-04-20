@@ -17,6 +17,7 @@ const CreateEvent = () => {
   const [transitionDirection, setTransitionDirection] = useState(null);
   const [fadeIn, setFadeIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [fadeOutBackground, setFadeOutBackground] = useState(false);
 
   useEffect(() => {
     setLoaded(true);
@@ -27,7 +28,15 @@ const CreateEvent = () => {
     setTransitioning(true);
     setFadeIn(false); // reset fade in
     setTimeout(() => {
-      setStep((prev) => prev + 1);
+      setStep((prev) => {
+        const next = prev + 1;
+    
+        if (authState.isAuthenticated && (next === 4 || next === 9)) {
+          setFadeOutBackground(true); // Fade out video when event is created
+        }
+    
+        return next;
+      });
       setTransitioning(false);
       setFadeIn(true); // trigger fade-in for new content
     }, 300);
@@ -74,7 +83,7 @@ const CreateEvent = () => {
 
   return (
     <EventProvider>
-      <div className="background-video-container">
+      {/* <div className={`background-video-container ${fadeOutBackground ? 'fade-out-img' : ''}`}>
         <video
           autoPlay
           muted
@@ -86,7 +95,7 @@ const CreateEvent = () => {
           <source src="/background-gradient.mp4" type="video/mp4" /> 
           Your browser does not support the video tag.
         </video>
-      </div>
+      </div> */}
       <div className="create-event-container">
           {/* Step 1: Name, Photo, Description */}
           {step === 1 && ( 

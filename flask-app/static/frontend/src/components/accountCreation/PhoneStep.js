@@ -9,7 +9,8 @@ import '../../animations/animations.scss';
 
 const PhoneStep = ({ formData, prevStep, updateFormData, nextStep, transitioning, transitionDirection, fadeIn }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({ phone: '' });
+  const [showError, setShowError] = useState({ phone: false });
   const [isChecking, setIsChecking] = useState(false); // To show a loading indicator while checking
 
   let animationClass = '';
@@ -27,13 +28,16 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep, transitioning
     console.log("Form Data In PhoneStep.js:\n", formData)
     // Frontend validation: Ensure the phone number is not empty
     if (!phoneNumber.trim()) {
-      setError('Phone number is required');
+      setErrors({ phone: 'Phone number is required' });
+      setShowError({ phone: true });
+      setTimeout(() => {
+        setShowError({ phone: false });
+        setTimeout(() => setErrors({ phone: '' }), 300);
+      }, 5000);
       return;
     }
 
 
-    // Clear previous errors
-    setError('');
      // Show loading indicator
     setIsChecking(true);
 
@@ -55,9 +59,14 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep, transitioning
         // Get response data
         const data = await response.json();
         // Check if data exists in DB
-        if (data.exists) {
-          setError('Phone number already exists');
-        } else {
+          if (data.exists) {
+            setErrors({ phone: 'Phone number already exists' });
+            setShowError({ phone: true });
+            setTimeout(() => {
+              setShowError({ phone: false });
+              setTimeout(() => setErrors({ phone: '' }), 300);
+            }, 5000);
+          } else {
 
           // Phone number is valid, proceed to the next step
           updateFormData('phoneNumber', phoneNumber);
@@ -81,17 +90,32 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep, transitioning
             nextStep();
           } else {
             const verificationError = await verificationResponse.json();
-            setError(verificationError.error || 'Failed to send verification code');
+            setErrors({ phone: verificationError.error || 'Failed to send verification code' });
+            setShowError({ phone: true });
+            setTimeout(() => {
+              setShowError({ phone: false });
+              setTimeout(() => setErrors({ phone: '' }), 300);
+            }, 5000);
           }
 
         }
-      } else {
-        const errorResponse = await response.json();
-        setError(errorResponse.error || 'An error occurred. Please try again.');
-      }
+        } else {
+          const errorResponse = await response.json();
+          setErrors({ phone: errorResponse.error || 'An error occurred. Please try again.' });
+          setShowError({ phone: true });
+          setTimeout(() => {
+            setShowError({ phone: false });
+            setTimeout(() => setErrors({ phone: '' }), 300);
+          }, 5000);
+        }
     } catch (err) {
       console.error('Error checking phone number:', err);
-      setError('Failed to validate phone number. Please try again.');
+      setErrors({ phone: 'Failed to validate phone number. Please try again.' });
+      setShowError({ phone: true });
+      setTimeout(() => {
+        setShowError({ phone: false });
+        setTimeout(() => setErrors({ phone: '' }), 300);
+      }, 5000);
     } finally {
       setIsChecking(false); // Hide loading indicator
     }
@@ -112,13 +136,15 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep, transitioning
             inputType="name"
             wrap={false}
             count={false}
+            errorMessage={errors.phone}
+            errorVisible={showError.phone}
           />
           <p className="phone-info">
             To verify you.
           </p>
         </div>
       </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      
       <div className='nav'>
         <CustomBack className="back-btn" onClick={prevStep} color='white' />
         <CustomButton className="next-btn" text="Next" onClick={handleNext} color="black" />

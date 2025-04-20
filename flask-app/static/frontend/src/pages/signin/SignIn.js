@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext'; // Use the AuthContext for managing authentication
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import "./style/SignIn.scss";
 import CustomButton from '../../components/common/CustomButton';
 import CustomInput from '../../components/common/CustomInput';
@@ -9,17 +9,49 @@ const SignIn = () => {
   const { signIn } = useAuth(); // Access the signIn function from AuthContext
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({ username: '', password: '' });
+  const [showError, setShowError] = useState({ username: false, password: false });
   const [loaded, setLoaded] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-    useEffect(() => {
-      setLoaded(true);
-    }, []);
+  useEffect(() => {
+    setLoaded(true);
+  
+    return () => {
+      setLoaded(false); // Reset loaded to false when navigating away
+    };
+  }, []);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setErrors({ username: '', password: '' });
+    setShowError({ username: false, password: false });
+
+    let hasError = false;
+    const newErrors = { username: '', password: '' };
+    const newShowError = { username: false, password: false };
+
+    if (!username.trim()) {
+      newErrors.username = 'Username is required';
+      newShowError.username = true;
+      hasError = true;
+    }
+    if (!password.trim()) {
+      newErrors.password = 'Password is required';
+      newShowError.password = true;
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      setShowError(newShowError);
+      setTimeout(() => {
+        setShowError({ username: false, password: false });
+        setTimeout(() => setErrors({ username: '', password: '' }), 300);
+      }, 5000);
+      return;
+    }
 
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/signin`, {
@@ -36,19 +68,29 @@ const SignIn = () => {
 
         console.log("jwtToken: ", localStorage.getItem('jwtToken'));
         navigate('/'); // Redirect to the homepage
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Sign-in failed');
+        } else {
+          const errorData = await response.json();
+          setErrors({ username: errorData.error || 'Sign-in failed', password: '' });
+          setShowError({ username: true, password: false });
+          setTimeout(() => {
+            setShowError({ username: false });
+            setTimeout(() => setErrors({ username: '', password: '' }), 300);
+          }, 5000);
+        }
+      } catch (err) {
+        console.error('Error during sign-in:', err);
+        setErrors({ username: 'An error occurred. Please try again.', password: '' });
+        setShowError({ username: true, password: false });
+        setTimeout(() => {
+          setShowError({ username: false });
+          setTimeout(() => setErrors({ username: '', password: '' }), 300);
+        }, 5000);
       }
-    } catch (err) {
-      console.error('Error during sign-in:', err);
-      setError('An error occurred. Please try again.');
-    }
   };
 
   return (
     <div className="sign-in-page">
-      {error && <p className="error-message">{error}</p>}
+      {/* Removed error message display */}
 
       <div className={`sign-in-label ${loaded ? 'stack-down-logo' : ''}`}>
           <img src="/Reach_Logo_Full.png" alt="Reach Logo" className="logo-signin" />
@@ -63,6 +105,8 @@ const SignIn = () => {
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            errorMessage={errors.username}
+            errorVisible={showError.username}
           />
         </div>
 
@@ -72,6 +116,8 @@ const SignIn = () => {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            errorMessage={errors.password}
+            errorVisible={showError.password}
           />
         </div>
 

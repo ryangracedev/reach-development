@@ -57,7 +57,7 @@ function App() {
           <EventProvider>
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/:eventName" element={<EventPage />} /> {/* Dynamic event page */}
+              <Route path="/:slug" element={<EventPage />} /> {/* Dynamic event page */}
               <Route path="/create-event" element={<CreateEvent />} />
               <Route path="/signin" element={<SignIn />} /> {/* Sign In route */}
               <Route path="/signup-for-event" element={<SignupForEvent />} />

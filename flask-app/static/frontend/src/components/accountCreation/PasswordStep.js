@@ -25,7 +25,8 @@ const validatePassword = (password) => {
 
 const PasswordStep = ({ nextStep, prevStep, updateFormData, formData, transitioning, transitionDirection, fadeIn }) => {
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({ password: '' });
+  const [showError, setShowError] = useState({ password: false });
 
   let animationClass = '';
 
@@ -44,12 +45,19 @@ const PasswordStep = ({ nextStep, prevStep, updateFormData, formData, transition
     const { isValid, error: validationError } = validatePassword(password);
 
     if (!isValid) {
-      setError(validationError);
+      setErrors({ password: validationError });
+      setShowError({ password: true });
+
+      setTimeout(() => {
+        setShowError({ password: false });
+        setTimeout(() => setErrors({ password: '' }), 300);
+      }, 5000);
       return; // Stop further execution if validation fails
     }
 
     // Clear any previous error
-    setError('');
+    setErrors({ password: '' });
+    setShowError({ password: false });
 
     // Update the form data and move to the next step
     updateFormData('password', password);
@@ -73,13 +81,15 @@ const PasswordStep = ({ nextStep, prevStep, updateFormData, formData, transition
             inputType="name"
             wrap={false}
             count={false}
+            errorMessage={errors.password}
+            errorVisible={showError.password}
+            maxChar={64}
           />
           <p className="password-info">
             Must be 8 characters minimum, with a number.
           </p>
         </div>
       </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
       <div className='nav'>
         <CustomBack className="back-btn" onClick={prevStep} color='white' />
         <CustomButton className="next-btn" text="Next" onClick={handleNext} color="black" />

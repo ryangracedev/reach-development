@@ -10,7 +10,15 @@ import '../../animations/animations.scss'
 const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
   const navigate = useNavigate();                               // Hook for navigation
   const { eventData, updateEventData } = useEventContext();
-  const [error, setError] = useState('');
+
+  const [showError, setShowError] = useState({
+    name: false,
+    description: false,
+  });
+  const [errors, setErrors] = useState({
+    name: '',
+    description: '',
+  });
 
   const animationClass = transitioning
     ? transitionDirection === 'forward'
@@ -19,11 +27,35 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
     : 'fade-in';
 
   const handleNext = () => {
-    if (!eventData.name.trim() || !eventData.description.trim()) {
-      setError('Name and description required');
+
+    let hasError = false;
+    const newErrors = { name: '', description: '' };
+    const newShowError = { name: false, description: false };
+
+    if (!eventData.name.trim()) {
+      newErrors.name = '* Name Required';
+      newShowError.name = true;
+      hasError = true;
+    }
+
+    if (!eventData.description.trim()) {
+      newErrors.description = '* About Required';
+      newShowError.description = true;
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
+      setShowError(newShowError);
+
+      // Auto-clear logic
+      setTimeout(() => {
+        setShowError({ name: false, description: false });
+        setTimeout(() => setErrors({ name: '', description: '' }), 300);
+      }, 2000);
+
       return;
     }
-    setError('');
     nextStep();
   };
 
@@ -48,24 +80,30 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
       <div className='event-inputs-one'>
         <div className='event-input-name'>
           <CustomInput
-            label="Name"
-            placeholder="Name"
+            label="Title"
+            placeholder="Title"
             value={eventData.name}
             onChange={(e) => updateEventData('name', e.target.value)}
             inputType="name"
             wrap={true}
             count={true}
+            errorMessage={errors.name}
+            errorVisible={showError.name}
+            maxChar={40}
           />
         </div>
         <div className='custom-textarea'>
           <CustomInput
-            label="About"
-            placeholder="About"
+            label="Description"
+            placeholder="Description"
             value={eventData.description}
             onChange={(e) => updateEventData('description', e.target.value)}
             inputType="description"
             wrap={true}
             count={true}
+            errorMessage={errors.description}
+            errorVisible={showError.description}
+            maxChar={70}
           />
         </div>
         <div className='event-upload-row'>
@@ -84,7 +122,6 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
           )}
         </div>
       </div>
-      <p className={`error ${error ? 'visible' : ''}`}>{error}</p>
       <div className='nav'>
         <CustomBack className="back-btn" onClick={handlePrev} />
         <CustomButton className="next-btn" text="Next" onClick={handleNext} color="black" />

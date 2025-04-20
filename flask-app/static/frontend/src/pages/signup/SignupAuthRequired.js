@@ -18,7 +18,16 @@ const EventSignupIntro = () => {
     setFadeState('fade-out');
     setTimeout(() => {
       navigate('/signup-for-event', {
-        state: { returnTo, action, image, eventName, description, dateTime }
+        state: {
+          returnTo,
+          action,
+          eventData: {
+            name: eventName,
+            description,
+            dateTime,
+            image
+          }
+        }
       });
     }, 300);
   };
@@ -34,7 +43,7 @@ const EventSignupIntro = () => {
     : image || '/default-image.jpg'; // Use stored URL or fallback
 
   return (
-    <div className={`auth-required  ${animationClass}`}>
+    <div className={`auth-required-event  ${animationClass}`}>
         <div className={`create-an-account`}>
             <div className='page-headings fade-in' id='page-headings'>
                 <h1 className="auth-title">To accept a party,<br/>you have to create<br/>an account.</h1>

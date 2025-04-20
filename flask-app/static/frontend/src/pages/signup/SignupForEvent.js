@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SignupSteps from './SignupSteps'; // Import the reusable SignupSteps component
 import './style/SignupForEvent.css';
+import EventStack from '../../components/common/EventStack';
 
 const SignupForEvent = () => {
   const [step, setStep] = useState(1); // Track signup steps
@@ -45,7 +46,7 @@ const SignupForEvent = () => {
   };
 
   // Retrieve the return path and action (Yes/No) from state
-  const { returnTo, action, image } = location.state || {};
+  const { returnTo, action, eventData } = location.state || {};
 
   const updateFormData = (key, value) => {
     setFormData((prev) => ({
@@ -61,13 +62,22 @@ const SignupForEvent = () => {
     }
   };
 
+  const imageUrl = eventData.image instanceof File
+    ? URL.createObjectURL(eventData.image) // Convert File object to a URL
+    : eventData.image || '/default-image.jpg'; // Use stored URL or fallback
+
   return (
     <div className='signup-for-event'>
-      <div 
-        className='signup-background-image'
-        style={{ backgroundImage: image ? `url(${image})` : 'none' }}
-      >
+    {/* {eventData && eventData.image && (
+      <div className='event-image'>
+        <EventStack
+          image={imageUrl}
+          name={eventData.name}
+          description={eventData.description}
+          dateTime={eventData.dateTime}
+        />
       </div>
+    )} */}
       <div className="signup-slides">
         <SignupSteps
           currentStep={step}

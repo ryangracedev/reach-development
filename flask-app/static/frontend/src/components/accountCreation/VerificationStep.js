@@ -10,7 +10,8 @@ import '../../animations/animations.scss';
 const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handleSignupComplete, transitioning, transitionDirection, fadeIn }) => {
   const { signIn } = useAuth(); // Access the signIn function from AuthContext
   const [code, setCode] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({ code: '' });
+  const [showError, setShowError] = useState({ code: false });
 
   let animationClass = '';
 
@@ -33,6 +34,16 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handle
 
     // For Testing
     console.log('Phone Number:', formData.phoneNumber);
+
+    if (!code.trim()) {
+      setErrors({ code: 'Code is required' });
+      setShowError({ code: true });
+      setTimeout(() => {
+        setShowError({ code: false });
+        setTimeout(() => setErrors({ code: '' }), 300);
+      }, 5000);
+      return;
+    }
 
     // Check if verification code is vaild
     try {
@@ -91,16 +102,31 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handle
 
         } else {
           const errorResponse = await signupResponse.json();
-          setError(errorResponse.error || 'Signup failed');
+          setErrors({ code: errorResponse.error || 'Signup failed' });
+          setShowError({ code: true });
+          setTimeout(() => {
+            setShowError({ code: false });
+            setTimeout(() => setErrors({ code: '' }), 300);
+          }, 5000);
         }
 
       } else {
         const errorResponse = await response.json();
-        setError(errorResponse.error || 'Verification failed');
+        setErrors({ code: errorResponse.error || 'Verification failed' });
+        setShowError({ code: true });
+        setTimeout(() => {
+          setShowError({ code: false });
+          setTimeout(() => setErrors({ code: '' }), 300);
+        }, 5000);
       }
     } catch (err) {
       console.error('Error verifying code:', err);
-      setError('An error occurred while verifying the code. Please try again.');
+      setErrors({ code: 'An error occurred while verifying the code. Please try again.' });
+      setShowError({ code: true });
+      setTimeout(() => {
+        setShowError({ code: false });
+        setTimeout(() => setErrors({ code: '' }), 300);
+      }, 5000);
     }
   };
 
@@ -128,11 +154,21 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handle
         alert('Verification code resent to your phone.');
       } else {
         const errorResponse = await response.json();
-        setError(errorResponse.error || 'Failed to resend code');
+        setErrors({ code: errorResponse.error || 'Failed to resend code' });
+        setShowError({ code: true });
+        setTimeout(() => {
+          setShowError({ code: false });
+          setTimeout(() => setErrors({ code: '' }), 300);
+        }, 5000);
       }
     } catch (err) {
       console.error('Error resending code:', err);
-      setError('An error occurred while resending the code. Please try again.');
+      setErrors({ code: 'An error occurred while resending the code. Please try again.' });
+      setShowError({ code: true });
+      setTimeout(() => {
+        setShowError({ code: false });
+        setTimeout(() => setErrors({ code: '' }), 300);
+      }, 5000);
     }
   };
 
@@ -150,6 +186,9 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handle
             className='user-input-verification'
             onChange={(e) => setCode(e.target.value)}
           />
+          <div className={`error-message-container ${showError.code ? 'visible' : ''}`}>
+            {errors.code && <p className='error-message'>{errors.code}</p>}
+          </div>
           <p className="verification-info">  {/* Feature: hide the first 2 parts of the phone number */}
             We sent a code to {formData.phoneNumber},   
             enter it below.
@@ -159,7 +198,6 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handle
           </button>
         </div>
       </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
       <div className='nav'>
         <CustomBack className="back-btn" onClick={prevStep} color='white' />
         <CustomButton className="next-btn" text="Next" onClick={handleVerify} color="black" />

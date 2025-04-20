@@ -64,3 +64,24 @@ def save_file(file):
         return save_file_s3(file)  # Save to S3 in production
     return save_file_local(file)  # Save locally in development
 
+
+
+def delete_file(file_url):
+    environment = current_app.config.get('ENV', 'development')
+
+    if environment == 'production':
+        # Delete from S3
+        filename = file_url.split("/")[-1]
+        bucket_name = os.getenv("S3_BUCKET_NAME", "reach-event-images")
+        try:
+            s3_client = boto3.client('s3', region_name=os.getenv("AWS_REGION", "us-east-2"))
+            s3_client.delete_object(Bucket=bucket_name, Key=filename)
+            print(f"Deleted {filename} from S3.")
+        except Exception as e:
+            print(f"Failed to delete from S3: {e}")
+    else:
+        # Delete from local storage
+        path = os.path.join(current_app.config.get('UPLOAD_FOLDER', 'uploads'), file_url.split('/')[-1])
+        if os.path.exists(path):
+            os.remove(path)
+            print(f"Deleted local file: {path}")

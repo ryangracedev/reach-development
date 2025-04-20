@@ -10,8 +10,8 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 50%;
-    margin-top: 6rem;
+    align-items: center;
+    height: 60%;
 }
 
 .auth-title {
@@ -21,12 +21,24 @@
     z-index: 1;
 }
 
+.event-link-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    word-break: break-word;
+    width: 50%;
+}
+
 .event-link {
     color: antiquewhite;
     font-weight: 400;
     font-size: 16px;
     margin-bottom: 3rem;
     z-index: 1;
+    word-wrap: break-word;
+    white-space: normal;
+    text-align: center;
 }
 
 .auth-subtext {
@@ -35,19 +47,15 @@
 }
 
 .event-image {
-    position: fixed;
-    top: 0; /* Pin it to the top of the screen */
-    bottom: 0;
-    left: 0; /* Pin it to the left of the screen */
-    right: 0;
-    width: 110%; /* Full width of the viewport */
-    height: 100%; /* Full height of the viewport */
-    object-fit: cover; /* Ensures the image covers the whole screen */
-    filter: blur(30px); /* Keeps the blur effect */
-    opacity: 0.6; /* Keeps the opacity for readability */
+    position: absolute;
+    filter: blur(15px); /* Keeps the blur effect */
+    opacity: 1; /* Keeps the opacity for readability */
     z-index: -1; /* Ensures the image stays in the background */
     overflow: visible; /* Makes sure the blur spreads beyond the image boundaries */
-    transform: scale(110%);
+    top: 50%;
+    left: 45%;
+    transform: translate(-50%, -50%) scale(1.1); /* Scale + center */
+    align-self: anchor-center;
 }
 
 .nav-single {
@@ -56,3 +64,4 @@
     justify-content: center;
     z-index: 1;
 }
+

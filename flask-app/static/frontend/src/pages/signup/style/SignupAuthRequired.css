@@ -1,3 +1,10 @@
+.auth-required-event {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 85%;
+}
+
 #page-headings {
     display: flex;
     flex-direction: column;

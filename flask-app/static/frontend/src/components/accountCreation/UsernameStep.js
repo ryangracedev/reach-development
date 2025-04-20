@@ -19,18 +19,40 @@ const UsernameStep = ({ nextStep, prevStep, updateFormData, formData, transition
     animationClass = 'fade-in';
   }
 
+  const [showError, setShowError] = useState({
+    username: false,
+  });
+
+  const [errors, setErrors] = useState({
+    username: '',
+  });
+
   useEffect(() => {
     setUsername(formData.username || ''); // Keep input in sync when formData updates
   }, [formData.username]);
 
   const handleNext = async () => {
+    let hasError = false;
+    const newErrors = { username: '' };
+    const newShowError = { usernmae: false };
+
     // Frontend validation: Ensure the username is not empty
     if (!username.trim()) {
-      setError('Username is required'); // Frontend validation
-      return;
+      newErrors.username = 'Username is required';
+      newShowError.username = true;
+      hasError = true;
     }
 
-    setError(''); // Clear previous errors
+    if (hasError) {
+      setErrors(newErrors);
+      setShowError(newShowError);
+
+      setTimeout(() => {
+        setShowError({ username: false });
+        setTimeout(() => setErrors({ username: '' }), 300);
+      }, 5000);
+      return;
+    }
 
     try {
       // Make API call to check if the username exists
@@ -44,20 +66,42 @@ const UsernameStep = ({ nextStep, prevStep, updateFormData, formData, transition
 
       if (response.ok) {
         const data = await response.json();
+        
+        // Check if username already exists
         if (data.exists) {
-          setError('Username already exists');
-        } else {
-          // Username is valid, proceed to the next step
-          updateFormData('username', username);
-          nextStep();
+          setErrors({ username: 'Username already exists' });
+          setShowError({ username: true });
+  
+          setTimeout(() => {
+            setShowError({ username: false });
+            setTimeout(() => setErrors({ username: '' }), 300);
+          }, 5000);
+  
+          return;
         }
+
+        // Username is valid, proceed to the next step
+        updateFormData('username', username);
+        nextStep();
+        
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'An error occurred. Please try again.');
+        setErrors({ username: errorData.error || 'Something went wrong.' });
+        setShowError({ username: true });
+  
+        setTimeout(() => {
+          setShowError({ username: false });
+          setTimeout(() => setErrors({ username: '' }), 300);
+        }, 5000);
       }
     } catch (err) {
-      setError('Failed to validate username. Please try again.');
-      console.error('Error checking username:', err);
+      setErrors({ username: 'Failed to validate username. Please try again.' });
+      setShowError({ username: true });
+  
+      setTimeout(() => {
+        setShowError({ username: false });
+        setTimeout(() => setErrors({ username: '' }), 300);
+      }, 5000);
     }
   };
 
@@ -76,6 +120,9 @@ const UsernameStep = ({ nextStep, prevStep, updateFormData, formData, transition
             inputType="name"
             wrap={false}
             count={false}
+            errorMessage={errors.username}
+            errorVisible={showError.username}
+            maxChar={30}
           />
           <p className="username-info">
             Who are you?

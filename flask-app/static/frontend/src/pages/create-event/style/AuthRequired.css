@@ -11,7 +11,7 @@
     justify-content: space-between;
     align-items: center;
     height: 50%;
-    margin-top: 4rem;
+    gap: 1rem;
 }
 
 .auth-title {
@@ -29,7 +29,6 @@
 
 .custom-button {
     justify-content: center;
-    margin-bottom: 5rem;
 }
 
 .auth-nav {

@@ -6,6 +6,7 @@
     background: #000;    /* Example: black background */
     color: #fff;         /* White text */
     position: relative;  /* So we can position child elements if needed */
+    isolation: isolate;
 }
 
 .event-image-background {
@@ -15,22 +16,45 @@
     width: 100vw; /* ✅ Ensures it covers the entire screen width */
     height: 100vh; /* ✅ Ensures it covers the entire screen height */
     object-fit: cover; /* Ensures image covers full screen */
-    opacity: 0.45; /* Adjust for readability */
+    opacity: 0; /* Adjust for readability */
     overflow: visible;
+    z-index: 0;
+}
+
+.event-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    backdrop-filter: blur(15px);
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease-in-out, visibility 0.2s ease-in-out;
+    overflow-y: auto; /* allows scroll inside */
+}
+
+.event-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 .event-info-container {
     position: relative;
     width: 100%;
-    height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
-    height: auto;
-    gap: 0.25rem;
+    gap: 1.5rem;
     z-index: 1;
-    margin-top: 20rem;
+    height: 95%;
+    bottom: 3.5rem;
 }
 
 .event-meta {
@@ -42,7 +66,7 @@
     gap: 0.25rem;
     width: 100%;
     overflow: visible;
-    text-shadow: 1px 1px 4px rgb(0, 0, 0);
+    text-shadow: 0px 0px 20px rgba(255, 255, 255, 0.623);
 
     .meta-backdrop {
         position: absolute;
@@ -55,7 +79,7 @@
     }
     
     .event-page-name {
-        text-transform: uppercase;
+        /* text-transform: uppercase; */
         font-size: 36px;
         font-weight: 900;
         margin: 0;
@@ -64,7 +88,7 @@
     }
     
     .event-page-date {
-        font-size: 16px;
+        font-size: 14px;
         margin: 0;
         opacity: 65%;
         text-transform: uppercase;
@@ -106,15 +130,23 @@
     border: none;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    margin-top: 2rem;
+}
+
+.link-text-wrapper {
+    display: flex;
+    flex: 1;
+    margin-right: 0.75rem; /* adds space before the icon */
+    overflow: hidden;
 }
 
 .link {
     font-size: 14px;
     font-weight: 200;
     color: white;
-    white-space: nowrap; /* Prevents text wrapping */
-    margin: 0;
+    white-space: nowrap;        /* Prevents text wrapping */
+    overflow: hidden;           /* Hides overflow text */
+    text-overflow: ellipsis;    /* Shows "..." when text overflows */
+    max-width: 100%;
 }
 
 .event-link-button:hover {
@@ -129,28 +161,46 @@
     height: auto;
     width: 100%;
     z-index: 1;
-    margin-top: 1rem;
     color: white;
     gap: 1.5rem;
 }
 
 .yes-button {
+    position: relative;
+    width: 5rem;
+    height: 2.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    isolation: isolate; /* ⬅️ Important */
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 5rem; /* Matches screenshot */
-    height: 2.5rem; /* Matches screenshot */
-    background: linear-gradient(145deg, #00ff00, #008800); /* Green gradient */
-    border: none;
-    border-radius: 25px; /* Makes it rounded */
-    cursor: pointer;
-    box-shadow: 0px 0px 8px rgba(0, 255, 0, 0.6); /* Green glow */
-    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(10px);
+}
+  
+.inverter-shape {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 25px;
+    background: rgba(0, 0, 0, 0.739);
+    mix-blend-mode: difference;
+    z-index: 0;
+}
+
+.checkmark-icon {
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+    fill: white;
+    pointer-events: none;
 }
 
 .yes-button:disabled {
-    background: linear-gradient(145deg, #00aa00, #006600); /* Darker green when disabled */
-    box-shadow: none; /* Remove glow when disabled */
+    background: rgba(40, 40, 40, 0.739);
+    box-shadow: none;
     cursor: default;
 }
 
@@ -158,6 +208,11 @@
     width: 20px;
     height: 20px;
     margin: 0;
+    mix-blend-mode: normal; /* ensures white checkmark isn't affected */
+}
+
+.check-mark {
+    fill: rgb(255, 255, 255);
 }
 
 .edit-button {
@@ -206,27 +261,22 @@
 
   
 .attendees-list-container {
-    /* position: absolute; */
     bottom: 0;
-    width: 100%;
-    height: 40%;
+    width: 80%;
+    max-width: 900px;
+    height: 75%;
     text-align: left;
-    margin-left: 4rem;
-    margin-top: 2rem;
-    /* background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
-    text-align: left;
-    padding-top: 5rem;
-    padding-left: 5rem; */
+    max-height: 85vh; /* ensures it's scrollable */
 }
 
-.list {
-    padding: 0;
-    color: white;
+.list-header {
+    position: sticky;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    top: 0;
+    z-index: 2;
+    padding-bottom: 0.75rem;
 }
 
 .list-name {
@@ -238,6 +288,67 @@
     opacity: 100%;
 }
 
+.list-amount {
+    font-size: 12px;
+}
+
+.list-scroll-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+  
+.fade-top,
+.fade-bottom {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 2rem; /* Adjust based on how soft/strong you want the fade */
+    pointer-events: none;
+    z-index: 3;
+}
+  
+.fade-top {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0), transparent);
+}
+  
+.fade-bottom {
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0), transparent);
+}
+
+.list-scrollable {
+    overflow-y: auto;
+    max-height: 100%;
+    padding-right: 1rem;
+
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+  
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+}
+
+.list {
+    padding: 0;
+    color: white;
+    list-style-type: none;
+}
+
+.attendee {
+    padding-top: 0.75rem;
+    opacity: 0;
+}
+
+.attendee-link {
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+}
+
 .bottom-container {
     position: absolute;
     display: flex;
@@ -245,14 +356,21 @@
     align-items: center;
     width: 100%;
     bottom: 0;
-    z-index: 2; /* ✅ Higher than background image */
-    margin-bottom: 2rem;
+    z-index: 999; /* ✅ Higher than background image */
     gap: 7rem;
+    opacity: 0;
+    margin-bottom: 1.5rem;
 }
 
 .logo-event-page {
     width: 1.75rem;
     cursor: pointer;
+}
+
+.hide-logo {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .list-button {
@@ -265,4 +383,29 @@
     border: none;
     border-radius: 4rem;
     align-self: center;
+}
+
+
+.edit-panel {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 90%;
+}
+
+
+.edit-inputs-wrapper {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 85%;
+    height: 100%;
+    transform: scale(0.9);
+}
+
+.date-time-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }

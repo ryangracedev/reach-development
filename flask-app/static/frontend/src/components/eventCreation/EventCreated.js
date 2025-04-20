@@ -45,7 +45,7 @@ const EventCreated = () => {
           console.log('Event created:', result);
 
           // Redirect to the dynamic event page
-          navigate(`/${encodeURIComponent(eventData.name.toLowerCase())}`);
+          navigate(`/${result.slug}`);
         } else {
           const errorData = await response.json();
           setError(errorData.error || 'Failed to create the event');

@@ -21,6 +21,7 @@ import random
 import string
 import sys
 import time
+import secrets
 # =============================
 # Print Envirnoment Variables
 # =============================
@@ -122,6 +123,13 @@ users_collection = mongo.db.users
 def generate_verification_code():
      # 4-digit numeric code
     return ''.join(random.choices(string.digits, k=4))
+
+def generate_unique_slug():
+    events_collection = mongo.db.events
+    while True:
+        slug = secrets.token_urlsafe(8)
+        if not events_collection.find_one({"slug": slug}):
+            return slug
 
 # This function serves the React frontend. It ensures that API routes return 404 errors,
 # serves static files correctly, and falls back to serving index.html for unknown paths.
@@ -379,6 +387,8 @@ def create_event():
     if not event_name or not description or not address or not date_time or not host_id:
         return jsonify({"error": "All fields (event_name, description, address, date_time, host_id) are required"}), 400
 
+    slug = generate_unique_slug()
+
     # Insert event into events collection
     event_doc = {
         "event_name": event_name.lower(),
@@ -388,7 +398,8 @@ def create_event():
         "host_id": host_id,
         "attendees": [],
         "status": "active",
-        "image": photo_url  # Add photo URL
+        "image": photo_url,
+        "slug": slug
     }
     event_id = events_collection.insert_one(event_doc).inserted_id
 
@@ -399,16 +410,79 @@ def create_event():
         {"$push": {"hosted_events": str(event_id)}}
     )
 
-    return jsonify({"message": "Event created successfully", "event_id": str(event_id)}), 201
+    return jsonify({
+        "message": "Event created successfully",
+        "event_id": str(event_id),
+        "slug": slug
+    }), 201
+
+# This endpoint allows authenticated users to update an event.
+@app.route('/api/update-event/<slug>', methods=['PUT'])
+@jwt_required()
+def update_event(slug):
+    # Get identity of the current user
+    user_id = get_jwt_identity()
+
+    # Get MongoDB collections
+    events_collection = mongo.db.events
+
+    # Find the event (case-insensitive match)
+    event = events_collection.find_one({"slug": slug})
+    if not event:
+        return jsonify({"error": "Event not found"}), 404
+
+    # Ensure the requesting user is the host
+    if str(event["host_id"]) != user_id:
+        return jsonify({"error": "You are not authorized to update this event"}), 403
+
+    # Fetch updated values
+    updated_name = request.form.get("event_name")
+    description = request.form.get("description")
+    address = request.form.get("address")
+    date_time = request.form.get("date_time")
+
+    # Fetch new image if uploaded
+    new_image = request.files.get("image")
+    old_image_url = event.get("image")
+
+    # Initialize update object
+    update_fields = {}
+
+    if updated_name:
+        update_fields["event_name"] = updated_name.lower()
+    if description:
+        update_fields["description"] = description
+    if address:
+        update_fields["address"] = address
+    if date_time:
+        update_fields["date_time"] = date_time
+
+    # If new image is uploaded, save and delete the old one
+    if new_image:
+        try:
+            from storage import save_file, delete_file  # ensure delete_file exists
+            new_image_url = save_file(new_image)
+            update_fields["image"] = new_image_url
+
+            # Only delete the old image if it exists and differs from new
+            if old_image_url and old_image_url != new_image_url:
+                delete_file(old_image_url)
+        except Exception as e:
+            return jsonify({"error": f"Image upload failed: {str(e)}"}), 500
+
+    # Apply update to the database
+    result = events_collection.update_one({"_id": event["_id"]}, {"$set": update_fields})
+
+    return jsonify({"message": "Event updated successfully"}), 200
 
 # This endpoint retrieves event details based on the event name.
-@app.route('/api/events/<event_name>', methods=['GET'])
-def get_event(event_name):
+@app.route('/api/events/<slug>', methods=['GET'])
+def get_event(slug):
 
     print("/events/<event_name> Reached. Displaying Event!")
     # Fetch the event by name from the database
     # Perform a case-insensitive search
-    event = mongo.db.events.find_one({"event_name": {"$regex": f"^{event_name}$", "$options": "i"}})
+    event = mongo.db.events.find_one({"slug": slug})
     if not event:
         return jsonify({"error": "Event not found"}), 404
 
@@ -422,20 +496,27 @@ def get_event(event_name):
     # Convert event document to JSON and add host's username
     event_json = json.loads(json_util.dumps(event))
     event_json["host_username"] = host_username  # ✅ Include host username
+    attendee_ids = event.get("attendees", [])
+    attendees = []
+    for user_id in attendee_ids:
+        user = mongo.db.users.find_one({"_id": ObjectId(user_id)})
+        if user:
+            attendees.append(user.get("username", "Unknown"))
+    event_json["attendees"] = attendees
     
     return jsonify(event_json), 200
 
 # This endpoint allows a user to mark themselves as attending an event.
-@app.route('/api/events/<event_name>/attend', methods=['POST'])
+@app.route('/api/events/<slug>/attend', methods=['POST'])
 @jwt_required()
-def attend_event(event_name):
+def attend_event(slug):
     user_id = get_jwt_identity()
 
     # Get users collection
     users_collection = mongo.db.users
 
     # Find the event by name
-    event = mongo.db.events.find_one({"event_name": event_name})
+    event = mongo.db.events.find_one({"slug": slug})
     if not event:
         return jsonify({"error": "Event not found"}), 404
     
@@ -445,7 +526,7 @@ def attend_event(event_name):
     # Add the user to the attendees list if not already added
     if user_id not in event.get("attendees", []):
         mongo.db.events.update_one(
-            {"event_name": event_name},
+            {"slug": slug},
             {"$push": {"attendees": user_id}}
         )
     
@@ -495,7 +576,7 @@ def unattend_event(event_name):
 # This endpoint retrieves a user's profile, including their hosted and attended events.
 @app.route('/api/profile/<username>', methods=['GET'])
 def get_profile(username):
-    
+
     # Fetch user data based on the username in the URL
     user = mongo.db.users.find_one({"username": username})
     if not user:
@@ -515,7 +596,8 @@ def get_profile(username):
             "event_name": event["event_name"],
             "description": event["description"],
             "date_time": event["date_time"],
-            "address": event["address"]
+            "address": event["address"],
+            "slug": event.get("slug", "")
         }
     
         event_time = parser.isoparse(event["date_time"])  # Adjust format as needed
@@ -541,7 +623,8 @@ def get_profile(username):
             "event_name": event["event_name"],
             "description": event["description"],
             "date_time": event["date_time"],
-            "address": event["address"]
+            "address": event["address"],
+            "slug": event.get("slug", "")
         }
     
         event_time = parser.isoparse(event["date_time"])
