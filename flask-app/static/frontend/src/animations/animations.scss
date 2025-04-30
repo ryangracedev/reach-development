@@ -69,9 +69,15 @@
 }
 
 .fade-in-gpu {
-  animation: fadeInOnly 0.5s ease forwards;
-  transform: translateZ(0);
-  will-change: transform, opacity;
+    animation: fadeInOpacityOnly 0.5s ease forwards;
+    animation-delay: 0.1s;
+    animation-fill-mode: both;
+}
+
+.fade-in-no-transform {
+    animation: fadeInNoTransform 0.5s ease forwards;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
 }
 
 @keyframes slideRight {
@@ -170,7 +176,18 @@
     }
     100% {
         transform: scale(100%);
-        opacity: 0.45;
+        opacity: 0.5;
         filter: blur(0px);
+    }
+}
+
+@keyframes fadeInNoTransform {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+    }
+    to {
+      opacity: 1;
+      filter: blur(0px);
     }
 }

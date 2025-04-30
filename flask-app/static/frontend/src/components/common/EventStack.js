@@ -18,11 +18,18 @@ const EventStack = ({ image, name, description, dateTime }) => {
     return `${formattedDate}, ${formattedTime}`;
   };
 
+  const [imageLoaded, setImageLoaded] = React.useState(false);
+
   return (
     <div className="event-preview">
       <img src={image || '/default-image.jpg'} alt="Event" className="event-preview-blur" />
-      <img src={image || '/default-image.jpg'} alt="Event" className="event-preview-image fade-in-gpu" />
-      <div className="event-preview-info fade-in-gpu">
+      <img
+        src={image || '/default-image.jpg'}
+        alt="Event"
+        className={`event-preview-image ${imageLoaded ? 'fade-in-delayed-1' : ''}`}
+        onLoad={() => setImageLoaded(true)}
+      />
+      <div className="event-preview-info fade-in-no-transform">
         <p className="event-preview-date">{dateTime ? formatEventDate(dateTime) : 'Event Date'}</p>
         <h2 className="event-preview-title">{name || 'Event Title'}</h2>
         <p className="event-preview-description">"{description || 'Event description'}"</p>

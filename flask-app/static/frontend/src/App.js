@@ -3,6 +3,7 @@ import './App.scss';
 import { Routes, Route } from 'react-router-dom';
 import { EventProvider } from './context/EventContext'; // Import EventProvider
 import { AuthProvider } from './context/AuthContext'; // Import AuthProvider
+import { ProfileProvider } from './context/ProfileContext';
 import { useEffect } from 'react';
 import CreateEvent from './pages/create-event/CreateEvent';
 import HomePage from './pages/home/HomePage';
@@ -55,18 +56,20 @@ function App() {
       <div className="App">
         <AuthProvider>
           <EventProvider>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/:slug" element={<EventPage />} /> {/* Dynamic event page */}
-              <Route path="/create-event" element={<CreateEvent />} />
-              <Route path="/signin" element={<SignIn />} /> {/* Sign In route */}
-              <Route path="/signup-for-event" element={<SignupForEvent />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/profile/:username" element={<Profile />} />
-              <Route path="/forgot-password" element={<ForgotPasswordSteps />} />
-              <Route path="/auth-required" element={<AuthRequired />} />
-              <Route path="/signup-auth-required" element={<SignupAuthRequired />} />
-            </Routes>
+            <ProfileProvider>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/:slug" element={<EventPage />} /> {/* Dynamic event page */}
+                <Route path="/create-event" element={<CreateEvent />} />
+                <Route path="/signin" element={<SignIn />} /> {/* Sign In route */}
+                <Route path="/signup-for-event" element={<SignupForEvent />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/profile/:username" element={<Profile />} />
+                <Route path="/forgot-password" element={<ForgotPasswordSteps />} />
+                <Route path="/auth-required" element={<AuthRequired />} />
+                <Route path="/signup-auth-required" element={<SignupAuthRequired />} />
+              </Routes>
+            </ProfileProvider>
           </EventProvider>
         </AuthProvider>
       </div>

@@ -13,6 +13,7 @@ from bson import json_util, ObjectId
 from werkzeug.utils import secure_filename
 import datetime
 from dateutil import parser
+from datetime import timedelta
 from storage import save_file
 import redis
 import os
@@ -51,6 +52,7 @@ if not app.config['SECRET_KEY']:
     raise ValueError("SECRET_KEY not set in environment variables")
 # Use the same secret key for JWT
 app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=7)  # or whatever you prefer
 # JSON Web Token
 jwt = JWTManager(app)
 # =============================
@@ -449,7 +451,7 @@ def update_event(slug):
     update_fields = {}
 
     if updated_name:
-        update_fields["event_name"] = updated_name.lower()
+        update_fields["event_name"] = updated_name
     if description:
         update_fields["description"] = description
     if address:
@@ -542,9 +544,9 @@ def attend_event(slug):
     return jsonify({"message": "Marked as attending"}), 200
 
 # This endpoint allows a user to remove themselves from an event's attendees list.
-@app.route('/api/events/<event_name>/unattend', methods=['POST'])
+@app.route('/api/events/<slug>/unattend', methods=['POST'])
 @jwt_required()
-def unattend_event(event_name):
+def unattend_event(slug):
 
     user_id = get_jwt_identity()
 
@@ -552,7 +554,7 @@ def unattend_event(event_name):
     users_collection = mongo.db.users
 
     # Find the event by name
-    event = mongo.db.events.find_one({"event_name": event_name})
+    event = mongo.db.events.find_one({"slug": slug})
     if not event:
         return jsonify({"error": "Event not found"}), 404
     
@@ -561,7 +563,7 @@ def unattend_event(event_name):
 
     # Remove the user from the attendees list
     mongo.db.events.update_one(
-        {"event_name": event_name},
+        {"slug": slug},
         {"$pull": {"attendees": user_id}}
     )
 
@@ -597,7 +599,8 @@ def get_profile(username):
             "description": event["description"],
             "date_time": event["date_time"],
             "address": event["address"],
-            "slug": event.get("slug", "")
+            "slug": event.get("slug", ""),
+            "image_url": event.get("image", "")
         }
     
         event_time = parser.isoparse(event["date_time"])  # Adjust format as needed
@@ -624,7 +627,8 @@ def get_profile(username):
             "description": event["description"],
             "date_time": event["date_time"],
             "address": event["address"],
-            "slug": event.get("slug", "")
+            "slug": event.get("slug", ""),
+            "image_url": event.get("image", "")
         }
     
         event_time = parser.isoparse(event["date_time"])
@@ -756,10 +760,6 @@ def health_check():
 @app.before_request
 def log_request_info():
     print(f"Incoming request: {request.method} {request.path}", file=sys.stderr, flush=True)
-
-
-
-
 
 
 

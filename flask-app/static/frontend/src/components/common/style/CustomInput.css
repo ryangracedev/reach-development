@@ -71,6 +71,9 @@
   overflow-wrap: break-word;
   word-break: break-word;
   resize: none;
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal;
 
 }
 

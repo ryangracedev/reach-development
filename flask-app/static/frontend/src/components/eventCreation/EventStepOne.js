@@ -103,7 +103,7 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
             count={true}
             errorMessage={errors.description}
             errorVisible={showError.description}
-            maxChar={70}
+            maxChar={100}
           />
         </div>
         <div className='event-upload-row'>

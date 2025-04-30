@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; // Import AuthContext
 import CustomInput from '../../components/common/CustomInput';
-import './style/EventPage.css'
+import './style/EventPage.scss'
 import '../../animations/animations.scss'
 
 const EventPage = () => {
@@ -17,6 +17,7 @@ const EventPage = () => {
   const [showAttendees, setShowAttendees] = useState(false); // ✅ Track whether to show attendees list
   const [activeOverlay, setActiveOverlay] = useState(null); // null | 'list' | 'edit'
   const isFirstLoad = useRef(true);
+  const [hasEventEnded, setHasEventEnded] = useState(false);
   const firstAnimationClass = useRef({
     meta: isFirstLoad.current ? 'fade-in-delayed-1' : 'fade-in-no-delay',
     accept: isFirstLoad.current ? 'fade-in-delayed-2' : 'fade-in-no-delay',
@@ -118,9 +119,17 @@ const EventPage = () => {
   
     const eventDate = new Date(eventData.date_time);
     const releaseTime = new Date(eventDate.getTime() - 2 * 60 * 60 * 1000); // 2 hours before event start
+    const eventEndTime = new Date(eventDate.getTime() + 12 * 60 * 60 * 1000); // 12 hours after start
   
     const updateCountdown = () => {
       const now = new Date();
+
+      if (now >= eventEndTime) {
+        setHasEventEnded(true);
+      } else {
+        setHasEventEnded(false);
+      }
+
       const timeLeft = releaseTime - now;
   
       if (timeLeft <= 0) {
@@ -257,8 +266,6 @@ const EventPage = () => {
     }
   };
 
-
-
   // Extract and format date & time separately
   const eventDate = eventData?.date_time
     ? new Date(eventData.date_time).toLocaleDateString('en-US', {
@@ -277,6 +284,27 @@ const EventPage = () => {
 
   const eventLink = `reachtheparty.com/${slug}`;
 
+  const handleShare = () => {
+    const shareData = {
+      title: eventData.event_name,
+      text: `Check out this event: ${eventData.event_name}`,
+      url: `https://${eventLink}`, // You might need to prefix with https://
+    };
+  
+    if (navigator.share) {
+      navigator.share(shareData)
+        .then(() => console.log('Shared successfully'))
+        .catch((err) => console.error('Error sharing:', err));
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareData.url)
+        .then(() => alert('Link copied to clipboard!'))
+        .catch(() => alert('Could not copy link. Please copy manually.'));
+    } else {
+      // Absolute last-resort fallback
+      prompt('Copy party link:', shareData.url);
+    }
+  };
+
   if (error) {
     return <p className="error">{error}</p>;
   }
@@ -292,28 +320,31 @@ const EventPage = () => {
 
       {/* Background Image */}
       {eventData.image && (
-        <img
-          className='event-image-background fade-in-img'
-          style={{ animationDelay: '0.1s' }}
-          src={eventData.imagePreview || eventData.image}
-          alt="Event"
-        />
+        <div className="event-background-wrapper">
+          <img
+            className='event-image-background fade-in-img'
+            style={{ animationDelay: '0.1s' }}
+            src={eventData.imagePreview || eventData.image}
+            alt="Event"
+          />
+        </div>
       )}
 
       {/* Logo */}
-      <div className='bottom-container fade-in' style={{ animationDelay: '0.55s' }}>
+      <div className='bottom-container'>
         <img
           src="/Reach_Logo_Full.png"
           alt="Reach Logo"
-          className={`logo-event-page ${activeOverlay === 'list' ? 'hide-logo' : ''}`}
+          className={`logo-event-page fade-in-delayed-3 ${activeOverlay === 'list' ? 'hide-logo' : ''}`}
+          style={{ animationDelay: '0.7s' }}
           onClick={() => navigate('/')}
         />
         {activeOverlay === 'edit' ? (
-          <button className='list-button' onClick={handleSaveEvent}>
+          <button className='list-button fade-in-delayed-3' style={{ animationDelay: '0.7s' }} onClick={handleSaveEvent}>
             SAVE
           </button>
         ) : (
-          <button className='list-button' onClick={() => handleToggleOverlay('list')}>
+          <button className='list-button fade-in-delayed-3' style={{ animationDelay: '0.7s' }} onClick={() => handleToggleOverlay('list')}>
             {activeOverlay === 'list' ? 'CLOSE' : 'LIST'}
           </button>
         )}
@@ -324,66 +355,103 @@ const EventPage = () => {
 
         <div 
           className={`event-meta ${
-            (activeOverlay === 'list' || activeOverlay === 'edit') ? 'fade-out-no-delay' : firstAnimationClass.current.meta
+            (activeOverlay === 'list' || activeOverlay === 'edit') 
+              ? 'fade-out-no-delay' 
+              : firstAnimationClass.current.meta
           }`}
         >
-          <div className='meta-backdrop'></div>
-          <h1 className='event-page-date'>
-            <span style={{ marginRight: '6px' }}>{eventDate}</span>•<span style={{ marginLeft: '6px' }}>{eventTime}</span>
-          </h1>
-          <h1 className='event-page-name'>{eventData.event_name}</h1>
-          <h1 className='event-page-hostname'>@{eventData.host_username}</h1>
-          <h1 className='event-page-desc'>"{eventData.description}"</h1>
+          <div className={`meta-inner ${hasEventEnded ? 'event-ended-opacity' : ''}`}>
+            <div className="meta-backdrop"></div>
+            <h1 className='event-page-date'>
+              <span style={{ marginRight: '6px' }}>{eventDate}</span>•<span style={{ marginLeft: '6px' }}>{eventTime}</span>
+            </h1>
+            <h1 className='event-page-name'>{eventData.event_name}</h1>
+            <h1 className='event-page-desc'>"{eventData.description}"</h1>
+            <h1 className='event-page-hostname'>@{eventData.host_username}</h1>
+          </div>
         </div>
-        
+          
         <div 
           className={`accept-event-container`}
         >
-          {isHost ? (
-            <button 
-              className={`edit-button ${
-                (activeOverlay === 'list' || activeOverlay === 'edit') 
-                  ? 'fade-out-no-delay' 
-                  : firstAnimationClass.current.accept
-              }`}
-              onClick={() => handleToggleOverlay('edit')}
-            >
-              {activeOverlay === 'edit' ? 'CLOSE' : 'EDIT'}
-            </button>
+          {hasEventEnded ? (
+            <div className={`event-ended-message ${
+              (activeOverlay === 'list' || activeOverlay === 'edit') 
+                ? 'fade-out-no-delay' 
+                : firstAnimationClass.current.accept
+            }`}>
+              <h2>
+                This party has ended.
+              </h2>
+            </div>
           ) : (
-            <button 
-              className={`yes-button ${isGoing ? 'going' : ''} ${
+            <>
+              {isHost ? (
+                <button 
+                  className={`edit-button ${
+                    (activeOverlay === 'list' || activeOverlay === 'edit') 
+                      ? 'fade-out-no-delay' 
+                      : firstAnimationClass.current.accept
+                  }`}
+                  onClick={() => handleToggleOverlay('edit')}
+                >
+                  {activeOverlay === 'edit' ? 'CLOSE' : 'EDIT'}
+                </button>
+              ) : (
+                <button 
+                  className={`yes-button ${isGoing ? 'going' : ''} ${
+                    (activeOverlay === 'list' || activeOverlay === 'edit') 
+                      ? 'fade-out-no-delay' 
+                      : firstAnimationClass.current.accept
+                  }`}
+                  onClick={isGoing ? handleNo : handleYes}
+                >
+                  {isGoing ? (
+                    <svg
+                      key="x-icon"
+                      className="fade-in"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="15.717"
+                      height="15.717"
+                      viewBox="0 0 15.717 15.717"
+                    >
+                      <g transform="translate(-4.082 2)">
+                        <rect width="17.226" height="5" rx="2.5" transform="translate(4.082 10.181) rotate(-45)" fill="#fff" />
+                        <rect width="17.226" height="5" rx="2.5" transform="translate(16.264 13.716) rotate(-135)" fill="#fff" />
+                      </g>
+                    </svg>
+                  ) : (
+                    <svg
+                      key="check-icon"
+                      className="checkmark-icon fade-in"
+                      viewBox="0 0 21.304 17.296"
+                    >
+                      <g transform="translate(1.505 2)">
+                        <rect width="17.226" height="5" rx="2.5" transform="translate(4.082 10.181) rotate(-45)" />
+                        <rect width="10.91" height="5" rx="2.5" transform="translate(2.03 4.047) rotate(45)" />
+                      </g>
+                    </svg>
+                  )}
+                </button>
+              )}
+
+              <div className={`countdown-container ${
                 (activeOverlay === 'list' || activeOverlay === 'edit') 
                   ? 'fade-out-no-delay' 
                   : firstAnimationClass.current.accept
-              }`}
-              disabled={isGoing}
-              onClick={handleYes}
-            >
-              <div className="inverter-shape"></div>
-              <svg className="checkmark-icon" viewBox="0 0 21.304 17.296">
-                <g transform="translate(1.505 2)">
-                  <rect width="17.226" height="5" rx="2.5" transform="translate(4.082 10.181) rotate(-45)" />
-                  <rect width="10.91" height="5" rx="2.5" transform="translate(2.03 4.047) rotate(45)" />
-                </g>
-              </svg>
-            </button>
+              }`}>
+                <p>{isAddressReleased ? "ADDRESS:" : "ADDRESS IS RELEASED IN:"}</p>
+                <h1 className="countdown-timer">{countdown}</h1>
+              </div>
+            </>
           )}
-
-          <div className={`countdown-container ${
-            (activeOverlay === 'list' || activeOverlay === 'edit') 
-              ? 'fade-out-no-delay' 
-              : firstAnimationClass.current.accept
-          }`}>
-            <p>{isAddressReleased ? "Address:" : "ADDRESS IS RELEASED IN"}</p>
-            <h1 className="countdown-timer">{countdown}</h1>
-          </div>
         </div>
 
         <div 
           className={`event-link-button ${
             (activeOverlay === 'list' || activeOverlay === 'edit') ? 'fade-out-no-delay' : firstAnimationClass.current.link
           }`}
+          onClick={handleShare}
         >
           <div className='link-text-wrapper'>
             <h1 className='link'>{eventLink}</h1>
@@ -449,6 +517,7 @@ const EventPage = () => {
                 inputType="name"
                 wrap={false}
                 count={true}
+                maxChar={40}
               />
 
               <CustomInput
@@ -459,6 +528,7 @@ const EventPage = () => {
                 inputType="description"
                 wrap={false}
                 count={true}
+                maxChar={100}
               />
 
               <CustomInput

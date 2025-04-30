@@ -5,10 +5,22 @@
     gap: 4rem;
     width: 70%;
     height: 80%;
+    max-width: 1500px;
 
     a {
         letter-spacing: 3px;
     }
+}
+
+.top-gradient-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 15rem;
+  background: linear-gradient(to bottom, rgb(0, 0, 0), transparent);
+  z-index: 998; /* slightly lower than .profile-header */
+  pointer-events: none; /* allow interaction through it */
 }
 
 .profile-header {
@@ -16,13 +28,14 @@
     justify-content: flex-start;
     align-items: center;
     gap: 1rem;
-    width: 100%;
     position: fixed;
+    z-index: 999; /* ensure it's above the gradient */
 }
 
 .logo-profile {
     width: 1.75rem;
     height: 1.75rem;
+    z-index: 10;
 }
 
 .profile-username {
@@ -30,14 +43,18 @@
     font-size: 22px;
     text-transform: uppercase;
     margin: 0;
+    backdrop-filter: blur(10px);
+    border-radius: 5rem;
+    padding: 0.25rem 0.5rem 0.25rem 0.5rem;
 }
 
 .events-section {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    margin-top: 5rem;
-    gap: 2rem;
+    margin-top: 4rem;
+    gap: 0rem;
+    padding-bottom: 6rem;
 }
 
 .profile-container h1 {
@@ -68,104 +85,10 @@
     text-decoration: none;
 }
 
-.checker-text-white {
-    font-family: monospace;
-    background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-        <rect width='4' height='4' fill='%23ffffff'/>\
-        <rect x='4' y='4' width='4' height='4' fill='%23ffffff'/>\
-      </svg>");
-    background-size: 4px 4px;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-.checker-text-white-past {
-    font-family: monospace;
-    background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-        <rect width='4' height='4' fill='%23ffffff'/>\
-        <rect x='4' y='4' width='4' height='4' fill='%23ffffff'/>\
-      </svg>");
-    background-size: 4px 4px;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    opacity: 20%;
-}
-
-.checker-text-red {
-    font-family: monospace;
-    background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-        <rect width='4' height='4' fill='%23ff69b4'/>\
-        <rect x='4' y='4' width='4' height='4' fill='%23ff69b4'/>\
-      </svg>");
-    background-size: 4px 4px;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-.checker-text-red-host {
-    font-family: monospace;
-    background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-        <rect width='4' height='4' fill='%23ffffff'/>\
-        <rect x='4' y='4' width='4' height='4' fill='%23ffffff'/>\
-      </svg>");
-    background-size: 4px 4px;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    opacity: 20%;
-}
-
-.checker-text-red-host::first-letter {
-    font-family: monospace;
-    background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-        <rect width='4' height='4' fill='%23ff69b4'/>\
-        <rect x='4' y='4' width='4' height='4' fill='%23ff69b4'/>\
-      </svg>");
-    background-size: 4px 4px;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-.checker-text-yellow {
-    font-family: monospace;
-    background-image: url("data:image/svg+xml;utf8,\
-      <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-        <rect width='4' height='4' fill='%23ffd500'/>\
-        <rect x='4' y='4' width='4' height='4' fill='%23ffd500'/>\
-      </svg>");
-    background-size: 4px 4px;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-}
-
-.checker-text-sub {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #ffffff46;
-    font-weight: 400;
-    background-size: 2px 2px;
-    // background-image: url("data:image/svg+xml;utf8,\
-    //   <svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'>\
-    //     <rect width='4' height='4' fill='%23ffd500'/>\
-    //     <rect x='4' y='4' width='4' height='4' fill='%23ffd500'/>\
-    //   </svg>");
-    // color: transparent;
-    // -webkit-background-clip: text;
-    // background-clip: text;
-}
-
 #list-label {
     color: rgb(255, 255, 255);
     background-color: #000000;
+    // text-shadow: 0px 0px 8px rgb(255, 255, 255);
     border: none;
     border-radius: 2rem;
     padding: 0.30rem 0.7rem 0.30rem 0.7rem;
@@ -184,14 +107,50 @@
     text-align: left;
 }
 
-.profile-container p {
-    margin: 5px 0;
-}
-
 h3 {
     color: wheat;
 }
 
 .event-link:hover {
     color: rgba(255, 255, 255, 0.6);
+}
+
+#event-button {
+  border-radius: 20px;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  background-color: #ffffff09;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 20px;
+  border: none;
+  text-shadow: 0px 0px 20px rgba(255, 255, 255, 0.623);
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 1.5rem; /* spacing between items */
+  transform: translateX(-10px);
+}
+
+.future-scroll {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 1.5rem;
+  scroll-snap-type: x mandatory;
+  padding: 0 0rem 1rem 0;
+  margin-right: -3rem;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+
+  &::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+}
+
+.future-scroll > div {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
 }

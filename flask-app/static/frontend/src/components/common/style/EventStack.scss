@@ -9,7 +9,7 @@
   margin-top: 4rem;
   transform: rotate(-3deg);
   margin-right: 2rem;
-  // filter: blur(0px); // Remove for other background effect
+  filter: blur(0px); // Remove for other background effect
 }
 
 .event-preview-image {
@@ -18,6 +18,7 @@
   height: 9rem;
   border-radius: 30px;
   object-fit: cover;
+  opacity: 0;
 }
 
 .event-preview-blur {
@@ -28,7 +29,7 @@
   margin-top: 2rem;
   margin-left: 2rem;
   background-color: transparent;
-  opacity: 15%;
+  opacity: 8%;
   filter: blur(60px);
   transform: scale(1.1) translateZ(0);
   overflow: visible;
@@ -40,31 +41,28 @@
   margin-left: 4rem;
   width: 14rem;
   border-radius: 30px;
-  padding: 1rem;
+  padding: 1.5rem 1rem 1.5rem 1rem;
   text-align: left;
   background-color: rgba(0, 0, 0, 0.516);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  // -webkit-backdrop-filter: blur(10px);
   // box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   z-index: 99;
-
 }
 
 .event-preview-date {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.136);
-  margin-bottom: 0.2rem;
   font-weight: 600;
   padding-left: 0.5rem;
+  margin: 0;
 }
 
 .event-preview-title {
   font-size: 1.563rem;
   font-weight: bold;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   color: rgb(255, 255, 255);
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin: 0;
   padding-left: 0.5rem;
 }
 
@@ -75,6 +73,7 @@
   margin-top: 0.5rem;
   padding-left: 0.5rem;
   text-transform: uppercase;
+  margin: 0;
 }
 
 
