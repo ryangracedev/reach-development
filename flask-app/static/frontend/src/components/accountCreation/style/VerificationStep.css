@@ -55,7 +55,7 @@
 
 .resend-code {
     color: white;
-    background-color: rgba(0, 0, 0, 0.427) ;
+    background-color: rgba(26, 26, 26, 0.427) ;
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px); 
     border: none;

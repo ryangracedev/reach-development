@@ -37,19 +37,19 @@ const EventStepTwo = ({ nextStep, prevStep, transitioning, transitionDirection }
     const newShowError = { address: false, date: false, time: false };
 
     if (!eventData.address.trim()) {
-      newErrors.address = 'Address is required';
+      newErrors.address = '* Address is required';
       newShowError.address = true;
       hasError = true;
     }
 
     if (!eventData.date) {
-      newErrors.date = 'Date is required';
+      newErrors.date = '* Date is required';
       newShowError.date = true;
       hasError = true;
     }
 
     if (!eventData.time) {
-      newErrors.time = 'Time is required';
+      newErrors.time = '* Time is required';
       newShowError.time = true;
       hasError = true;
     }
@@ -94,42 +94,69 @@ const EventStepTwo = ({ nextStep, prevStep, transitioning, transitionDirection }
             inputType="name"
             wrap={false}
             count={false}
+            inputDescription={'The address will be released 2 hours before the party starts.'}
             errorMessage={errors.address}
             errorVisible={showError.address}
+            isAddressInput={true}
           />
-
+{/* 
           <p className="address-info">
             Address is released 2 hours before the party starts. So, if it starts at 9pm, the address is released at 7pm.
-          </p>
+          </p> */}
         </div>
 
-        <div className="input-container">
-          <label htmlFor="event-date" className="input-label">Date</label>
-          <input
-            type="date"
-            id="event-date"
-            className="event-input"
-            value={eventData.date || ""}  // Default to an empty string if undefined
-            onChange={(e) => updateEventData('date', e.target.value)}
-          />
-          <div id='when-error' className={`error-message-container ${showError.date ? 'visible' : ''}`}>
-            {errors.date && <p className='error-message'>{errors.date}</p>}
+        <div className="event-date-time-container">
+
+          <div className="input-container">
+
+            <div className="floating-label-wrapper">
+              <label htmlFor="event-date" className="input-label">Date</label>
+              <input
+                type="date"
+                id="event-date"
+                className="event-input"
+                value={eventData.date || ""}
+                onChange={(e) => updateEventData('date', e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+              />
+              <span className={`floating-placeholder ${(eventData.date || isFocused) ? 'active' : ''}`}>
+                Select a date
+              </span>
+            </div>
+            <div id='when-error' className={`error-message-container ${showError.date ? 'visible' : ''}`}>
+              {errors.date && <p className='error-message'>{errors.date}</p>}
+            </div>
+
           </div>
+
+          <div className="input-container">
+
+            <div className="floating-label-wrapper">
+              <label htmlFor="event-time" className="input-label">Time</label>
+              <input
+                type="time"
+                id="event-time"
+                className="event-input"
+                placeholder='--'
+                value={eventData.time || ""}
+                onChange={(e) => updateEventData('time', e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+              />
+              <span className={`floating-placeholder ${(eventData.time || isFocused) ? 'active' : ''}`}>
+                Select a time
+              </span>
+            </div>
+            <div id='time-error' className={`error-message-container ${showError.time ? 'visible' : ''}`}>
+              {errors.time && <p className='error-message'>{errors.time}</p>}
+            </div>
+
+          </div>
+
+
         </div>
 
-        <div className="input-container">
-          <label htmlFor="event-time" className="input-label">Time</label>
-          <input
-            type="time"
-            id="event-time"
-            className="event-input"
-            value={eventData.time || ""}  // Default to an empty string if undefined
-            onChange={(e) => updateEventData('time', e.target.value)}
-          />
-          <div id='time-error' className={`error-message-container ${showError.time ? 'visible' : ''}`}>
-            {errors.time && <p className='error-message'>{errors.time}</p>}
-          </div>
-        </div>
       </div>
 
       <div className='nav'>

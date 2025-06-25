@@ -33,11 +33,11 @@
     margin-top: 0rem;
     width: 18rem;
     gap: 0.5rem;
+    height: 60%;
 }
 
 .username-input {
     opacity: 0;
-    margin-bottom: 1rem;
 }
 
 .password-input {
@@ -79,7 +79,7 @@
 }
 
 #custom-input {
-    overflow: hidden;
+    // overflow: hidden;
     width: 100%;
 }
 

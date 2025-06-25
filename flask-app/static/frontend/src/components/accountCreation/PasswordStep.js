@@ -83,11 +83,13 @@ const PasswordStep = ({ nextStep, prevStep, updateFormData, formData, transition
             count={false}
             errorMessage={errors.password}
             errorVisible={showError.password}
+            inputDescription={'Must be 8 characters minimum, with a number.'}
             maxChar={64}
+            isNormalInput={true}
           />
-          <p className="password-info">
+          {/* <p className="password-info">
             Must be 8 characters minimum, with a number.
-          </p>
+          </p> */}
         </div>
       </div>
       <div className='nav'>

@@ -15,6 +15,9 @@ services:
       - MONGO_URI
       - REDIS_HOST
       - SECRET_KEY
+      - TWILIO_ACCOUNT_SID
+      - TWILIO_AUTH_TOKEN
+      - TWILIO_VERIFY_SERVICE_SID
     env_file:
       - .env
     depends_on:

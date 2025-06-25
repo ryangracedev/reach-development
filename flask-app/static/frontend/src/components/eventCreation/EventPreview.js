@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useEventContext } from '../../context/EventContext';
 import CustomButton from '../common/CustomButton';
 import EventStack from '../../components/common/EventStack';
@@ -21,6 +21,24 @@ const EventPreview = ({ nextStep, transitioning, transitionDirection, fadeIn }) 
   const imageUrl = eventData.image instanceof File
     ? URL.createObjectURL(eventData.image) // Convert File object to a URL
     : eventData.image || '/default-image.jpg'; // Use stored URL or fallback
+
+  useEffect(() => {
+    if (eventData.image) {
+      const image = new Image();
+      const url = eventData.image instanceof File
+        ? URL.createObjectURL(eventData.image)
+        : eventData.image;
+
+      image.src = url;
+
+      // Optional: store the URL in a state if you want to revoke it later
+      return () => {
+        if (eventData.image instanceof File) {
+          URL.revokeObjectURL(url); // clean up blob URL
+        }
+      };
+    }
+  }, [eventData.image]);
 
   return (
     <div className={`event-link-preview ${animationClass}`}>

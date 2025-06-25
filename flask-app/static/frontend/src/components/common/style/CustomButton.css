@@ -5,6 +5,10 @@
     border: none;
     cursor: pointer;
     justify-content: flex-end;
+
+    svg {
+        margin-left: 0.2rem;
+    }
 }
 
 .button-icon {
@@ -25,8 +29,4 @@
     width: 70%;
     height: auto;
     /* transform: rotate(180deg); */
-}
-
-svg {
-    margin-left: 0.2rem;
 }

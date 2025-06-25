@@ -32,6 +32,6 @@
     stroke: rgb(255, 255, 255); /* Change arrow color to black */
 }
 
-svg {
-    margin-left: 0.2rem; /* Remove unwanted shift */
-}
+/* svg {
+    margin-left: 0.2rem;
+} */

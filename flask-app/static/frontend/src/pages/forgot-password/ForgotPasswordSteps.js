@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import CustomInput from '../../components/common/CustomInput';
+import CustomButton from '../../components/common/CustomButton';
+import CustomBack from '../../components/common/CustomBack';
+import './style/ForgotPasswordSteps.css'; // Assuming you style similarly to UsernameStep
 
 const ForgotPasswordSteps = () => {
   const [step, setStep] = useState(1);
@@ -17,13 +21,12 @@ const ForgotPasswordSteps = () => {
       });
 
       if (response.ok) {
-        setStep(2); // Move to the next step
+        setStep(2);
       } else {
         const errorResponse = await response.json();
         setError(errorResponse.error || 'Failed to send code.');
       }
     } catch (err) {
-      console.error(err);
       setError('An error occurred. Please try again.');
     }
   };
@@ -37,13 +40,12 @@ const ForgotPasswordSteps = () => {
       });
 
       if (response.ok) {
-        setStep(3); // Move to the next step
+        setStep(3);
       } else {
         const errorResponse = await response.json();
         setError(errorResponse.error || 'Invalid code.');
       }
     } catch (err) {
-      console.error(err);
       setError('An error occurred. Please try again.');
     }
   };
@@ -63,65 +65,106 @@ const ForgotPasswordSteps = () => {
 
       if (response.ok) {
         alert('Password reset successfully. Redirecting to sign-in page.');
-        window.location.href = '/signin'; // Redirect to sign-in page
+        window.location.href = '/signin';
       } else {
         const errorResponse = await response.json();
         setError(errorResponse.error || 'Failed to reset password.');
       }
     } catch (err) {
-      console.error(err);
       setError('An error occurred. Please try again.');
     }
   };
 
   return (
-    <div>
-      {step === 1 && (
-        <div>
-          <h2>Enter Your Phone Number</h2>
-          <input
-            type="text"
-            placeholder="Phone Number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-          <button onClick={handleSendCode}>Send Code</button>
-        </div>
-      )}
+    <div className="forgot-password-page__container">
+      <div className="content-area">
+        {step === 1 && (
+          <div className="username-box">
+            <CustomInput
+              label="Phone Number"
+              placeholder="Phone Number"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              inputType="tel"
+              wrap={false}
+              count={false}
+              errorMessage=""
+              errorVisible={false}
+            />
+          </div>
+        )}
 
-      {step === 2 && (
-        <div>
-          <h2>Enter Verification Code</h2>
-          <input
-            type="text"
-            placeholder="Verification Code"
-            value={verificationCode}
-            onChange={(e) => setVerificationCode(e.target.value)}
-          />
-          <button onClick={handleVerifyCode}>Verify Code</button>
-        </div>
-      )}
+        {step === 2 && (
+          <div className="username-box">
+            <CustomInput
+              label="Verification Code"
+              placeholder="Verification Code"
+              value={verificationCode}
+              onChange={(e) => setVerificationCode(e.target.value)}
+              inputType="text"
+              wrap={false}
+              count={false}
+              errorMessage=""
+              errorVisible={false}
+            />
+          </div>
+        )}
 
-      {step === 3 && (
-        <div>
-          <h2>Reset Your Password</h2>
-          <input
-            type="password"
-            placeholder="New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <button onClick={handleResetPassword}>Reset Password</button>
-        </div>
-      )}
+        {step === 3 && (
+          <div className="username-box">
+            <CustomInput
+              label="New Password"
+              placeholder="New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              inputType="password"
+              wrap={false}
+              count={false}
+              errorMessage=""
+              errorVisible={false}
+            />
+            <CustomInput
+              label="Confirm Password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              inputType="password"
+              wrap={false}
+              count={false}
+              errorMessage=""
+              errorVisible={false}
+            />
+          </div>
+        )}
+      </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      <div className="nav">
+        <CustomBack
+          className="back-btn"
+          onClick={() => {
+            if (step === 1) {
+              window.history.back();
+            } else {
+              setStep(step - 1);
+            }
+          }}
+          color="white"
+        />
+        <CustomButton
+          className="next-btn"
+          text={step === 3 ? 'Reset Password' : 'Next'}
+          onClick={
+            step === 1
+              ? handleSendCode
+              : step === 2
+              ? handleVerifyCode
+              : handleResetPassword
+          }
+          color="black"
+        />
+      </div>
     </div>
   );
 };

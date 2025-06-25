@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import "./style/Profile.scss";
 import EventBlock from './EventBlock';
 
@@ -8,6 +9,11 @@ const Profile = () => {
   const [profileData, setProfileData] = useState(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { authState, signOut } = useAuth(); // Access authState and signOut from AuthContext
+
+  const handleHomeClick = () => {
+    navigate('/');
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -52,15 +58,43 @@ const Profile = () => {
     <div className="profile-container">
       <div className="top-gradient-overlay"></div>
       <div className="profile-header">
-          <img src="/Reach_Logo_Full.png" alt="Reach Logo" className="logo-profile" />
-          <h1 className="profile-username">@{profileData.username}</h1>
+        <div className='profile-header-left'>
+          <img src="/Reach_Logo_Full.png" onClick={handleHomeClick} alt="Reach Logo" className="logo-profile" />
+          <h1
+            className="profile-username"
+            onClick={() => {
+              if (authState.isAuthenticated && authState.username === profileData.username) {
+                if (window.confirm('Are you sure you want to log out?')) {
+                  signOut();
+                  navigate('/');
+                }
+              }
+            }}
+            style={{ cursor: authState.isAuthenticated && authState.username === profileData.username ? 'pointer' : 'default' }}
+          >
+            @{profileData.username}
+          </h1>
+        </div>
+        <div className='profile-header-right'>
+          {/* {authState.isAuthenticated && authState.username === profileData.username && (
+            <button 
+              className="logout-button" 
+              onClick={() => {
+                signOut();
+                navigate('/');
+              }}
+            >
+              Logout
+            </button>
+          )} */}
+        </div>
       </div>
 
       <div className='events-section'>
 
         {([...profileData.hosted_events, ...profileData.events_going_to].some(event => new Date(event.date_time).getTime() > Date.now())) && (
           <>
-            <h2 id='list-label'>Future</h2>
+            {/* <h2 id='list-label'>Future</h2> */}
             <div className='event-grid future-scroll'>
               {[...profileData.hosted_events, ...profileData.events_going_to]
                 .filter(event => new Date(event.date_time).getTime() > Date.now())
@@ -77,6 +111,9 @@ const Profile = () => {
                       time={event.date_time ? new Date(event.date_time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : ''}
                       imageUrl={event.image_url}
                       isHosted={profileData.hosted_events.some(hosted => hosted.event_id === event.event_id)}
+                      isGoing={!profileData.hosted_events.some(hosted => hosted.event_id === event.event_id)}
+                      isFuture={true}
+                      isOwnProfile={authState.isAuthenticated && authState.username === profileData.username}
                     />
                   </div>
                 ))}
@@ -87,7 +124,7 @@ const Profile = () => {
         {profileData.past_events.some(({ event }) => new Date(event.date_time).getTime() + 12 * 60 * 60 * 1000 < Date.now()) && (
           <>
             <h2 id='list-label'>Past</h2>
-            <div className='event-grid'>
+            <div className='event-grid-past'>
               {profileData.past_events
                 .filter(({ event }) => new Date(event.date_time).getTime() + 12 * 60 * 60 * 1000 < Date.now())
                 .map(({ event, was_host }, index) => (
@@ -102,6 +139,9 @@ const Profile = () => {
                       date={new Date(event.date_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                       imageUrl={event.image_url}
                       isHosted={was_host}
+                      isGoing={!was_host}
+                      isFuture={false}
+                      isOwnProfile={authState.isAuthenticated && authState.username === profileData.username}
                     />
                   </div>
                 ))}
@@ -110,7 +150,6 @@ const Profile = () => {
         )}
 
       </div>
-
 
     </div>
   );

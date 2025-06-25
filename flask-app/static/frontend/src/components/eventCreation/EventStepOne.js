@@ -14,10 +14,12 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
   const [showError, setShowError] = useState({
     name: false,
     description: false,
+    photo: false,
   });
   const [errors, setErrors] = useState({
     name: '',
     description: '',
+    photo: '',
   });
 
   const animationClass = transitioning
@@ -29,8 +31,8 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
   const handleNext = () => {
 
     let hasError = false;
-    const newErrors = { name: '', description: '' };
-    const newShowError = { name: false, description: false };
+    const newErrors = { name: '', description: '', photo: '' };
+    const newShowError = { name: false, description: false, photo: false };
 
     if (!eventData.name.trim()) {
       newErrors.name = '* Name Required';
@@ -44,14 +46,20 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
       hasError = true;
     }
 
+    if (!eventData.imagePreview) {
+      newErrors.photo = '* Photo Required';
+      newShowError.photo = true;
+      hasError = true;
+    }
+
     if (hasError) {
       setErrors(newErrors);
       setShowError(newShowError);
 
       // Auto-clear logic
       setTimeout(() => {
-        setShowError({ name: false, description: false });
-        setTimeout(() => setErrors({ name: '', description: '' }), 300);
+        setShowError({ name: false, description: false, photo: false });
+        setTimeout(() => setErrors({ name: '', description: '', photo: '' }), 300);
       }, 2000);
 
       return;
@@ -85,10 +93,11 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
             value={eventData.name}
             onChange={(e) => updateEventData('name', e.target.value)}
             inputType="name"
-            wrap={true}
+            multiline={true}
             count={true}
             errorMessage={errors.name}
             errorVisible={showError.name}
+            inputDescription={'In a few words.'}
             maxChar={40}
           />
         </div>
@@ -99,11 +108,13 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
             value={eventData.description}
             onChange={(e) => updateEventData('description', e.target.value)}
             inputType="description"
-            wrap={true}
+            multiline={true}
             count={true}
             errorMessage={errors.description}
             errorVisible={showError.description}
+            inputDescription={'What are the details?'}
             maxChar={100}
+            isDescription={true}
           />
         </div>
         <div className='event-upload-row'>
@@ -114,12 +125,20 @@ const EventStepOne = ({ nextStep, transitioning, transitionDirection }) => {
             className="event-input-photo"
             accept="image/*"
           />
-          <label htmlFor="file-upload" className="custom-file-upload">Photo</label>
+          <label
+            htmlFor="file-upload"
+            className={`custom-file-upload photo-upload-label ${eventData.imagePreview ? 'visible' : ''}`}
+          >
+            Photo
+          </label>
           {eventData.imagePreview && (
             <label htmlFor="file-upload">
               <img src={eventData.imagePreview} alt="Preview" className="image-preview clickable" />
             </label>
           )}
+          <p className={`event-step-one__input-description ${(showError.photo || (!eventData.imagePreview && !errors.photo)) ? 'visible' : ''} ${errors.photo ? 'error' : ''}`}>
+            {errors.photo ? errors.photo : 'Add a visual.'}
+          </p>
         </div>
       </div>
       <div className='nav'>

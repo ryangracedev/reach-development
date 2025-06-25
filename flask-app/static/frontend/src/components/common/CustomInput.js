@@ -1,9 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import './style/CustomInput.css'; // Import the styles
 
-const CustomInput = ({ label, placeholder, onClick, value, onChange, inputType = "text", wrap, count, errorMessage, errorVisible, maxChar }) => {
+const CustomInput = ({ 
+  label,
+  placeholder,
+  onClick,
+  value,
+  onChange, 
+  inputType = "text", 
+  wrap, 
+  multiline = false, 
+  count, 
+  errorMessage, 
+  errorVisible,
+  inputDescription,
+  maxChar, 
+  isDescription,
+  isAddressInput = false,
+  isNormalInput = false
+}) => {
 
   const [isFocused, setIsFocused] = useState(false);
+
+  const textareaRef = useRef(null);
     
   let maxCount = maxChar;
 
@@ -50,9 +69,10 @@ const CustomInput = ({ label, placeholder, onClick, value, onChange, inputType =
           </div>
         )}
       </div>
-      {wrap ? (
+      {multiline ? (
         <textarea
-          className="custom-input-field"
+          ref={textareaRef}
+          className={`custom-input-field__multiline ${isDescription ? 'description-input' : ''}`}
           placeholder={placeholder}
           onClick={onClick}
           onFocus={handleFocus}
@@ -62,7 +82,7 @@ const CustomInput = ({ label, placeholder, onClick, value, onChange, inputType =
         />
       ) : (
         <input
-          className="custom-input-field"
+          className={`custom-input-field ${isDescription ? 'description-input' : ''}`}
           placeholder={placeholder}
           onClick={onClick}
           onFocus={handleFocus}
@@ -71,6 +91,11 @@ const CustomInput = ({ label, placeholder, onClick, value, onChange, inputType =
           onChange={handleChange}
         />
       )}
+      <p
+        className={`input-description${isNormalInput ? ' normal-input' : ''} ${!errorVisible && !isFocused && !value ? 'visible' : ''} ${isAddressInput ? 'address-adjust' : ''}`}
+      >
+        {inputDescription}
+      </p>
       <div className={`error-message-container ${errorVisible ? 'visible' : ''}`}>
         {errorMessage && <p className='error-message'>{errorMessage}</p>}
       </div>

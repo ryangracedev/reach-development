@@ -15,6 +15,7 @@ import datetime
 from dateutil import parser
 from datetime import timedelta
 from storage import save_file
+from twilio.rest import Client
 import redis
 import os
 import json
@@ -214,7 +215,7 @@ def signup():
     if users_collection.find_one({'username': username}) is not None:
         return jsonify({"error": "Username already exists"}), 400
     # Check if the phone number is already verified
-    verified = redis_client.get(f'verified:{username}')
+    verified = redis_client.get(f'verified:{phone_number}')
     if not verified:
         return jsonify({"error": "Phone number not verified yet"}), 400
     # Hash the password
@@ -236,7 +237,7 @@ def signup():
         additional_claims={"username": username}  # Include username in the payload
     )
     # Cleanup Redis
-    redis_client.delete(f'verified:{username}')
+    redis_client.delete(f'verified:{phone_number}')
     # DEBUG
     # Retrieve the inserted document using its ID
     document = users_collection.find_one({'_id': user_id})
@@ -275,78 +276,77 @@ def check_phone():
 
     return jsonify({"exists": phone_exists}), 200
 
-# This endpoint generates and sends a verification code to the user's phone number,
-# storing the code temporarily in Redis.
+# This endpoint generates and sends a verification code to the user's phone number using Twilio Verify.
 @app.route('/api/send-verification', methods=['POST'])
 def send_verification():
-
-    # Get user data request
     data = request.json
-    # Extract user data
     phone_number = data.get('phone_number')
     username = data.get('username')
 
-    # Validate username, phone number, and password
+    # Validate input
     if not phone_number or not username:
         return jsonify({"error": "Phone Number and Username required"}), 400
-    
-    # Generate a verification code
-    # verification_code = generate_verification_code()
-    # Simulate sending the code
-    verification_code = "1234"  # Fixed code for now
 
-    # Store the code in Redis with a 5-minute expiration
     try:
-        print(f"Storing verification code in Redis -> Key: {username}, Code: {verification_code}")
-        redis_client.set(username, verification_code, ex=300)  # Store for 5 mins
-        print("Successfully stored verification code in Redis!")
+        # Use Twilio Verify to send a verification code via SMS
+        twilio_client = Client(
+            os.getenv("TWILIO_ACCOUNT_SID"),
+            os.getenv("TWILIO_AUTH_TOKEN")
+        )
+        verification = twilio_client.verify.v2.services(
+            os.getenv("TWILIO_VERIFY_SERVICE_SID")
+        ).verifications.create(to=phone_number, channel="sms")
+
+        # Log the SID for debugging
+        print(f"✅ Sent verification to {phone_number} — SID: {verification.sid}")
+        return jsonify({"message": "Verification code sent"}), 200
+
     except Exception as e:
-        print(f"Error setting Redis key: {e}")
-        return jsonify({"error": "Failed to store verification code"}), 500
+        # Log the error
+        print(f"❌ Failed to send verification: {e}")
+        return jsonify({"error": "Failed to send verification code"}), 500
 
-    # Simulate sending the verification code (replace with actual SMS logic)
-    print(f"Sending verification code {verification_code} to {phone_number}")
-    # For Testing
-    print(f"Verification code for {username}: {verification_code}")
-
-    return jsonify({"message": "Verification code sent"}), 200
-
-# This endpoint validates a verification code entered by the user against the stored code in Redis.
+# This endpoint validates a verification code using Twilio Verify and sets a Redis flag if successful.
 @app.route('/api/verify-code', methods=['POST'])
 def verify_code():
-
-    # Get data
     data = request.json
-    # Extract the username and code
-    username = data.get('username')
+    phone_number = data.get('phone_number')
     code = data.get('code')
 
-    # For Testing
-    print("Username received:", username)
+    # Normalize phone number to E.164 if 10 digits
+    if phone_number and phone_number.isdigit() and len(phone_number) == 10:
+        phone_number = f"+1{phone_number}"
 
-    # Validate inputs
-    if not username or not code:
-        return jsonify({"error": "Username and code are required"}), 400
+    print(f"📩 Received phone number: {phone_number}")
+    print(f"🔑 Received verification code: {code}")
 
-    # Check Redis (or in-memory store) for verification code
-    stored_code = redis_client.get(username)  # Replace with your Redis logic
-    if not stored_code:
-        # For Testing
-        print(f"Redis Debug: Username '{username}' not found in Redis or expired")
-        return jsonify({"error": "Verification code expired or not found"}), 404
-    
-    # For Testing
-    print(f"Redis Debug: Stored code for '{username}' is '{stored_code}'")
+    # Validate inputs after normalization
+    if not phone_number or not code:
+        return jsonify({"error": "Phone number and code are required"}), 400
 
-    # Verify the code
-    if code != stored_code:
-        return jsonify({"error": "Invalid verification code"}), 400
+    try:
+        # Use Twilio Verify to check the submitted code
+        twilio_client = Client(
+            os.getenv("TWILIO_ACCOUNT_SID"),
+            os.getenv("TWILIO_AUTH_TOKEN")
+        )
+        verification_check = twilio_client.verify.v2.services(
+            os.getenv("TWILIO_VERIFY_SERVICE_SID")
+        ).verification_checks.create(to=phone_number, code=code)
 
-    # Code is valid; delete from Redis
-    redis_client.delete(username)
-    redis_client.set(f"verified:{username}", "true", ex=300)  # Flag valid for 5 minutes
+        # Log verification status
+        print(f"🔍 Verification status for {phone_number}: {verification_check.status}")
 
-    return jsonify({"message": "Phone number verified successfully"}), 200
+        if verification_check.status == "approved":
+            # Store a temporary verified flag in Redis (valid for 5 minutes)
+            redis_client.set(f"verified:{phone_number}", "true", ex=300)
+            return jsonify({"message": "Phone number verified successfully"}), 200
+        else:
+            return jsonify({"error": "Invalid verification code"}), 400
+
+    except Exception as e:
+        print(f"❌ Verification failed: {e}")
+        return jsonify({"error": "Verification failed"}), 500
 
 # This endpoint allows authenticated users to create events. The event details,
 # including an optional image, are stored in MongoDB.
@@ -477,6 +477,40 @@ def update_event(slug):
 
     return jsonify({"message": "Event updated successfully"}), 200
 
+# This endpoint allows authenticated users to update an event's image.
+@app.route('/api/update-event-image/<slug>', methods=['PUT'])
+@jwt_required()
+def update_event_image(slug):
+    user_id = get_jwt_identity()
+
+    # Find the event
+    event = mongo.db.events.find_one({"slug": slug})
+    if not event:
+        return jsonify({'error': 'Event not found'}), 404
+
+    if str(event["host_id"]) != user_id:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image uploaded'}), 400
+
+    image = request.files['image']
+
+    try:
+        from storage import save_file  # Reuse your storage logic
+        image_url = save_file(image)
+
+        # Update the event with the new image
+        mongo.db.events.update_one(
+            {"slug": slug},
+            {"$set": {"image": image_url}}
+        )
+
+        return jsonify({'message': 'Image updated successfully', 'image_url': image_url}), 200
+
+    except Exception as e:
+        return jsonify({'error': f'Image upload failed: {str(e)}'}), 500
+
 # This endpoint retrieves event details based on the event name.
 @app.route('/api/events/<slug>', methods=['GET'])
 def get_event(slug):
@@ -507,6 +541,47 @@ def get_event(slug):
     event_json["attendees"] = attendees
     
     return jsonify(event_json), 200
+
+# Endpint to delete an event by its slug.
+@app.route('/api/delete-event/<slug>', methods=['DELETE'])
+@jwt_required()
+def delete_event(slug):
+    user_id = get_jwt_identity()
+    events_collection = mongo.db.events
+    users_collection = mongo.db.users
+
+    # Find the event
+    event = events_collection.find_one({"slug": slug})
+    if not event:
+        return jsonify({"error": "Event not found"}), 404
+
+    # Only the host can delete the event
+    if str(event["host_id"]) != user_id:
+        return jsonify({"error": "You are not authorized to delete this event"}), 403
+
+    event_id = str(event["_id"])
+
+    # Remove event from host's hosted_events
+    users_collection.update_one(
+        {"_id": event["host_id"]},
+        {"$pull": {"hosted_events": event_id}}
+    )
+
+    # Remove event from attendees' events_going_to
+    attendee_ids = event.get("attendees", [])
+    for attendee_id in attendee_ids:
+        users_collection.update_one(
+            {"_id": ObjectId(attendee_id)},
+            {"$pull": {"events_going_to": event_id}}
+        )
+
+    # Delete event
+    events_collection.delete_one({"_id": event["_id"]})
+
+    # Optionally: delete event image file if needed
+    # (implement if using local/S3 storage)
+
+    return jsonify({"message": "Event deleted successfully"}), 200
 
 # This endpoint allows a user to mark themselves as attending an event.
 @app.route('/api/events/<slug>/attend', methods=['POST'])
@@ -760,9 +835,6 @@ def health_check():
 @app.before_request
 def log_request_info():
     print(f"Incoming request: {request.method} {request.path}", file=sys.stderr, flush=True)
-
-
-
 
 
 

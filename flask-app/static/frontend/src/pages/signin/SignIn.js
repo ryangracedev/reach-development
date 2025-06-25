@@ -33,12 +33,12 @@ const SignIn = () => {
     const newShowError = { username: false, password: false };
 
     if (!username.trim()) {
-      newErrors.username = 'Username is required';
+      newErrors.username = '* Username is required';
       newShowError.username = true;
       hasError = true;
     }
     if (!password.trim()) {
-      newErrors.password = 'Password is required';
+      newErrors.password = '* Password is required';
       newShowError.password = true;
       hasError = true;
     }
@@ -49,7 +49,7 @@ const SignIn = () => {
       setTimeout(() => {
         setShowError({ username: false, password: false });
         setTimeout(() => setErrors({ username: '', password: '' }), 300);
-      }, 5000);
+      }, 2000);
       return;
     }
 
@@ -75,7 +75,7 @@ const SignIn = () => {
           setTimeout(() => {
             setShowError({ username: false });
             setTimeout(() => setErrors({ username: '', password: '' }), 300);
-          }, 5000);
+          }, 2000);
         }
       } catch (err) {
         console.error('Error during sign-in:', err);
@@ -84,7 +84,7 @@ const SignIn = () => {
         setTimeout(() => {
           setShowError({ username: false });
           setTimeout(() => setErrors({ username: '', password: '' }), 300);
-        }, 5000);
+        }, 2000);
       }
   };
 

@@ -122,11 +122,13 @@ const UsernameStep = ({ nextStep, prevStep, updateFormData, formData, transition
             count={false}
             errorMessage={errors.username}
             errorVisible={showError.username}
+            inputDescription={'Who are you?'}
             maxChar={30}
+            isNormalInput={true}
           />
-          <p className="username-info">
+          {/* <p className="username-info">
             Who are you?
-          </p>
+          </p> */}
         </div>
       </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}

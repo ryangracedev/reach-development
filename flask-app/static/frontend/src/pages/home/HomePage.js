@@ -31,18 +31,18 @@ const HomePage = () => {
 
   return (
     <div className={`home-page`}>
-      {/* <video
-        className="logo"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-      >
-        <source src="/reach-rotate.mov" type="video/quicktime" />
-        <source src="/reach-rotate.webm" type="video/webm" />
-        Your browser does not support the video tag.
-      </video> */}
+      <div className="home-page__background-video-container">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="home-page__create-party-background-video"
+        >
+          <source src="/yellow-flash.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
 
 
 
@@ -58,11 +58,11 @@ const HomePage = () => {
             }, 500);
           });
         }} 
-        className={`create-event-btn fade-in-slowed ${clicked ? 'clicked' : ''}`}
+        className={`home-page__create-event-btn fade-in-slowed ${clicked ? 'clicked' : ''}`}
       >
        
         {/* <video
-          className="create-a-party-model"
+          className="home-page__create-a-party-model"
           autoPlay
           loop
           muted
@@ -73,7 +73,7 @@ const HomePage = () => {
           Your browser does not support the video tag.
         </video> */}
 
-        <h1 className='create-a-party-button'>Create a<br/>party.</h1>
+        <h1 className='home-page__create-a-party-text'>CREATE A<br/>PARTY.</h1>
 
       </button>
 
@@ -86,7 +86,7 @@ const HomePage = () => {
           <img src="/Reach_Logo_Full.png" alt="Reach Logo" className="logo" />
         </div>
         {authState.isAuthenticated ? (
-          <div className={`bottom-button ${loaded ? 'fade-in-delayed-1' : ''} ${animateExit ? 'button-leave' : ''}`}>
+          <div className={`bottom-button ${loaded ? 'fade-in-slowed' : ''} ${animateExit ? 'button-leave' : ''}`}>
             <h3 id='bottom-button-text'>
               @<Link to={`/profile/${authState.username}`}>{authState.username}</Link>
             </h3>

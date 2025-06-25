@@ -7,41 +7,43 @@
   position: relative;
   z-index: 0;
   margin-bottom: 1.5rem;
-  gap: 50%;
+  gap: 40%;
 }
 
-.create-event-btn {
+.home-page__create-event-btn {
   border: none;
   cursor: pointer;
   background-color: #ffffff00;
-  color: white;
+  color: #FFCE00;
+  text-shadow: #FFCE00 0px 0px 6px;
   align-self: center;
-  font-family: "Poppins", sans-serif;
-  font-weight: 700;
+  font-family: "Public Sans", sans-serif;
+  // font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  font-weight: 900;
   font-style: normal;
   // 💡 Prevent background change on mobile tap
   -webkit-tap-highlight-color: transparent;
   outline: none;
   user-select: none;
-
 }
 
-.create-a-party-button {
+.home-page__create-a-party-text {
   font-size: 38px;
+  font-weight: 900;
   line-height: 2.2rem;
   width: 100%;
 }
 
-.create-a-party-model {
+.home-page__create-a-party-model {
   width: 14rem;
 }
 
-.create-event-btn.clicked {
+.home-page__create-event-btn.clicked {
   animation: click 0.3s cubic-bezier(0.37, 0.01, 0, 1) forwards;
 }
 
 .button-leave {
-  animation: click 0.1s cubic-bezier(0.37, 0.01, 0, 1) forwards;
+  animation: fade 0.3s cubic-bezier(0.37, 0.01, 0, 1) forwards;
 }
 
 @keyframes click {
@@ -57,6 +59,19 @@
   }
   80% {
     opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+    filter: blur(10px);
+  }
+}
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
   }
   100% {
     opacity: 0;
@@ -118,4 +133,20 @@
   height: 50%;
   object-fit: cover;
   pointer-events: none;
+}
+
+.home-page__background-video-container {
+  position: fixed; /* Make sure it's outside the normal flow */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Push behind everything else */
+  overflow: hidden; /* Optional: hides any overflow */
+}
+
+.home-page__create-party-background-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

@@ -53,7 +53,7 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handle
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: formData.username,
+          phone_number: formData.phoneNumber,
           code: code,
         }),
       });
@@ -191,7 +191,7 @@ const VerificationStep = ({ formData, prevStep, updateFormData, nextStep, handle
           </div>
           <p className="verification-info">  {/* Feature: hide the first 2 parts of the phone number */}
             We sent a code to {formData.phoneNumber},   
-            enter it below.
+            enter it above.
           </p>
           <button className="resend-code" onClick={handleResendCode}>
             Resend Code

@@ -83,7 +83,7 @@ const CreateEvent = () => {
 
   return (
     <EventProvider>
-      {/* <div className={`background-video-container ${fadeOutBackground ? 'fade-out-img' : ''}`}>
+      <div className={`background-video-container ${fadeOutBackground ? 'fade-out-img' : ''}`}>
         <video
           autoPlay
           muted
@@ -91,11 +91,11 @@ const CreateEvent = () => {
           playsInline
           className="create-party-background-video"
         >
-          <source src="/background-gradient.mov" type="video/quicktime" />  
-          <source src="/background-gradient.mp4" type="video/mp4" /> 
+          {/* <source src="/background-gradient.mov" type="video/quicktime" />   */}
+          <source src="/yellow-flash.mp4" type="video/mp4" /> 
           Your browser does not support the video tag.
         </video>
-      </div> */}
+      </div>
       <div className="create-event-container">
           {/* Step 1: Name, Photo, Description */}
           {step === 1 && ( 

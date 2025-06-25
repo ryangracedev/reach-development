@@ -138,10 +138,12 @@ const PhoneStep = ({ formData, prevStep, updateFormData, nextStep, transitioning
             count={false}
             errorMessage={errors.phone}
             errorVisible={showError.phone}
+            inputDescription={'To verify you.'}
+            isNormalInput={true}
           />
-          <p className="phone-info">
+          {/* <p className="phone-info">
             To verify you.
-          </p>
+          </p> */}
         </div>
       </div>
       
